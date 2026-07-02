@@ -1,0 +1,102 @@
+:root {
+  --bg: #eef0f3;
+  --panel: #ffffff;
+  --border: #d8dbe0;
+  --text: #23272f;
+  --muted: #6b7280;
+  --accent: #2f5d9f;
+  --accent-dark: #234878;
+  --danger: #b3261e;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; background: var(--bg); color: var(--text); font-size: 14px; }
+
+#root { height: 100vh; }
+
+button {
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+button.primary:hover { background: var(--accent-dark); }
+button.danger { color: var(--danger); border-color: var(--danger); }
+button.subtle { border: none; background: none; color: var(--accent); }
+button:disabled { opacity: 0.4; cursor: default; }
+
+input[type=text], input[type=number], input[type=date], select, textarea {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+/* ---------- Start screen ---------- */
+.start-screen { max-width: 760px; margin: 40px auto; padding: 0 20px; }
+.start-screen h1 { color: var(--accent-dark); }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; margin-bottom: 16px; }
+.template-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 4px; border-bottom: 1px solid var(--border); }
+.template-item:last-child { border-bottom: none; }
+.category-heading { font-weight: 600; margin-top: 10px; color: var(--accent-dark); }
+
+/* ---------- App shell ---------- */
+.editor-shell { display: flex; height: 100vh; }
+.editor-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.editor-topbar {
+  display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+  background: var(--accent-dark); color: #fff;
+}
+.editor-topbar .title { font-weight: 600; margin-right: auto; }
+.editor-body { flex: 1; overflow-y: auto; padding: 24px; display: flex; justify-content: center; }
+.sidebar {
+  width: 280px; flex-shrink: 0; background: var(--panel); border-left: 1px solid var(--border);
+  overflow-y: auto; padding: 16px;
+}
+
+/* ---------- Document / page ---------- */
+.document-page {
+  background: #fff; width: 210mm; min-height: 297mm; padding: 20mm 18mm;
+  box-shadow: 0 0 6px rgba(0,0,0,0.15);
+}
+.doc-header, .doc-footer {
+  display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--muted);
+  padding-bottom: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--border);
+}
+.doc-footer { border-bottom: none; border-top: 1px solid var(--border); margin-top: 16px; padding-top: 8px; margin-bottom: 0; }
+.doc-header img, .doc-footer img { max-height: 32px; max-width: 100px; object-fit: contain; }
+.doc-header input[type=text], .doc-footer input[type=text] { border: 1px dashed var(--border); background: transparent; font-size: 12px; }
+
+.fred-block { position: relative; margin-bottom: 14px; padding: 6px; border-radius: 4px; }
+.fred-block.locked { background: #fafafa; }
+.fred-block.editable:hover { outline: 1px dashed #c7d2e0; }
+.fred-block-toolbar { display: flex; gap: 4px; margin-bottom: 4px; }
+.fred-block-toolbar button { padding: 2px 7px; font-size: 12px; }
+.fred-block-content { outline: none; min-height: 1.4em; line-height: 1.5; }
+.fred-block-content .fred-param-chip {
+  background: #e5edfb; border-radius: 3px; padding: 0 3px; color: var(--accent-dark);
+}
+.fred-block-label { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 2px; }
+.fred-block-actions { position: absolute; top: -10px; right: 0; display: flex; gap: 2px; }
+.fred-block-actions button { padding: 1px 5px; font-size: 11px; }
+.page-break { border-top: 2px dashed #94a3b8; margin: 12px 0; height: 0; }
+.page-break::after { content: "Sidbrytning"; font-size: 10px; color: #94a3b8; }
+
+mark.search-hit { background: #fff2a8; }
+mark.search-hit.active { background: #ffb84d; }
+
+/* ---------- Print ---------- */
+@media print {
+  body * { visibility: hidden; }
+  .document-page, .document-page * { visibility: visible; }
+  .document-page { position: absolute; left: 0; top: 0; box-shadow: none; margin: 0; width: auto; min-height: 0; }
+  .fred-block-actions, .fred-block-toolbar { display: none !important; }
+  .page-break { break-after: page; border: none; }
+  .page-break::after { content: none; }
+}
