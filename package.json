@@ -1,0 +1,18 @@
+{
+  "name": "fred",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Fred (Fras-EDitor) - fristaende, offline ordbehandlingssystem",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:editor": "npm run dev -w apps/editor",
+    "dev:configurator": "npm run dev -w apps/configurator",
+    "build:editor": "npm run build -w apps/editor",
+    "build:configurator": "npm run build -w apps/configurator",
+    "build": "npm run build:editor && npm run build:configurator",
+    "typecheck": "npm run typecheck -w packages/shared -w apps/editor -w apps/configurator"
+  }
+}
