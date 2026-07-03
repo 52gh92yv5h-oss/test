@@ -1,0 +1,131 @@
+{
+  "marker": "fred-mall",
+  "version": 1,
+  "mall": {
+    "id": "mall-polis-id-handling",
+    "name": "Ansökan om ID-handling - Polismyndigheten",
+    "description": "Ansökan för pass eller nationellt ID-kort",
+    "categoryId": "swedish-government",
+    "orgScope": {
+      "mode": "specific",
+      "organisationId": "org-polismyndigheten"
+    },
+    "headerFooter": {
+      "headerFields": [
+        {
+          "id": "header-logo",
+          "kind": "logo",
+          "label": "Organisationslogotyp"
+        },
+        {
+          "id": "header-org",
+          "kind": "organisation"
+        }
+      ],
+      "footerFields": [
+        {
+          "id": "footer-page",
+          "kind": "text",
+          "label": "Sidnummer",
+          "defaultText": "Sida {{page}}/{{totalPages}}"
+        }
+      ]
+    },
+    "parameters": [
+      {
+        "id": "applicantName",
+        "label": "Ansökares namn",
+        "type": "text"
+      },
+      {
+        "id": "personalNumber",
+        "label": "Personnummer",
+        "type": "text"
+      },
+      {
+        "id": "birthplace",
+        "label": "Födelseort",
+        "type": "text"
+      },
+      {
+        "id": "idType",
+        "label": "Typ av ID-handling",
+        "type": "list",
+        "options": [
+          {
+            "value": "pass",
+            "label": "Pass"
+          },
+          {
+            "value": "idkort",
+            "label": "Nationellt ID-kort"
+          },
+          {
+            "value": "byte",
+            "label": "Byte av befintlig handling"
+          }
+        ]
+      },
+      {
+        "id": "validity",
+        "label": "Giltighetstid (år)",
+        "type": "number",
+        "defaultValue": 10
+      },
+      {
+        "id": "phone",
+        "label": "Telefonnummer",
+        "type": "text"
+      },
+      {
+        "id": "email",
+        "label": "E-postadress",
+        "type": "text"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "block-title",
+        "title": "Ansökan om ID-handling",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<h2>Ansökan om ID-handling</h2>",
+        "order": 1
+      },
+      {
+        "id": "block-applicant",
+        "title": "Ansökares information",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<p><strong>Namn:</strong> {{applicantName}}<br/><strong>Personnummer:</strong> {{personalNumber}}<br/><strong>Födelseort:</strong> {{birthplace}}</p>",
+        "order": 2
+      },
+      {
+        "id": "block-id-type",
+        "title": "Typ av ID-handling",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<p><strong>Önskad handling:</strong> {{idType}}</p>",
+        "order": 3
+      },
+      {
+        "id": "block-validity",
+        "title": "Giltighet",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<p><strong>Önskad giltighetstid:</strong> {{validity}} år</p>",
+        "order": 4
+      },
+      {
+        "id": "block-contact",
+        "title": "Kontaktuppgifter",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p><strong>Telefon:</strong> {{phone}}<br/><strong>E-post:</strong> {{email}}</p>",
+        "order": 5
+      }
+    ],
+    "createdAt": "2026-07-03T11:52:39.482792Z",
+    "updatedAt": "2026-07-03T11:52:39.482792Z"
+  }
+}

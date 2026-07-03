@@ -1,0 +1,145 @@
+{
+  "marker": "fred-mall",
+  "version": 1,
+  "mall": {
+    "id": "mall-migrationsverket-uppehall",
+    "name": "Ansökan om uppehållstillstånd - Migrationsverket",
+    "description": "Ansökan för att få stanna i Sverige",
+    "categoryId": "swedish-government",
+    "orgScope": {
+      "mode": "specific",
+      "organisationId": "org-migrationsverket"
+    },
+    "headerFooter": {
+      "headerFields": [
+        {
+          "id": "header-logo",
+          "kind": "logo",
+          "label": "Organisationslogotyp"
+        },
+        {
+          "id": "header-org",
+          "kind": "organisation"
+        }
+      ],
+      "footerFields": [
+        {
+          "id": "footer-page",
+          "kind": "text",
+          "label": "Sidnummer",
+          "defaultText": "Sida {{page}}/{{totalPages}}"
+        }
+      ]
+    },
+    "parameters": [
+      {
+        "id": "fullName",
+        "label": "Fullständigt namn",
+        "type": "text"
+      },
+      {
+        "id": "dateOfBirth",
+        "label": "Födelsedatum",
+        "type": "date"
+      },
+      {
+        "id": "nationality",
+        "label": "Medborgarskap/Nationalitet",
+        "type": "text"
+      },
+      {
+        "id": "residenceAddress",
+        "label": "Aktuell boendeadress i Sverige",
+        "type": "text"
+      },
+      {
+        "id": "postalCode",
+        "label": "Postnummer",
+        "type": "text"
+      },
+      {
+        "id": "applicationReason",
+        "label": "Grund för uppehållstillstånds ansökan",
+        "type": "list",
+        "options": [
+          {
+            "value": "anstallning",
+            "label": "Anställning"
+          },
+          {
+            "value": "studier",
+            "label": "Studier"
+          },
+          {
+            "value": "familj",
+            "label": "Familjesammanförning"
+          },
+          {
+            "value": "egetyrelserott",
+            "label": "Egna medel"
+          }
+        ]
+      },
+      {
+        "id": "employer",
+        "label": "Namn på arbetsgivare",
+        "type": "text"
+      },
+      {
+        "id": "position",
+        "label": "Befattning",
+        "type": "text"
+      },
+      {
+        "id": "employmentProof",
+        "label": "Anställningsbevis bifogat",
+        "type": "boolean",
+        "defaultValue": false
+      }
+    ],
+    "blocks": [
+      {
+        "id": "block-title",
+        "title": "Ansökan om uppehållstillstånd",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<h2>Ansökan om uppehållstillstånd</h2>",
+        "order": 1
+      },
+      {
+        "id": "block-personal",
+        "title": "Personlig information",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<p><strong>Namn:</strong> {{fullName}}<br/><strong>Födelsedatum:</strong> {{dateOfBirth}}<br/><strong>Medborgarskap:</strong> {{nationality}}</p>",
+        "order": 2
+      },
+      {
+        "id": "block-residence",
+        "title": "Aktuell boendeadress",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p><strong>Adress i Sverige:</strong> {{residenceAddress}}<br/><strong>Postnummer:</strong> {{postalCode}}</p>",
+        "order": 3
+      },
+      {
+        "id": "block-reason",
+        "title": "Grund för ansökan",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<p><strong>Grund:</strong> {{applicationReason}}</p>",
+        "order": 4
+      },
+      {
+        "id": "block-employment",
+        "title": "Anställningsuppgifter (om tillämpligt)",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p><strong>Arbetsgivare:</strong> {{employer}}<br/><strong>Befattning:</strong> {{position}}<br/><strong>Anställningsbevis bifogat:</strong> {{employmentProof}}</p>",
+        "order": 5
+      }
+    ],
+    "createdAt": "2026-07-03T11:52:39.482785Z",
+    "updatedAt": "2026-07-03T11:52:39.482785Z"
+  }
+}

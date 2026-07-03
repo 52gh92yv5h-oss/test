@@ -1,0 +1,145 @@
+{
+  "marker": "fred-mall",
+  "version": 1,
+  "mall": {
+    "id": "mall-fk-lakarintyg",
+    "name": "Läkarintyg för sjukpenning - Försäkringskassan",
+    "description": "Medicinsk bedömning för sjukpenning",
+    "categoryId": "swedish-government",
+    "orgScope": {
+      "mode": "specific",
+      "organisationId": "org-forsaksringskassan"
+    },
+    "headerFooter": {
+      "headerFields": [
+        {
+          "id": "header-logo",
+          "kind": "logo",
+          "label": "Organisationslogotyp"
+        },
+        {
+          "id": "header-org",
+          "kind": "organisation"
+        }
+      ],
+      "footerFields": [
+        {
+          "id": "footer-page",
+          "kind": "text",
+          "label": "Sidnummer",
+          "defaultText": "Sida {{page}}/{{totalPages}}"
+        }
+      ]
+    },
+    "parameters": [
+      {
+        "id": "patientName",
+        "label": "Patientens namn",
+        "type": "text"
+      },
+      {
+        "id": "patientNumber",
+        "label": "Personnummer",
+        "type": "text"
+      },
+      {
+        "id": "examinationDate",
+        "label": "Datum för läkarundersökning",
+        "type": "date"
+      },
+      {
+        "id": "diagnosis",
+        "label": "Diagnos (ICD-kod)",
+        "type": "text"
+      },
+      {
+        "id": "sickLeavePercent",
+        "label": "Sjukskrivnings grad (%)",
+        "type": "number",
+        "defaultValue": 100,
+        "options": [
+          {
+            "value": "25",
+            "label": "25%"
+          },
+          {
+            "value": "50",
+            "label": "50%"
+          },
+          {
+            "value": "75",
+            "label": "75%"
+          },
+          {
+            "value": "100",
+            "label": "100%"
+          }
+        ]
+      },
+      {
+        "id": "startDate",
+        "label": "Sjukskrivningens startdatum",
+        "type": "date"
+      },
+      {
+        "id": "endDate",
+        "label": "Sjukskrivningens slutdatum",
+        "type": "date"
+      },
+      {
+        "id": "workabilityDescription",
+        "label": "Beskrivning av arbetsförmåga",
+        "type": "text"
+      },
+      {
+        "id": "treatmentPlan",
+        "label": "Planerad behandling och uppföljning",
+        "type": "text"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "block-title",
+        "title": "Läkarintyg",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<h2>Läkarintyg för sjukpenning</h2>",
+        "order": 1
+      },
+      {
+        "id": "block-patient",
+        "title": "Patientinformation",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<p><strong>Namn:</strong> {{patientName}}<br/><strong>Personnummer:</strong> {{patientNumber}}<br/><strong>Datum för underlag:</strong> {{examinationDate}}</p>",
+        "order": 2
+      },
+      {
+        "id": "block-diagnosis",
+        "title": "Diagnos och medicinsk bedömning",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p><strong>Diagnos:</strong> {{diagnosis}}<br/><strong>Sjukskrivnings grad:</strong> {{sickLeavePercent}}%<br/><strong>Sjukskrivningsperiod:</strong> Från {{startDate}} till {{endDate}}</p>",
+        "order": 3
+      },
+      {
+        "id": "block-workability",
+        "title": "Arbetsförmåga",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p>{{workabilityDescription}}</p>",
+        "order": 4
+      },
+      {
+        "id": "block-treatment",
+        "title": "Planerad behandling",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p>{{treatmentPlan}}</p>",
+        "order": 5
+      }
+    ],
+    "createdAt": "2026-07-03T11:52:39.482756Z",
+    "updatedAt": "2026-07-03T11:52:39.482756Z"
+  }
+}

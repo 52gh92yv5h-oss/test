@@ -1,0 +1,136 @@
+{
+  "marker": "fred-mall",
+  "version": 1,
+  "mall": {
+    "id": "mall-arb-handlingsplan",
+    "name": "Personlig handlingsplan - Arbetsförmedlingen",
+    "description": "Handlingsplan för arbetssökande",
+    "categoryId": "swedish-government",
+    "orgScope": {
+      "mode": "specific",
+      "organisationId": "org-arbetsformedlingen"
+    },
+    "headerFooter": {
+      "headerFields": [
+        {
+          "id": "header-logo",
+          "kind": "logo",
+          "label": "Organisationslogotyp"
+        },
+        {
+          "id": "header-org",
+          "kind": "organisation"
+        }
+      ],
+      "footerFields": [
+        {
+          "id": "footer-page",
+          "kind": "text",
+          "label": "Sidnummer",
+          "defaultText": "Sida {{page}}/{{totalPages}}"
+        }
+      ]
+    },
+    "parameters": [
+      {
+        "id": "personalName",
+        "label": "Personens namn",
+        "type": "text",
+        "defaultValue": ""
+      },
+      {
+        "id": "personalNumber",
+        "label": "Personnummer (YYYYMMDD-XXXX)",
+        "type": "text",
+        "defaultValue": ""
+      },
+      {
+        "id": "date",
+        "label": "Datum för handlingsplanen",
+        "type": "date",
+        "defaultValue": "2026-07-03"
+      },
+      {
+        "id": "employmentGoal",
+        "label": "Arbetsmarknadsmål",
+        "type": "list",
+        "options": [
+          {
+            "value": "anstallning",
+            "label": "Anställning på öppen arbetsmarknad"
+          },
+          {
+            "value": "egenforetagare",
+            "label": "Etablera eget företag"
+          },
+          {
+            "value": "utbildning",
+            "label": "Genomgå yrkesutbildning"
+          }
+        ]
+      },
+      {
+        "id": "action",
+        "label": "Specifik åtgärd",
+        "type": "text",
+        "defaultValue": ""
+      },
+      {
+        "id": "timeline",
+        "label": "Tidsplan för åtgärd",
+        "type": "text",
+        "defaultValue": ""
+      },
+      {
+        "id": "supportOffered",
+        "label": "Stödåtgärd från AF",
+        "type": "text",
+        "defaultValue": "Arbetsmarknadsutbildning, jobbcoachning eller praktikplats"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "block-intro",
+        "title": "Introduktion",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<h2>Personlig handlingsplan</h2><p>Denna handlingsplan upprättas tillsammans med Arbetsförmedlingen för att stödja dina möjligheter på arbetsmarknaden.</p>",
+        "order": 1
+      },
+      {
+        "id": "block-info",
+        "title": "Personlig information",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p><strong>Namn:</strong> {{personalName}}<br/><strong>Personnummer:</strong> {{personalNumber}}<br/><strong>Datum:</strong> {{date}}</p>",
+        "order": 2
+      },
+      {
+        "id": "block-goal",
+        "title": "Arbetsmarknadsmål",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p>Ditt primära mål är att {{employmentGoal}}. Detta kommer att uppnås genom följande åtgärder:</p>",
+        "order": 3
+      },
+      {
+        "id": "block-actions",
+        "title": "Åtgärder",
+        "type": "editable",
+        "placement": "free",
+        "content": "<p>Åtgärd: {{action}}</p><p>Tidsplan: {{timeline}}</p>",
+        "order": 4
+      },
+      {
+        "id": "block-support",
+        "title": "Stöd från Arbetsförmedlingen",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<p>Arbetsförmedlingen erbjuder följande stöd: {{supportOffered}}</p>",
+        "order": 5
+      }
+    ],
+    "createdAt": "2026-07-03T11:52:39.482730Z",
+    "updatedAt": "2026-07-03T11:52:39.482730Z"
+  }
+}
