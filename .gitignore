@@ -2,3 +2,10 @@ node_modules/
 dist/
 *.local
 .DS_Store
+
+# Rust-byggkatalog för WASM-motorn
+apps/editor-wasm/engine/target/
+
+# Den färdigbyggda enfilsappen versionshanteras (kravet om "run-fil per app")
+!apps/editor-wasm/dist/
+!apps/editor-wasm/dist/index.html

@@ -1,0 +1,66 @@
+# Fred Editor (WebAssembly)
+
+Omskrivning av Fred Editor där all dokumentlogik körs i en **WebAssembly-motor
+skriven i Rust**, med ett gränssnitt som efterliknar Microsoft Word.
+Parametrarna redigeras **direkt i löptexten** som Words innehållskontroller –
+det finns ingen sidopanel, utan känslan är att man skriver i ett vanligt
+Word-dokument.
+
+## Arkitektur
+
+```
+apps/editor-wasm/
+├── engine/            Rust-crate → fred_engine.wasm (ingen bindgen, rå ABI)
+│   └── src/lib.rs     Dokumentmodell, global parametersubstitution,
+│                      undo/redo, sök & ersätt, sessionsfiler (JSON in/ut)
+├── web/               Skal utan ramverk: index.html + styles.css + app.js
+│   └── demo-data.js   Inbyggda demoorganisationer och demomallar
+├── scripts/
+│   ├── build.mjs      Bygger dist/index.html (WASM inbäddad som base64)
+│   └── test-engine.mjs Funktionstester av motorn via Node
+└── dist/index.html    Fristående "run-fil" – öppnas direkt från disk, helt offline
+```
+
+**Ansvarsfördelning:** JavaScript-skalet ritar bara gränssnittet och skickar
+varje redigering som ett JSON-kommando till motorn (`fred_cmd`). Motorn äger
+sessionstillståndet: parametervärden, blockstruktur, historik (ångra/gör om),
+sök & ersätt samt in-/utläsning av sessionsfiler. Rendermodellen som motorn
+returnerar innehåller färdig HTML där `{{parameterId}}` ersatts med
+inline-fält (`<span class="fred-cc">`).
+
+## Word-upplevelsen
+
+* Namnlist med Autospara, snabbåtkomst (Spara/Ångra/Gör om) och sökruta.
+* Menyflikar: Arkiv (backstage), Start, Infoga, Granska, Visa.
+* A4-sida med linjal, Calibri 11 pt, rubrikstilar i Word-blått.
+* Statusfält med sidräkning, ordantal, språk och zoomreglage.
+* Parametrar är innehållskontroller i texten: tomma fält visar grå
+  platshållare, klick gör fältet skrivbart på plats (text/nummer) eller
+  öppnar en dropdown (lista/ja–nej/datum). Alla förekomster av samma
+  parameter uppdateras medan man skriver (global uppdatering).
+* Låsta block kan inte redigeras, men deras parameterfält går att fylla i.
+* Fraser (fria block) infogas via Infoga → Fras (snabbdelar).
+
+## Bygga & testa
+
+```bash
+rustup target add wasm32-unknown-unknown   # engångssteg
+npm run build -w apps/editor-wasm          # → dist/index.html
+npm run test  -w apps/editor-wasm          # motortester i Node
+```
+
+Under utveckling kan `web/index.html` serveras direkt (t.ex.
+`python3 -m http.server`) – då läses WASM-filen från `engine/target/…`.
+
+## Filformat
+
+Samma JSON-format som övriga Fred: mallfiler (`fred-mall`),
+organisationsfiler (`fred-organisationer`), sessionsfiler (`fred-session`)
+och importfiler (`{ organisationId?, values }`). Filer skapade i
+Fred Konfiguratör kan läsas in via startskärmen eller Arkiv → Öppna.
+
+## Start från extern applikation
+
+`index.html?mall=<mall-id>&org=<organisations-id>&data=<URL-kodad JSON med parametervärden>`
+öppnar editorn direkt med angiven mall och förifyllda värden
+(kravspecifikationen avsnitt 4).
