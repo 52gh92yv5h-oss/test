@@ -8,16 +8,16 @@
 
   let wasm;
   async function initWasm() {
-    let bytes;
-    if (window.FRED_WASM_BASE64) {
-      const bin = atob(window.FRED_WASM_BASE64);
-      bytes = new Uint8Array(bin.length);
-      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    } else {
-      const res = await fetch("../engine/target/wasm32-unknown-unknown/release/fred_engine.wasm");
-      bytes = new Uint8Array(await res.arrayBuffer());
-    }
-    const { instance } = await WebAssembly.instantiate(bytes, {});
+    // I den paketerade appen ligger motorn som base64 i ett <template>-element
+    // och läses in som en vanlig resurs via data-URL (fungerar från file://).
+    // Under utveckling hämtas .wasm-filen från Rust-byggkatalogen i stället.
+    const holder = document.getElementById("fred-wasm-data");
+    const embedded = (holder?.content?.textContent ?? holder?.textContent ?? "").trim();
+    const src = embedded
+      ? "data:application/wasm;base64," + embedded
+      : "../engine/target/wasm32-unknown-unknown/release/fred_engine.wasm";
+    const res = await fetch(src);
+    const { instance } = await WebAssembly.instantiate(await res.arrayBuffer(), {});
     wasm = instance.exports;
   }
 

@@ -52,6 +52,24 @@ npm run test  -w apps/editor-wasm          # motortester i Node
 Under utveckling kan `web/index.html` serveras direkt (t.ex.
 `python3 -m http.server`) – då läses WASM-filen från `engine/target/…`.
 
+## Distribution
+
+Bygget skapar två artefakter i `dist/`:
+
+* **`fred-editor.zip`** – rekommenderat format att skicka via e-post.
+  Innehåller `index.html` + `LASMIG.txt` i mappen `fred-editor/`.
+* **`index.html`** – själva enfilsappen, för direkt användning.
+
+**Skicka inte den råa HTML-filen som e-postbilaga.** En HTML-fil med inbäddad
+WebAssembly-binär liknar tekniken "HTML smuggling" som skadlig kod använder,
+och virusskannrar (t.ex. Gmails) kan därför falskflagga den. Bygget minimerar
+signaturmönstren (WASM-datan ligger i ett icke-exekverbart `<template>`-element
+och läses in som en vanlig resurs), men heuristiken går inte att styra helt.
+
+Om zip-filen ändå flaggas: dela via länk i stället – t.ex. GitHub-repot,
+Google Drive, OneDrive eller ett internt nätverksdelat utrymme. Länkar
+genomgår inte bilageskanning.
+
 ## Filformat
 
 Samma JSON-format som övriga Fred: mallfiler (`fred-mall`),
