@@ -1041,11 +1041,23 @@ mark.fred-hit.cur { background: #ffb900; }
     // Under utveckling hämtas .wasm-filen från Rust-byggkatalogen i stället.
     const holder = document.getElementById("fred-wasm-data");
     const embedded = (holder?.content?.textContent ?? holder?.textContent ?? "").trim();
-    const src = embedded
-      ? "data:application/wasm;base64," + embedded
-      : "../engine/target/wasm32-unknown-unknown/release/fred_engine.wasm";
-    const res = await fetch(src);
-    const { instance } = await WebAssembly.instantiate(await res.arrayBuffer(), {});
+    let buffer;
+    if (embedded) {
+      try {
+        const res = await fetch("data:application/wasm;base64," + embedded);
+        buffer = await res.arrayBuffer();
+      } catch {
+        // Vissa inbäddade miljöer (strikt CSP) tillåter inte data:-hämtning.
+        const bin = atob(embedded);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        buffer = bytes.buffer;
+      }
+    } else {
+      const res = await fetch("../engine/target/wasm32-unknown-unknown/release/fred_engine.wasm");
+      buffer = await res.arrayBuffer();
+    }
+    const { instance } = await WebAssembly.instantiate(buffer, {});
     wasm = instance.exports;
   }
 
@@ -1264,11 +1276,13 @@ mark.fred-hit.cur { background: #ffb900; }
 
   function recentDocs() {
     const out = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (!key.startsWith(DOC_KEY)) continue;
-      try { out.push(JSON.parse(localStorage.getItem(key))); } catch { /* hoppa över trasiga poster */ }
-    }
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key.startsWith(DOC_KEY)) continue;
+        try { out.push(JSON.parse(localStorage.getItem(key))); } catch { /* hoppa över trasiga poster */ }
+      }
+    } catch { /* lagring avstängd (t.ex. inbäddad miljö) – ingen senaste-lista */ }
     return out.sort((a, b) => (b.savedAt || "").localeCompare(a.savedAt || ""));
   }
 
