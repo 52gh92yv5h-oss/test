@@ -327,32 +327,47 @@
     const doc = model.doc;
     $("doc-title").textContent = `${doc.templateName} – Fred`;
 
+    // 3x3-matris (kravspec 2.1): fält placeras i celler kolumn x rad;
+    // fält utan position hamnar i vänster/mitt, flera fält i samma cell staplas.
     const hf = (fields, host) => {
       host.innerHTML = "";
+      const cells = new Map();
+      for (const row of ["top", "middle", "bottom"]) {
+        for (const col of ["left", "center", "right"]) {
+          const cell = document.createElement("div");
+          cell.className = `hf-cell hf-col-${col} hf-row-${row}`;
+          cells.set(`${col}/${row}`, cell);
+          host.appendChild(cell);
+        }
+      }
       for (const f of fields) {
+        let d;
         if (f.kind === "logo") {
-          const d = document.createElement("span");
+          d = document.createElement("span");
           d.className = "hf-logo";
           if (f.logo) d.innerHTML = `<img src="${f.logo}" alt="Logotyp">`;
-          host.appendChild(d);
         } else if (f.kind === "organisation") {
-          const d = document.createElement("span");
+          d = document.createElement("span");
           d.className = "hf-org";
           d.textContent = f.text || "";
-          host.appendChild(d);
         } else {
-          const d = document.createElement("span");
+          d = document.createElement("span");
           d.className = "hf-text";
           d.contentEditable = "true";
           d.dataset.fieldId = f.id;
           d.dataset.ph = f.label || "Text";
           d.textContent = f.text || "";
-          host.appendChild(d);
         }
+        // Fältets typografi (kravspec 6.0); oangivet ärvs från dokumentet.
+        if (f.styleCss) d.style.cssText = f.styleCss;
+        cells.get(`${f.col || "left"}/${f.row || "middle"}`).appendChild(d);
       }
     };
     hf(doc.header, $("page-header"));
     hf(doc.footer, $("page-footer"));
+
+    // Mallens standardtypografi på sidan; block/fält utan egen stil ärver.
+    $("page").style.cssText = doc.defaultStyleCss || "";
 
     const host = $("doc-blocks");
     host.innerHTML = "";
@@ -370,7 +385,10 @@
           <button data-act="remove" title="Ta bort block">✕</button>
         </div>
         <div class="block-body"${block.editable ? ' contenteditable="true" spellcheck="true"' : ""}></div>`;
-      sec.querySelector(".block-body").innerHTML = block.html;
+      const body = sec.querySelector(".block-body");
+      body.innerHTML = block.html;
+      // Blockets typografi (kravspec 6.0); oangivet ärvs från dokumentet.
+      if (block.styleCss) body.style.cssText = block.styleCss;
       host.appendChild(sec);
     }
 

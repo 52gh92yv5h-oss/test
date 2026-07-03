@@ -1,4 +1,5 @@
 import { BlockPlacement, BlockType, ContentBlock, ParameterDef, flattenParameters, newId } from "@fred/shared";
+import StyleEditor from "./StyleEditor";
 
 interface Props {
   blocks: ContentBlock[];
@@ -84,6 +85,14 @@ export default function BlocksEditor({ blocks, parameters, onChange }: Props) {
               </>
             )}
             <button className="danger" onClick={() => remove(block.id)}>Ta bort</button>
+          </div>
+          <div className="col">
+            <label>Typografi (ersätter mallens standard)</label>
+            <StyleEditor
+              value={block.style}
+              onChange={(style) => patch(block.id, { style })}
+              inheritLabel="(ärver mallens standard)"
+            />
           </div>
           <div className="col">
             <label>Förhandsinnehåll</label>

@@ -1,5 +1,7 @@
 import {
   FRED_MALL_FILE_MARKER,
+  HFCol,
+  HFRow,
   HeaderFooterField,
   MallFile,
   OrgScope,
@@ -12,6 +14,19 @@ import {
 import { useConfiguratorStore } from "../store";
 import ParametersEditor from "./ParametersEditor";
 import BlocksEditor from "./BlocksEditor";
+import StyleEditor from "./StyleEditor";
+
+const HF_COLS: { value: HFCol; label: string }[] = [
+  { value: "left", label: "Vänster" },
+  { value: "center", label: "Mitten" },
+  { value: "right", label: "Höger" },
+];
+
+const HF_ROWS: { value: HFRow; label: string }[] = [
+  { value: "top", label: "Topp" },
+  { value: "middle", label: "Mitt" },
+  { value: "bottom", label: "Botten" },
+];
 
 function HeaderFooterFieldsEditor({
   title,
@@ -25,49 +40,84 @@ function HeaderFooterFieldsEditor({
   return (
     <div className="col">
       <label>{title}</label>
-      {fields.map((f, i) => (
-        <div className="row" key={f.id}>
-          <select
-            value={f.kind}
-            onChange={(e) => {
-              const next = [...fields];
-              next[i] = { ...f, kind: e.target.value as HeaderFooterField["kind"] };
-              onChange(next);
-            }}
-          >
-            <option value="logo">Logotyp (organisation)</option>
-            <option value="organisation">Organisationsnamn</option>
-            <option value="text">Valfri text</option>
-          </select>
-          {f.kind === "text" && (
-            <>
-              <input
-                type="text"
-                placeholder="Etikett"
-                value={f.label ?? ""}
-                onChange={(e) => {
-                  const next = [...fields];
-                  next[i] = { ...f, label: e.target.value };
-                  onChange(next);
-                }}
+      {fields.map((f, i) => {
+        const patchField = (p: Partial<HeaderFooterField>) => {
+          const next = [...fields];
+          next[i] = { ...f, ...p };
+          onChange(next);
+        };
+        return (
+          <div className="block-card" key={f.id}>
+            <div className="row">
+              <select
+                value={f.kind}
+                onChange={(e) => patchField({ kind: e.target.value as HeaderFooterField["kind"] })}
+              >
+                <option value="logo">Logotyp (organisation)</option>
+                <option value="organisation">Organisationsnamn</option>
+                <option value="text">Valfri text</option>
+              </select>
+              {f.kind === "text" && (
+                <>
+                  <input
+                    type="text"
+                    placeholder="Etikett"
+                    value={f.label ?? ""}
+                    onChange={(e) => patchField({ label: e.target.value })}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Standardtext"
+                    value={f.defaultText ?? ""}
+                    onChange={(e) => patchField({ defaultText: e.target.value })}
+                  />
+                </>
+              )}
+              <button className="danger" onClick={() => onChange(fields.filter((_, j) => j !== i))}>
+                Ta bort
+              </button>
+            </div>
+            <div className="row" style={{ alignItems: "center" }}>
+              <label style={{ fontWeight: 400 }}>Position:</label>
+              <select
+                value={f.position?.col ?? "left"}
+                title="Kolumn i 3x3-matrisen"
+                onChange={(e) =>
+                  patchField({
+                    position: { col: e.target.value as HFCol, row: f.position?.row ?? "middle" },
+                  })
+                }
+              >
+                {HF_COLS.map((c) => (
+                  <option key={c.value} value={c.value}>
+                    {c.label}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={f.position?.row ?? "middle"}
+                title="Rad i 3x3-matrisen"
+                onChange={(e) =>
+                  patchField({
+                    position: { col: f.position?.col ?? "left", row: e.target.value as HFRow },
+                  })
+                }
+              >
+                {HF_ROWS.map((r) => (
+                  <option key={r.value} value={r.value}>
+                    {r.label}
+                  </option>
+                ))}
+              </select>
+              <StyleEditor
+                value={f.style}
+                onChange={(style) => patchField({ style })}
+                inheritLabel="(ärver mallens standard)"
               />
-              <input
-                type="text"
-                placeholder="Standardtext"
-                value={f.defaultText ?? ""}
-                onChange={(e) => {
-                  const next = [...fields];
-                  next[i] = { ...f, defaultText: e.target.value };
-                  onChange(next);
-                }}
-              />
-            </>
-          )}
-          <button className="danger" onClick={() => onChange(fields.filter((_, j) => j !== i))}>
-            Ta bort
-          </button>
-        </div>
-      ))}
+            </div>
+          </div>
+        );
+      })}
       <button
         className="subtle"
         onClick={() => onChange([...fields, { id: newId("field"), kind: "text" }])}
@@ -206,6 +256,18 @@ export default function MallPanel() {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="panel">
+        <h2>Typografi (standard för hela dokumentet)</h2>
+        <p className="muted">
+          Standardstil som ärvs av alla block och sidhuvud/sidfot-fält om de inte anger en egen stil.
+        </p>
+        <StyleEditor
+          value={mall.defaultStyle}
+          onChange={(defaultStyle) => updateMall({ defaultStyle })}
+          inheritLabel="(systemets grundstil)"
+        />
       </div>
 
       <div className="panel">

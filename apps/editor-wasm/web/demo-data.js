@@ -23,11 +23,25 @@
     description: "Myndighetsbeslut med villkorade textavsnitt och överklagandefraser.",
     categoryId: "kat-beslut",
     orgScope: { mode: "all" },
+    // Standardtypografi (kravspec 6.2) — ärvs av block/fält utan egen stil.
+    defaultStyle: { fontFamily: "Georgia, 'Times New Roman', serif", fontSizePt: 11 },
     headerFooter: {
       headerFields: [
-        { id: "hf-logo", kind: "logo" },
-        { id: "hf-org", kind: "organisation" },
-        { id: "hf-dnr", kind: "text", label: "Diarienummer", defaultText: "Dnr FT 2026-0000" },
+        { id: "hf-logo", kind: "logo", position: { col: "left", row: "top" } },
+        {
+          id: "hf-org",
+          kind: "organisation",
+          position: { col: "center", row: "top" },
+          style: { fontSizePt: 14, bold: true },
+        },
+        {
+          id: "hf-dnr",
+          kind: "text",
+          label: "Diarienummer",
+          defaultText: "Dnr FT 2026-0000",
+          position: { col: "right", row: "top" },
+          style: { italic: true },
+        },
       ],
       footerFields: [
         {
@@ -35,6 +49,7 @@
           kind: "text",
           label: "Kontaktuppgifter",
           defaultText: "Postadress: Box 100, 123 45 Näsby · Telefon: 0123-45 60 00 · E-post: kontakt@kommunen.se",
+          position: { col: "center", row: "bottom" },
         },
       ],
     },

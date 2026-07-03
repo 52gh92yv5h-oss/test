@@ -18,6 +18,31 @@ use std::cell::RefCell;
 // Informationsmodell (speglar packages/shared/src/types.ts)
 // ---------------------------------------------------------------------------
 
+/// Stildefinition enligt kravspec 6.0. Alla attribut valfria; utelämnat
+/// attribut ärvs (fält/block -> mallens defaultStyle -> grundstil).
+#[derive(Serialize, Deserialize, Clone, Default)]
+#[serde(rename_all = "camelCase")]
+struct StyleDef {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    font_family: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    font_size_pt: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    bold: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    italic: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    underline: Option<bool>,
+}
+
+/// Position i sidhuvudets/sidfotens 3x3-matris (kravspec 2.1).
+#[derive(Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+struct HfPosition {
+    col: String, // "left" | "center" | "right"
+    row: String, // "top" | "middle" | "bottom"
+}
+
 #[derive(Serialize, Deserialize, Clone, Default)]
 #[serde(rename_all = "camelCase")]
 struct Organisation {
@@ -61,6 +86,8 @@ struct ContentBlock {
     placement: String, // "fixed" | "free"
     content: String,
     order: i64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    style: Option<StyleDef>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -72,6 +99,10 @@ struct HeaderFooterField {
     label: Option<String>,
     #[serde(default)]
     default_text: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    position: Option<HfPosition>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    style: Option<StyleDef>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default)]
@@ -94,6 +125,8 @@ struct Mall {
     category_id: Option<Value>,
     #[serde(default)]
     org_scope: Option<Value>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    default_style: Option<StyleDef>,
     #[serde(default)]
     header_footer: HeaderFooterDefinition,
     #[serde(default)]
@@ -485,6 +518,33 @@ fn build_session(engine: &mut Engine, mall: &Mall, organisation_id: &str, now: &
     }
 }
 
+/// Konverterar en Stildefinition till inline-CSS (kravspec 6.0). Utelämnade
+/// attribut ger ingen CSS och ärver därmed från nivån ovanför.
+fn style_to_css(style: Option<&StyleDef>) -> String {
+    let mut css = String::new();
+    let Some(s) = style else {
+        return css;
+    };
+    if let Some(f) = &s.font_family {
+        css.push_str("font-family:");
+        css.push_str(f);
+        css.push(';');
+    }
+    if let Some(pt) = s.font_size_pt {
+        css.push_str(&format!("font-size:{}pt;", pt));
+    }
+    if let Some(b) = s.bold {
+        css.push_str(if b { "font-weight:bold;" } else { "font-weight:normal;" });
+    }
+    if let Some(i) = s.italic {
+        css.push_str(if i { "font-style:italic;" } else { "font-style:normal;" });
+    }
+    if let Some(u) = s.underline {
+        css.push_str(if u { "text-decoration:underline;" } else { "text-decoration:none;" });
+    }
+    css
+}
+
 /// Bygger hela rendermodellen som JS-skalet ritar upp.
 fn render_model(engine: &Engine) -> Value {
     let (mall, session) = match (&engine.mall, &engine.session) {
@@ -528,19 +588,27 @@ fn render_model(engine: &Engine) -> Value {
                 "source": ub.source,
                 "editable": editable,
                 "html": html,
+                "styleCss": style_to_css(block.style.as_ref()),
             }))
         })
         .collect();
 
     let hf_field = |f: &HeaderFooterField| -> Value {
+        // Fält utan position hamnar i vänster/mitt (kravspec 2.1).
+        let col = f.position.as_ref().map(|p| p.col.as_str()).unwrap_or("left");
+        let row = f.position.as_ref().map(|p| p.row.as_str()).unwrap_or("middle");
+        let style_css = style_to_css(f.style.as_ref());
         match f.kind.as_str() {
-            "logo" => json!({ "id": f.id, "kind": "logo", "logo": org.logo_data_url }),
-            "organisation" => json!({ "id": f.id, "kind": "organisation", "text": org.name }),
+            "logo" => json!({ "id": f.id, "kind": "logo", "logo": org.logo_data_url, "col": col, "row": row, "styleCss": style_css }),
+            "organisation" => json!({ "id": f.id, "kind": "organisation", "text": org.name, "col": col, "row": row, "styleCss": style_css }),
             _ => json!({
                 "id": f.id,
                 "kind": "text",
                 "label": f.label,
                 "text": session.header_footer_values.get(&f.id).and_then(|v| v.as_str()).unwrap_or(""),
+                "col": col,
+                "row": row,
+                "styleCss": style_css,
             }),
         }
     };
@@ -576,6 +644,7 @@ fn render_model(engine: &Engine) -> Value {
             "sessionId": session.id,
             "templateName": session.template_name,
             "organisation": org,
+            "defaultStyleCss": style_to_css(mall.default_style.as_ref()),
             "blocks": blocks,
             "header": mall.header_footer.header_fields.iter().map(hf_field).collect::<Vec<_>>(),
             "footer": mall.header_footer.footer_fields.iter().map(hf_field).collect::<Vec<_>>(),

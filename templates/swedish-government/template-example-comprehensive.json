@@ -4,27 +4,36 @@
   "mall": {
     "id": "mall-comprehensive-example",
     "name": "Omfattande exempel-mall (Alla konstruktioner)",
-    "description": "Denna mall demonstrerar ALLA möjliga konstruktioner i Fred-systemet: text, datum, nummer, boolean, listor, nästlade parametrar, samma parameter på flera ställen, låsta/redigerbara block, fria block, och sidhuvud/sidfot.",
+    "description": "Denna mall demonstrerar ALLA möjliga konstruktioner i Fred-systemet: text, datum, nummer, boolean, listor, nästlade parametrar, samma parameter på flera ställen, låsta/redigerbara block, fria block, sidhuvud/sidfot med 3x3-positionering samt typografi på tre nivåer (mall-standard, block och fält).",
     "categoryId": "examples",
     "orgScope": {
       "mode": "all"
+    },
+    "defaultStyle": {
+      "fontFamily": "Georgia, 'Times New Roman', serif",
+      "fontSizePt": 11
     },
     "headerFooter": {
       "headerFields": [
         {
           "id": "header-logo",
           "kind": "logo",
-          "label": "Organisationslogotyp"
+          "label": "Organisationslogotyp",
+          "position": { "col": "left", "row": "top" }
         },
         {
           "id": "header-org",
-          "kind": "organisation"
+          "kind": "organisation",
+          "position": { "col": "center", "row": "top" },
+          "style": { "fontSizePt": 14, "bold": true }
         },
         {
           "id": "header-custom",
           "kind": "text",
           "label": "Dokumenttyp",
-          "defaultText": "EXEMPEL-DOKUMENT"
+          "defaultText": "EXEMPEL-DOKUMENT",
+          "position": { "col": "right", "row": "top" },
+          "style": { "bold": true, "fontSizePt": 9 }
         }
       ],
       "footerFields": [
@@ -32,13 +41,17 @@
           "id": "footer-page",
           "kind": "text",
           "label": "Sidnummer",
-          "defaultText": "Sida {{page}}/{{totalPages}}"
+          "defaultText": "Sida {{page}}/{{totalPages}}",
+          "position": { "col": "left", "row": "bottom" },
+          "style": { "fontSizePt": 8 }
         },
         {
           "id": "footer-date",
           "kind": "text",
           "label": "Datum",
-          "defaultText": "Utskriftsdag: {{printDate}}"
+          "defaultText": "Utskriftsdag: {{printDate}}",
+          "position": { "col": "right", "row": "bottom" },
+          "style": { "fontSizePt": 8, "italic": true }
         }
       ]
     },
@@ -244,8 +257,9 @@
         "title": "Introduktion",
         "type": "locked",
         "placement": "fixed",
-        "content": "<h1>Omfattande exempel-mall för Fred-systemet</h1><p>Detta är ett <strong>låst block</strong> som användaren <em>inte kan redigera</em>. Det innehåller introduktiv text från administratören.</p>",
-        "order": 1
+        "content": "<h1>Omfattande exempel-mall för Fred-systemet</h1><p>Detta är ett <strong>låst block</strong> som användaren <em>inte kan redigera</em>. Det innehåller introduktiv text från administratören. Blocket har en egen typografi (12,5 pt) som ersätter mallens standard (Georgia 11 pt).</p>",
+        "order": 1,
+        "style": { "fontSizePt": 12.5 }
       },
       {
         "id": "block-personal-info",
@@ -308,8 +322,9 @@
         "title": "Bekräftelse",
         "type": "locked",
         "placement": "fixed",
-        "content": "<h2>Bekräftelse</h2>\n<p><strong>Namn:</strong> {{applicantName}}</p>\n<p><strong>Godkänner villkoren:</strong> {{agreeToTerms}}</p>\n<p>Jag bekräftar att all information i denna ansökan är korrekt och sanningsenlig.</p>\n<p>Ansökan inlämnad: {{applicationDate}}</p>",
-        "order": 9
+        "content": "<h2>Bekräftelse</h2>\n<p><strong>Namn:</strong> {{applicantName}}</p>\n<p><strong>Godkänner villkoren:</strong> {{agreeToTerms}}</p>\n<p>Jag bekräftar att all information i denna ansökan är korrekt och sanningsenlig. Detta block är kursivt via blockets egen Stildefinition.</p>\n<p>Ansökan inlämnad: {{applicationDate}}</p>",
+        "order": 9,
+        "style": { "italic": true }
       }
     ],
     "createdAt": "2026-07-03T12:16:05.102537Z",

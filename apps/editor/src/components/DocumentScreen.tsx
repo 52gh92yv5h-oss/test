@@ -3,6 +3,7 @@ import {
   FRED_SESSION_FILE_MARKER,
   SessionFile,
   saveJsonToLocalFile,
+  styleDefToCss,
 } from "@fred/shared";
 import { useEditorStore } from "../store";
 import { saveAutosave } from "../autosave";
@@ -71,7 +72,8 @@ export default function DocumentScreen() {
           <button className="primary" onClick={() => window.print()}>🖶 Skriv ut / PDF</button>
         </div>
         <div className="editor-body">
-          <div className="document-page">
+          {/* Mallens defaultStyle sätts på sidan; block/fält utan egen stil ärver via CSS. */}
+          <div className="document-page" style={styleDefToCss(mall.defaultStyle)}>
             <HeaderFooterView fields={mall.headerFooter.headerFields} organisation={organisation} as="header" />
             {sortedBlocks.map((used, i) => {
               const blockDef = mall.blocks.find((b) => b.id === used.blockId);

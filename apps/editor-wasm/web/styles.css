@@ -272,22 +272,29 @@ input, select { font-family: inherit; }
 /* ------- Sidhuvud & sidfot ------- */
 
 .page-hf { color: #444; }
+/* 3x3-matris (kravspec 2.1): grid med kolumnerna vänster/mitten/höger och
+   raderna topp/mitt/botten. Tomma celler kollapsar. */
 .page-header {
-  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  column-gap: 14px; row-gap: 2px; align-items: center;
   border-bottom: 1px solid #d9d9d9; padding-bottom: 4mm; margin-bottom: 8mm;
   min-height: 16mm;
 }
 .page-footer {
   border-top: 1px solid #d9d9d9; padding-top: 3mm; margin-top: auto;
-  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  column-gap: 14px; row-gap: 2px; align-items: center;
   font-size: 9pt;
 }
+.page-hf .hf-cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.page-hf .hf-col-left { align-items: flex-start; text-align: left; }
+.page-hf .hf-col-center { align-items: center; text-align: center; }
+.page-hf .hf-col-right { align-items: flex-end; text-align: right; }
 .page-hf .hf-logo img { height: 14mm; display: block; }
 .page-hf .hf-org { font-family: "Calibri Light", Calibri, Carlito, sans-serif; font-size: 13pt; color: #333; }
 .page-hf .hf-text {
   font-size: 9pt; min-width: 30mm; outline: none; border-radius: 2px; padding: 1px 3px;
 }
-.page-header .hf-text:last-child { margin-left: auto; text-align: right; }
 .page-hf .hf-text:hover { background: #f1f1f1; }
 .page-hf .hf-text:focus { background: #eaf1fb; box-shadow: 0 0 0 1px #9fc0e8; }
 .page-hf .hf-text:empty::before { content: attr(data-ph); color: #999; }

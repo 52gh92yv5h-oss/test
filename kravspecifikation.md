@@ -1,4 +1,4 @@
-# Kravspecifikation: Fred (Fras-EDitor) (V8)
+# Kravspecifikation: Fred (Fras-EDitor) (V9)
 
 Detta dokument sammanställer kraven för utvecklingen av Fred (Fras-EDitor) – ett fristående, helt isolerat ordbehandlingssystem baserat på lokala JSON-konfigurationer. Systemet ska köras i en webbläsarmiljö och består av två separata applikationer: en Editor för slutanvändare och en Konfiguratör för administratörer.
 
@@ -26,6 +26,8 @@ Fred Editor är verktyget där användaren väljer mall, fyller i uppgifter, red
   * En logotyp (kopplad till den organisation som utfärdar dokumentet).
   * Den organisation som har utfärdat dokumentet.
   * Valfri text samt ytterligare textfält definierade av administratören.
+* **Sidhuvud/sidfot-layout (3×3-matris):** Varje fält i sidhuvud och sidfot ska kunna placeras i en 3×3-matris: kolumn *vänster/mitten/höger* kombinerat med rad *topp/mitt/botten*. Flera fält kan dela samma cell och staplas då i den ordning de är definierade i mallen. Fält som saknar angiven position placeras i cellen vänster/mitt.
+* **Typografi från mallen:** Dokumentets typsnitt, textstorlek och stil (fet, kursiv, understruken) definieras i mallen och tillämpas automatiskt när dokumentet öppnas i Fred Editor. Typografi kan anges som en standard för hela dokumentet samt överstyras per innehållsblock och per sidhuvud/sidfot-fält (se avsnitt 3 och 6).
 
 ### 2.2 Dataimport & Parameterstyrning
 * **JSON-import:** Fred Editor ska kunna ta emot en lokal importfil i JSON-format innehållandes namn, organisation och andra uppgifter som automatiskt infogas på rätt platser i mallen.
@@ -47,7 +49,7 @@ Fred Editor är verktyget där användaren väljer mall, fyller i uppgifter, red
 * **Funktioner som INTE krävs:** Tabeller, bilder (utöver logotyp i sidhuvud/sidfot), bilagor samt dokumentegenskaper utöver innehåll stöds inte.
 
 ### 2.4 Export och Sessionshantering
-* **Utskrift & PDF-export:** Fred Editor ska kunna skriva ut och spara information i PDF-form. Den exporterade PDF-filen ska motsvara dokumentets visuella innehåll i editorn.
+* **Utskrift & PDF-export:** Fred Editor ska kunna skriva ut och spara information i PDF-form. Den exporterade PDF-filen ska motsvara dokumentets visuella innehåll i editorn. Detta inkluderar mallens typografi (typsnitt, storlek, stil) samt sidhuvud/sidfot-fältens positioner i 3×3-matrisen.
 * **Spara pågående arbete:** Man ska kunna spara ett ifyllt dokument som en lokal fil och återöppna det för att redigera vidare vid ett annat tillfälle.
 
 ---
@@ -58,6 +60,12 @@ Ett separat verktyg dedikerat till administratörer för att skapa, konfigurera 
 
 * **Fristående konfigurationsapp:** En helt fristående app som administratören använder för att konfigurera mallarna.
 * **Malluppbyggnad:** En mall byggs upp av innehållsblock (redigerbara eller låsta), parametrar samt definitioner för sidhuvud/sidfot.
+* **Typografistyrning:** Administratören ska kunna ange typsnittsinformation (typsnitt, storlek i punkter samt stil: fet, kursiv, understruken) på tre nivåer:
+  * *Mallnivå:* En standardstil (`defaultStyle`) som gäller för hela dokumentet.
+  * *Blocknivå:* En valfri stil (`style`) per innehållsblock som ersätter mallens standard för det blocket.
+  * *Sidhuvud/sidfot-nivå:* En valfri stil (`style`) per fält i sidhuvud och sidfot.
+  * *Arvsregel:* Om ingen stil anges på block- eller fältnivå ärvs mallens standardstil. Om mallen saknar standardstil används systemets grundstil. Varje enskilt stilattribut ärvs separat (t.ex. kan ett block ange endast storlek och ärva typsnittet).
+* **Sidhuvud/sidfot-layout:** Administratören ska för varje fält i sidhuvud och sidfot kunna ange en position i 3×3-matrisen (kolumn: vänster/mitten/höger, rad: topp/mitt/botten).
 * **Enkel JSON-konfiguration:** Formatet på konfigurationen ska vara JSON. Mallarna ska sparas och konfigureras som lokala JSON-filer.
 * **Förhandsinnehåll & Ordning:** Administratören bestämmer ordningen på alla fasta block i mallen och kan fylla i fördefinierad text i blocken.
 * **Definition av fria block (Fraser):** Administratören ska kunna markera valda block i mallen som "fria" (fraser), vilket innebär dataladdning att de inte har en fast plats från start utan lämnas tillgängliga för slutanvändaren att infoga fritt via Fred Editor.
@@ -91,6 +99,16 @@ Ett separat verktyg dedikerat till administratörer för att skapa, konfigurera 
 
 Det lokala och filbaserade systemets informationsobjekt och dataobjekt definieras enligt följande struktur:
 
+### 6.0 Stildefinition (gemensam struktur)
+En återanvändbar struktur för typsnittsinformation som refereras från Mall, Innehållsblock och Sidhuvud/Sidfot-fält. Samtliga attribut är valfria; ett utelämnat attribut ärvs från nivån ovanför (fält/block → mallens standardtypografi → systemets grundstil).
+* **Typsnitt** (`fontFamily`, textsträng, t.ex. `"Georgia, 'Times New Roman', serif"`)
+* **Storlek** (`fontSizePt`, numeriskt värde i punkter)
+* **Fet** (`bold`, ja/nej)
+* **Kursiv** (`italic`, ja/nej)
+* **Understruken** (`underline`, ja/nej)
+
+*Bakåtkompatibilitet:* Befintliga mallfiler utan stilfält förblir giltiga; avsaknad av stilfält innebär att systemets grundstil används.
+
 ### 6.1 Organisation
 Informationsobjekt som hanterar Freds organisationer.
 * **Organisations-ID** (Unik identifierare)
@@ -103,7 +121,11 @@ Informationsobjekt för de lokala JSON-filer som skapas i Fred Konfiguratör.
 * **Namn & Beskrivning** (Textsträngar)
 * **Hierarkiplacering** (Referens till kategori/nod i navigeringsstrukturen)
 * **Organisationstillhörighet** (Definition om mallen gäller för en specifik organisation, ett urval eller alla)
+* **Standardtypografi** (`defaultStyle`, valfri Stildefinition enligt 6.0 som gäller hela dokumentet)
 * **Sidhuvud & Sidfot-definition** (Layoutinställningar samt textfält definierade av administratör)
+  * Fält-ID och fälttyp (*Logotyp, Organisation eller Text*)
+  * Position i 3×3-matrisen (`position`, valfri: `col` = *left/center/right*, `row` = *top/middle/bottom*; fält utan position placeras i vänster/mitt, fält i samma cell staplas i listordning)
+  * Typografi (`style`, valfri Stildefinition enligt 6.0)
 * **Parametrar** (Lista med metadata per parameter)
   * Parameter-ID
   * Datatyp (*Text, Datum, Numerisk, Ja/Nej, Lista*)
@@ -114,6 +136,7 @@ Informationsobjekt för de lokala JSON-filer som skapas i Fred Konfiguratör.
   * Blocktyp (*Låst* eller *Redigerbart*)
   * Placeringsstatus (*Fast* eller *Fri/Fras*)
   * Förhandsinnehåll (Grundtext med platshållare för parametrar)
+  * Typografi (`style`, valfri Stildefinition enligt 6.0 som ersätter mallens standardtypografi för blocket)
 
 ### 6.3 Dokument / Session (Sparfil)
 Informationsobjekt för den lokala fil som sparas i Fred Editor för fortsatt redigering.

@@ -20,6 +20,8 @@ Detta katalog innehåller 10 dokumentmallar för Fred-systemet, baserade på van
   - **Fria block (Fraser):** Block som kan infogas fritt av användaren under arbetet
   - **Sidhuvud:** Logotyp, organisationsnamn och custom text ("EXEMPEL-DOKUMENT")
   - **Sidfot:** Sidnummer och utskriftsdatum
+  - **Typografi på tre nivåer (kravspec V9):** Mallens `defaultStyle` (Georgia 11 pt) ärvs av alla delar; introduktionsblocket ersätter storleken (12,5 pt), bekräftelseblocket är kursivt och sidhuvudets/sidfotens fält har egna stilar
+  - **3×3-positionering (kravspec V9):** Sidhuvudets fält ligger på topp-raden (logotyp vänster, organisationsnamn mitten, dokumenttyp höger) och sidfotens fält på botten-raden (sidnummer vänster, datum höger)
 
 **Denna mall är perfekt att använda som mall för nya dokument då den visar alla möjligheter!**
 
@@ -230,3 +232,32 @@ Parametern `applicantName` demonstrerar **globala uppdateringar** - samma parame
 3. Under "Bekräftelse" (där det säger "Jag bekräftar...")
 
 Om användaren ändrar namnet på ett ställe, uppdateras det automatiskt på alla tre ställen.
+
+### Typografi och 3×3-layout (kravspec V9)
+
+Mallformatet stödjer typsnittsinformation på tre nivåer med arv:
+
+```json
+{
+  "mall": {
+    "defaultStyle": { "fontFamily": "Georgia, 'Times New Roman', serif", "fontSizePt": 11 },
+    "blocks": [
+      { "id": "block-intro", "style": { "fontSizePt": 12.5 } }
+    ],
+    "headerFooter": {
+      "headerFields": [
+        {
+          "id": "header-org",
+          "kind": "organisation",
+          "position": { "col": "center", "row": "top" },
+          "style": { "fontSizePt": 14, "bold": true }
+        }
+      ]
+    }
+  }
+}
+```
+
+- **Stildefinition** (`style`/`defaultStyle`): `fontFamily`, `fontSizePt`, `bold`, `italic`, `underline` — alla valfria; utelämnat attribut ärvs (fält/block → mallens standard → systemets grundstil).
+- **Position** (`position`): `col` = `left`/`center`/`right`, `row` = `top`/`middle`/`bottom`. Fält utan position hamnar i vänster/mitt-cellen; fält i samma cell staplas i listordning.
+- Alla fält är bakåtkompatibla — mallar utan dem fortsätter fungera.

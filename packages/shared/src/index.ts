@@ -1,4 +1,5 @@
 export * from "./types";
+export * from "./style";
 export * from "./substitution";
 export * from "./fileIO";
 export * from "./id";
