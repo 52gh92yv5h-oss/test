@@ -360,6 +360,7 @@
       const sec = document.createElement("section");
       sec.className = "doc-block " + (block.editable ? "editable" : "locked");
       sec.dataset.instanceId = block.instanceId;
+      if (!block.editable) sec.tabIndex = -1; // gör låsta block fokuserbara så blockverktygen nås via tryck på touchskärm
       const lockIcon = block.editable ? "" : '<svg viewBox="0 0 24 24"><path d="M6 10V7a6 6 0 1 1 12 0v3h1v11H5V10zm2 0h8V7a4 4 0 1 0-8 0z"/></svg> ';
       sec.innerHTML = `
         <div class="block-tools" contenteditable="false">
@@ -1045,6 +1046,14 @@
   });
 
   window.addEventListener("resize", updateStatusSoon);
+
+  // iOS Safari kan lämna fönstret panorerat efter att skärmtangentbordet
+  // stängts – dra tillbaka layouten så att dokumentet går att rulla igen.
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", () => {
+      if (window.scrollX || window.scrollY) window.scrollTo(0, 0);
+    });
+  }
 
   // ===================== Start & extern applikationsstart =====================
 
