@@ -1,0 +1,146 @@
+{
+  "marker": "fred-mall",
+  "version": 1,
+  "mall": {
+    "id": "mall-csn-studielan",
+    "name": "Ansökan om statligt studiestöd - CSN",
+    "description": "Ansökan om studiestöd och studielån",
+    "categoryId": "swedish-government",
+    "orgScope": {
+      "mode": "specific",
+      "organisationId": "org-csn"
+    },
+    "headerFooter": {
+      "headerFields": [
+        {
+          "id": "header-logo",
+          "kind": "logo",
+          "label": "Organisationslogotyp"
+        },
+        {
+          "id": "header-org",
+          "kind": "organisation"
+        }
+      ],
+      "footerFields": [
+        {
+          "id": "footer-page",
+          "kind": "text",
+          "label": "Sidnummer",
+          "defaultText": "Sida {{page}}/{{totalPages}}"
+        }
+      ]
+    },
+    "parameters": [
+      {
+        "id": "studentName",
+        "label": "Studentens namn",
+        "type": "text"
+      },
+      {
+        "id": "studentNumber",
+        "label": "Personnummer",
+        "type": "text"
+      },
+      {
+        "id": "citizenship",
+        "label": "Medborgskap",
+        "type": "text",
+        "defaultValue": "Sverige"
+      },
+      {
+        "id": "educationProgram",
+        "label": "Utbildningsprogram",
+        "type": "text"
+      },
+      {
+        "id": "institution",
+        "label": "Högskola/Universitet",
+        "type": "text"
+      },
+      {
+        "id": "studyStartDate",
+        "label": "Studiernas startdatum",
+        "type": "date"
+      },
+      {
+        "id": "studyEndDate",
+        "label": "Studiernas slutdatum",
+        "type": "date"
+      },
+      {
+        "id": "supportType",
+        "label": "Typ av studiestöd",
+        "type": "list",
+        "options": [
+          {
+            "value": "stipendium",
+            "label": "Stipendium"
+          },
+          {
+            "value": "studielan",
+            "label": "Studielån"
+          },
+          {
+            "value": "bada",
+            "label": "Både stipendium och studielån"
+          }
+        ]
+      },
+      {
+        "id": "housingCost",
+        "label": "Månadlig hyra/bostad (SEK)",
+        "type": "number"
+      },
+      {
+        "id": "livingCost",
+        "label": "Övriga levnadskostnader (SEK)",
+        "type": "number"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "block-title",
+        "title": "Ansökan om statligt studiestöd",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<h2>Ansökan om statligt studiestöd</h2><p>CSN - Centrala studiestödsnämnden</p>",
+        "order": 1
+      },
+      {
+        "id": "block-student",
+        "title": "Studentens information",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<p><strong>Namn:</strong> {{studentName}}<br/><strong>Personnummer:</strong> {{studentNumber}}<br/><strong>Medborgskap:</strong> {{citizenship}}</p>",
+        "order": 2
+      },
+      {
+        "id": "block-studies",
+        "title": "Studieuppgifter",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p><strong>Utbildning:</strong> {{educationProgram}}<br/><strong>Högskola/Universitet:</strong> {{institution}}<br/><strong>Startdatum:</strong> {{studyStartDate}}<br/><strong>Slutdatum:</strong> {{studyEndDate}}</p>",
+        "order": 3
+      },
+      {
+        "id": "block-support-type",
+        "title": "Typ av studiestöd",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<p><strong>Önskad studiestöd:</strong> {{supportType}}</p>",
+        "order": 4
+      },
+      {
+        "id": "block-costs",
+        "title": "Förväntade kostnader",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p><strong>Hyra/Bostad:</strong> {{housingCost}} SEK<br/><strong>Övriga levnadskostnader:</strong> {{livingCost}} SEK</p>",
+        "order": 5
+      }
+    ],
+    "createdAt": "2026-07-03T11:52:39.482768Z",
+    "updatedAt": "2026-07-03T11:52:39.482768Z"
+  }
+}

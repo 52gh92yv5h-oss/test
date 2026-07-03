@@ -1,0 +1,150 @@
+{
+  "marker": "fred-mall",
+  "version": 1,
+  "mall": {
+    "id": "mall-kronofogden-betalningsplan",
+    "name": "Ansökan om betalningsplan - Kronofogdemyndigheten",
+    "description": "Ansökan för betalningsplan för skulder",
+    "categoryId": "swedish-government",
+    "orgScope": {
+      "mode": "specific",
+      "organisationId": "org-kronofogden"
+    },
+    "headerFooter": {
+      "headerFields": [
+        {
+          "id": "header-logo",
+          "kind": "logo",
+          "label": "Organisationslogotyp"
+        },
+        {
+          "id": "header-org",
+          "kind": "organisation"
+        }
+      ],
+      "footerFields": [
+        {
+          "id": "footer-page",
+          "kind": "text",
+          "label": "Sidnummer",
+          "defaultText": "Sida {{page}}/{{totalPages}}"
+        }
+      ]
+    },
+    "parameters": [
+      {
+        "id": "debtorName",
+        "label": "Gäldenärens namn",
+        "type": "text"
+      },
+      {
+        "id": "personalNumber",
+        "label": "Personnummer",
+        "type": "text"
+      },
+      {
+        "id": "address",
+        "label": "Adress",
+        "type": "text"
+      },
+      {
+        "id": "debtAmount",
+        "label": "Skuldbelopp (SEK)",
+        "type": "number"
+      },
+      {
+        "id": "debtReason",
+        "label": "Orsakskategori för skulden",
+        "type": "list",
+        "options": [
+          {
+            "value": "bosta",
+            "label": "Bostadshyra"
+          },
+          {
+            "value": "skatter",
+            "label": "Skatter och avgifter"
+          },
+          {
+            "value": "ovriga",
+            "label": "Övriga skulder"
+          }
+        ]
+      },
+      {
+        "id": "dueDate",
+        "label": "Förfallodag",
+        "type": "date"
+      },
+      {
+        "id": "monthlyIncome",
+        "label": "Månadsinkomst (SEK)",
+        "type": "number"
+      },
+      {
+        "id": "monthlyExpenses",
+        "label": "Månadskostnader (SEK)",
+        "type": "number"
+      },
+      {
+        "id": "disposableIncome",
+        "label": "Disponibel inkomst (SEK)",
+        "type": "number"
+      },
+      {
+        "id": "monthlyPayment",
+        "label": "Föreslagen månatlig betalning (SEK)",
+        "type": "number"
+      },
+      {
+        "id": "repaymentPeriod",
+        "label": "Förväntad återbetalningstid (månader)",
+        "type": "number"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "block-title",
+        "title": "Ansökan om betalningsplan",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<h2>Ansökan om betalningsplan för skuld</h2>",
+        "order": 1
+      },
+      {
+        "id": "block-debtor",
+        "title": "Gäldenärens information",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<p><strong>Namn:</strong> {{debtorName}}<br/><strong>Personnummer:</strong> {{personalNumber}}<br/><strong>Adress:</strong> {{address}}</p>",
+        "order": 2
+      },
+      {
+        "id": "block-debt",
+        "title": "Skulduppgifter",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p><strong>Skuldbeloppet:</strong> {{debtAmount}} SEK<br/><strong>Skuldens ursprung:</strong> {{debtReason}}<br/><strong>Förfallodag:</strong> {{dueDate}}</p>",
+        "order": 3
+      },
+      {
+        "id": "block-financial",
+        "title": "Ekonomisk situation",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p><strong>Månadsinkomst:</strong> {{monthlyIncome}} SEK<br/><strong>Månadskostnader:</strong> {{monthlyExpenses}} SEK<br/><strong>Disponibel inkomst:</strong> {{disposableIncome}} SEK</p>",
+        "order": 4
+      },
+      {
+        "id": "block-plan",
+        "title": "Föreslaget betalningsschema",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p><strong>Betalning per månad:</strong> {{monthlyPayment}} SEK<br/><strong>Förväntad återbetalningstid:</strong> {{repaymentPeriod}} månader</p>",
+        "order": 5
+      }
+    ],
+    "createdAt": "2026-07-03T11:52:39.482795Z",
+    "updatedAt": "2026-07-03T11:52:39.482795Z"
+  }
+}

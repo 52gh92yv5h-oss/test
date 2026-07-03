@@ -1,0 +1,150 @@
+{
+  "marker": "fred-mall",
+  "version": 1,
+  "mall": {
+    "id": "mall-fk-foraldrapenning",
+    "name": "Ansökan om föräldrapenning - Försäkringskassan",
+    "description": "Ansökan för graviditets- och föräldrapenning",
+    "categoryId": "swedish-government",
+    "orgScope": {
+      "mode": "specific",
+      "organisationId": "org-forsaksringskassan"
+    },
+    "headerFooter": {
+      "headerFields": [
+        {
+          "id": "header-logo",
+          "kind": "logo",
+          "label": "Organisationslogotyp"
+        },
+        {
+          "id": "header-org",
+          "kind": "organisation"
+        }
+      ],
+      "footerFields": [
+        {
+          "id": "footer-page",
+          "kind": "text",
+          "label": "Sidnummer",
+          "defaultText": "Sida {{page}}/{{totalPages}}"
+        }
+      ]
+    },
+    "parameters": [
+      {
+        "id": "applicantName",
+        "label": "Ansökares namn",
+        "type": "text"
+      },
+      {
+        "id": "applicantNumber",
+        "label": "Personnummer",
+        "type": "text"
+      },
+      {
+        "id": "phone",
+        "label": "Telefonnummer",
+        "type": "text"
+      },
+      {
+        "id": "email",
+        "label": "E-postadress",
+        "type": "text"
+      },
+      {
+        "id": "childName",
+        "label": "Barnets namn",
+        "type": "text"
+      },
+      {
+        "id": "childNumber",
+        "label": "Barnets personnummer",
+        "type": "text"
+      },
+      {
+        "id": "birthDate",
+        "label": "Barnets födelsedatum",
+        "type": "date"
+      },
+      {
+        "id": "startPeriod",
+        "label": "Föräldrapenningens startdatum",
+        "type": "date"
+      },
+      {
+        "id": "endPeriod",
+        "label": "Föräldrapenningens slutdatum",
+        "type": "date"
+      },
+      {
+        "id": "numberOfDays",
+        "label": "Antal dagar föräldrapenning",
+        "type": "number"
+      },
+      {
+        "id": "leaveType",
+        "label": "Typ av föräldrapenning",
+        "type": "list",
+        "options": [
+          {
+            "value": "graviditet",
+            "label": "Graviditetspenning"
+          },
+          {
+            "value": "foraldrapenning",
+            "label": "Föräldrapenning"
+          },
+          {
+            "value": "foraldrapenning-delad",
+            "label": "Föräldrapenning - delad"
+          }
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "id": "block-title",
+        "title": "Ansökan om föräldrapenning",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<h2>Ansökan om föräldrapenning</h2>",
+        "order": 1
+      },
+      {
+        "id": "block-applicant",
+        "title": "Ansökares information",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<p><strong>Namn:</strong> {{applicantName}}<br/><strong>Personnummer:</strong> {{applicantNumber}}<br/><strong>Telefon:</strong> {{phone}}<br/><strong>E-post:</strong> {{email}}</p>",
+        "order": 2
+      },
+      {
+        "id": "block-child",
+        "title": "Barnets information",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p><strong>Barnets namn:</strong> {{childName}}<br/><strong>Personnummer:</strong> {{childNumber}}<br/><strong>Född:</strong> {{birthDate}}</p>",
+        "order": 3
+      },
+      {
+        "id": "block-period",
+        "title": "Tidsperiod för föräldrapenning",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p><strong>Från och med:</strong> {{startPeriod}}<br/><strong>Till och med:</strong> {{endPeriod}}<br/><strong>Antal dagar:</strong> {{numberOfDays}}</p>",
+        "order": 4
+      },
+      {
+        "id": "block-type",
+        "title": "Typ av föräldrapenning",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<p>Jag ansöker om: {{leaveType}}</p>",
+        "order": 5
+      }
+    ],
+    "createdAt": "2026-07-03T11:52:39.482763Z",
+    "updatedAt": "2026-07-03T11:52:39.482763Z"
+  }
+}

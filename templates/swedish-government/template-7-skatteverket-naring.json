@@ -1,0 +1,149 @@
+{
+  "marker": "fred-mall",
+  "version": 1,
+  "mall": {
+    "id": "mall-skatt-anmalan-naring",
+    "name": "Anmälan om start av näringsverksamhet - Skatteverket",
+    "description": "Registrering av nystartat företag",
+    "categoryId": "swedish-government",
+    "orgScope": {
+      "mode": "specific",
+      "organisationId": "org-skatteverket"
+    },
+    "headerFooter": {
+      "headerFields": [
+        {
+          "id": "header-logo",
+          "kind": "logo",
+          "label": "Organisationslogotyp"
+        },
+        {
+          "id": "header-org",
+          "kind": "organisation"
+        }
+      ],
+      "footerFields": [
+        {
+          "id": "footer-page",
+          "kind": "text",
+          "label": "Sidnummer",
+          "defaultText": "Sida {{page}}/{{totalPages}}"
+        }
+      ]
+    },
+    "parameters": [
+      {
+        "id": "applicantName",
+        "label": "Ansökares namn",
+        "type": "text"
+      },
+      {
+        "id": "applicantNumber",
+        "label": "Personnummer",
+        "type": "text"
+      },
+      {
+        "id": "applicantAddress",
+        "label": "Personlig adress",
+        "type": "text"
+      },
+      {
+        "id": "businessName",
+        "label": "Företagsnamn",
+        "type": "text"
+      },
+      {
+        "id": "businessType",
+        "label": "Verksamhetstyp",
+        "type": "list",
+        "options": [
+          {
+            "value": "enskild",
+            "label": "Enskild näringsidkare"
+          },
+          {
+            "value": "aktiebolag",
+            "label": "Aktiebolag"
+          },
+          {
+            "value": "kommanditbolag",
+            "label": "Kommanditbolag"
+          },
+          {
+            "value": "osa",
+            "label": "Ekonomisk förening"
+          }
+        ]
+      },
+      {
+        "id": "startDate",
+        "label": "Startdatum för verksamheten",
+        "type": "date"
+      },
+      {
+        "id": "businessDescription",
+        "label": "Beskrivning av verksamhet",
+        "type": "text"
+      },
+      {
+        "id": "expectedRevenue",
+        "label": "Förväntad årlig omsättning (SEK)",
+        "type": "number"
+      },
+      {
+        "id": "bankName",
+        "label": "Banknamn",
+        "type": "text"
+      },
+      {
+        "id": "accountNumber",
+        "label": "Bankkontonummer",
+        "type": "text"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "block-title",
+        "title": "Anmälan om start av näringsverksamhet",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<h2>Anmälan om start av näringsverksamhet</h2>",
+        "order": 1
+      },
+      {
+        "id": "block-applicant",
+        "title": "Andöares information",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<p><strong>Namn:</strong> {{applicantName}}<br/><strong>Personnummer:</strong> {{applicantNumber}}<br/><strong>Adress:</strong> {{applicantAddress}}</p>",
+        "order": 2
+      },
+      {
+        "id": "block-business",
+        "title": "Företagsinformation",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p><strong>Företagsnamn:</strong> {{businessName}}<br/><strong>Verksamhetstyp:</strong> {{businessType}}<br/><strong>Startdatum:</strong> {{startDate}}</p>",
+        "order": 3
+      },
+      {
+        "id": "block-business-details",
+        "title": "Verksamhetsuppgifter",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p><strong>Beskrivning av verksamhet:</strong> {{businessDescription}}<br/><strong>Förväntad årlig omsättning:</strong> {{expectedRevenue}} SEK</p>",
+        "order": 4
+      },
+      {
+        "id": "block-bank",
+        "title": "Bankkontouppgifter",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p><strong>Banknamn:</strong> {{bankName}}<br/><strong>Kontonummer:</strong> {{accountNumber}}</p>",
+        "order": 5
+      }
+    ],
+    "createdAt": "2026-07-03T11:52:39.482779Z",
+    "updatedAt": "2026-07-03T11:52:39.482779Z"
+  }
+}

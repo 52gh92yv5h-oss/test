@@ -1,0 +1,70 @@
+{
+  "marker": "fred-hierarki",
+  "version": 1,
+  "root": {
+    "id": "root",
+    "name": "Svenska myndighetsdokument",
+    "children": [
+      {
+        "id": "swedish-government",
+        "name": "Svenska myndigheter",
+        "children": [
+          {
+            "id": "arbetsmarknaden",
+            "name": "Arbetsmarknad",
+            "children": [],
+            "templateIds": [
+              "mall-arb-handlingsplan"
+            ]
+          },
+          {
+            "id": "skatter-och-naringsverksamhet",
+            "name": "Skatter och näringsverksamhet",
+            "children": [],
+            "templateIds": [
+              "mall-skatt-agdekl",
+              "mall-skatt-anmalan-naring"
+            ]
+          },
+          {
+            "id": "forsaksring",
+            "name": "Försäkringar och social trygghet",
+            "children": [],
+            "templateIds": [
+              "mall-fk-lakarintyg",
+              "mall-fk-foraldrapenning",
+              "mall-fk-boendebidraget"
+            ]
+          },
+          {
+            "id": "utbildning",
+            "name": "Utbildning",
+            "children": [],
+            "templateIds": [
+              "mall-csn-studielan"
+            ]
+          },
+          {
+            "id": "migration",
+            "name": "Migration och id-handlingar",
+            "children": [],
+            "templateIds": [
+              "mall-migrationsverket-uppehall",
+              "mall-polis-id-handling"
+            ]
+          },
+          {
+            "id": "skulder",
+            "name": "Skulder och betalning",
+            "children": [],
+            "templateIds": [
+              "mall-kronofogden-betalningsplan"
+            ]
+          }
+        ],
+        "templateIds": []
+      }
+    ],
+    "templateIds": []
+  }
+}

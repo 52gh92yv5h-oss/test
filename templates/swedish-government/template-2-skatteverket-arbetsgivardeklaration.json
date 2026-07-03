@@ -1,0 +1,127 @@
+{
+  "marker": "fred-mall",
+  "version": 1,
+  "mall": {
+    "id": "mall-skatt-agdekl",
+    "name": "Arbetsgivardeklaration - Skatteverket",
+    "description": "Månatlig rapportering av arbetsgivaravgifter",
+    "categoryId": "swedish-government",
+    "orgScope": {
+      "mode": "specific",
+      "organisationId": "org-skatteverket"
+    },
+    "headerFooter": {
+      "headerFields": [
+        {
+          "id": "header-logo",
+          "kind": "logo",
+          "label": "Organisationslogotyp"
+        },
+        {
+          "id": "header-org",
+          "kind": "organisation"
+        }
+      ],
+      "footerFields": [
+        {
+          "id": "footer-page",
+          "kind": "text",
+          "label": "Sidnummer",
+          "defaultText": "Sida {{page}}/{{totalPages}}"
+        }
+      ]
+    },
+    "parameters": [
+      {
+        "id": "reportingMonth",
+        "label": "Rapporterings månad (YYYY-MM)",
+        "type": "text",
+        "defaultValue": "2026-07"
+      },
+      {
+        "id": "orgNumber",
+        "label": "Organisationsnummer",
+        "type": "text",
+        "defaultValue": ""
+      },
+      {
+        "id": "companyName",
+        "label": "Företagsnamn",
+        "type": "text",
+        "defaultValue": ""
+      },
+      {
+        "id": "employeeName",
+        "label": "Anställds namn",
+        "type": "text",
+        "defaultValue": ""
+      },
+      {
+        "id": "employeeId",
+        "label": "Personnummer",
+        "type": "text",
+        "defaultValue": ""
+      },
+      {
+        "id": "salary",
+        "label": "Månadslön (SEK)",
+        "type": "number",
+        "defaultValue": 0
+      },
+      {
+        "id": "avgift",
+        "label": "Arbetsgivaravgift (SEK)",
+        "type": "number",
+        "defaultValue": 0
+      },
+      {
+        "id": "totalSalaries",
+        "label": "Totala löner för månad",
+        "type": "number",
+        "defaultValue": 0
+      },
+      {
+        "id": "totalAvgift",
+        "label": "Total arbetsgivaravgift",
+        "type": "number",
+        "defaultValue": 0
+      }
+    ],
+    "blocks": [
+      {
+        "id": "block-header",
+        "title": "Arbetsgivardeklaration",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<h2>Arbetsgivardeklaration för {{reportingMonth}}</h2>",
+        "order": 1
+      },
+      {
+        "id": "block-employer-info",
+        "title": "Arbetsgivarinformation",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<p><strong>Organisationsnummer:</strong> {{orgNumber}}<br/><strong>Företagsnamn:</strong> {{companyName}}<br/><strong>Rapporterings månad:</strong> {{reportingMonth}}</p>",
+        "order": 2
+      },
+      {
+        "id": "block-employees",
+        "title": "Anställdas information",
+        "type": "editable",
+        "placement": "free",
+        "content": "<p><strong>Namn:</strong> {{employeeName}}<br/><strong>Personnummer:</strong> {{employeeId}}<br/><strong>Lön:</strong> {{salary}} SEK<br/><strong>Arbetsgivaravgift:</strong> {{avgift}} SEK</p>",
+        "order": 3
+      },
+      {
+        "id": "block-total",
+        "title": "Totalt",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<p><strong>Totala utgifter för löner:</strong> {{totalSalaries}} SEK<br/><strong>Total arbetsgivaravgift:</strong> {{totalAvgift}} SEK</p>",
+        "order": 4
+      }
+    ],
+    "createdAt": "2026-07-03T11:52:39.482752Z",
+    "updatedAt": "2026-07-03T11:52:39.482752Z"
+  }
+}
