@@ -6,6 +6,14 @@
     "name": "Svenska myndighetsdokument",
     "children": [
       {
+        "id": "examples",
+        "name": "Exempel och dokumentation",
+        "children": [],
+        "templateIds": [
+          "mall-comprehensive-example"
+        ]
+      },
+      {
         "id": "swedish-government",
         "name": "Svenska myndigheter",
         "children": [

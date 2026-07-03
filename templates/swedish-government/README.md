@@ -2,7 +2,32 @@
 
 Detta katalog innehåller 10 dokumentmallar för Fred-systemet, baserade på vanliga dokumenttyper från svenska myndigheter.
 
-## Mallar
+## Exempel-mall (För demonstation av alla möjligheter)
+
+### **EXEMPEL: Omfattande mall - Alla konstruktioner**
+- **Fil:** `template-example-comprehensive.json`
+- **Användning:** Demonstrerar ALLA möjliga konstruktioner i Fred-systemet
+- **Innehål:** Denna mall visar exempel på:
+  - **Text-parametrar:** Namn, e-post, telefonnummer
+  - **Datum-parametrar:** Ansökningsdatum, födelsedatum, startdatum
+  - **Nummer-parametrar:** Inkomst (SEK), utgifter (SEK), procentsats
+  - **Boolean-parametrar:** Har familj? Studerar? Godkänner villkor?
+  - **List-parametrar:** Utbildningsnivå, ansökningsgrund, civilstatus med valalternativ
+  - **Nästlade parametrar:** Familjetyp, barnantal, barnåldrar (visas endast när "hasFamily" är true)
+  - **Samma parameter på flera ställen:** `applicantName` återanvänds på 3 olika ställen i dokumentet (sidhuvud, bekräftelse, etc.)
+  - **Låsta block:** Informativ text som användaren inte kan redigera
+  - **Redigerbara block:** Text som slutanvändaren kan modifiera fritt
+  - **Fria block (Fraser):** Block som kan infogas fritt av användaren under arbetet
+  - **Sidhuvud:** Logotyp, organisationsnamn och custom text ("EXEMPEL-DOKUMENT")
+  - **Sidfot:** Sidnummer och utskriftsdatum
+  - **Typografi på tre nivåer (kravspec V9):** Mallens `defaultStyle` (Georgia 11 pt) ärvs av alla delar; introduktionsblocket ersätter storleken (12,5 pt), bekräftelseblocket är kursivt och sidhuvudets/sidfotens fält har egna stilar
+  - **3×3-positionering (kravspec V9):** Sidhuvudets fält ligger på topp-raden (logotyp vänster, organisationsnamn mitten, dokumenttyp höger) och sidfotens fält på botten-raden (sidnummer vänster, datum höger)
+
+**Denna mall är perfekt att använda som mall för nya dokument då den visar alla möjligheter!**
+
+---
+
+## Mallar för svenska myndigheter
 
 ### 1. **Arbetsförmedlingen - Personlig handlingsplan**
 - **Fil:** `template-1-arbetsformedlingen-handlingsplan.json`
@@ -81,15 +106,25 @@ Varje mall följer Fred-systemets datamodell (kravspecifikation V8):
 
 ## Logotyper
 
-Logotyperna är skapade som SVG-illustrationer och lagras som base64-kodade data-URLs i organisationsfilen. Varje myndighet har en unik färg:
+Logotyperna är professionellt designade SVG-illustrationer och lagras som base64-kodade data-URLs i organisationsfilen. Varje logotyp inkluderar:
+- Organisationsnamnet på logotypen
+- En sköldsform som symboliserar myndighet och officiell status
+- En färgkodad design unik för varje organisation
+- Professionell layout lämplig för dokumentsidhuvuden
 
-- **Arbetsförmedlingen**: Mörkblå (#003399)
-- **Skatteverket**: Röd (#B22234)
-- **Försäkringskassan**: Grön (#00A86B)
-- **CSN**: Orange (#FF6B35)
-- **Migrationsverket**: Mörkviolett (#4B0082)
-- **Polismyndigheten**: Mörkblå (#003366)
-- **Kronofogdemyndigheten**: Svart (#1C1C1C)
+### Färgkodning per myndighet:
+
+| Myndighet | Färg | Hex-kod |
+|-----------|------|---------|
+| Arbetsförmedlingen | Blå | #0066CC, #1E90FF |
+| Skatteverket | Röd | #CC0000, #FF3333 |
+| Försäkringskassan | Grön | #009933, #33CC66 |
+| CSN | Orange | #FF9900, #FFAA33 |
+| Migrationsverket | Violett | #663399, #9966CC |
+| Polismyndigheten | Mörkblå | #003366, #0066AA |
+| Kronofogdemyndigheten | Grå | #333333, #666666 |
+
+Logotyperna renderas direkt i dokumentens sidhuvuden när dokumentet visas i Fred Editor och vid PDF-export.
 
 ## Använda filformatet
 
@@ -117,9 +152,112 @@ För att anpassa mallarna:
 
 1. Ladda organisationsfilen och hierarkin i Fred Konfigurator
 2. Importera mallarna
-3. I Fred Editor kan användare sedan:
+3. I Fred Editor kan använder sedan:
    - Välja en mall baserad på myndighetshierarkin
    - Fylla i parametervärden
    - Redigera innehållet i redigerbara block
    - Infoga fria block (fraser) efter behov
    - Exportera som PDF eller spara dokumentet lokalt
+
+---
+
+## Detaljerad beskrivning av den omfattande exempel-mallen
+
+### Syfte
+`template-example-comprehensive.json` är inte en verklig myndighetsmall utan en **referensmall för utvecklare och administratörer** som visar alla möjligheter i Fred-systemet.
+
+### Parametrar som demonstreras
+
+#### Text-parametrar
+- `applicantName`: Personens namn (återanvänds på 3 ställen)
+- `applicantEmail`: E-postadress
+- `applicantPhone`: Telefonnummer
+
+#### Datum-parametrar
+- `applicationDate`: Ansökningsdatum
+- `birthDate`: Födelsedatum
+- `startDate`: Startdatum
+
+#### Nummer-parametrar
+- `income`: Månadsinkomst (SEK)
+- `expenses`: Månadskostnader (SEK)
+- `percentage`: Procentsats (%)
+
+#### Boolean-parametrar
+- `hasFamily`: Har barn/familj? (true/false)
+- `isStudent`: Studerar du? (true/false)
+- `agreeToTerms`: Godkänner du villkoren? (true/false)
+
+#### List-parametrar (med valalternativ)
+- `educationLevel`: Grundskola, Gymnasium, Universitet, Forskargrad
+- `applicationReason`: Ekonomisk svårighet, Arbetslös, Sjuk, Familjesjäl
+- `maritalStatus`: Ensam, Gift/Sambo, Skild
+
+#### Nästlade parametrar (Conditional)
+Dessa visas bara när `hasFamily` eller `isStudent` är true:
+- `familyType`: Typ av familj (Barn, Adopterat barn, Styvbarn)
+- `numberOfChildren`: Antal barn
+- `childrenAges`: Barnens åldrar
+- `studentInstitution`: Utbildningsinstitution
+- `studyProgram`: Utbildningsprogram
+
+### Innehållsblock
+
+1. **Introduktion** (Låst block) - Informativ text från administratör
+2. **Personlig information** (Låst block med parametrar) - Visa personuppgifter
+3. **Utbildning** (Låst block med parametrar) - Utbildningsnivå, studiestatus
+4. **Familjesituation** (Låst block med parametrar) - Familjeuppgifter (nästlade)
+5. **Ekonomisk situation** (Redigerbart block) - Inkomst, utgifter + fri text
+6. **Grund för ansökan** (Redigerbart block) - Ansökningsgrund + fri text
+7. **Bifogade dokument** (Fritt block/Phrase) - Kan infogas flera gånger
+8. **Ytterligare information** (Fritt block/Phrase) - Kan infogas flera gånger
+9. **Bekräftelse** (Låst block) - Slutlig bekräftelse med namn och datum
+
+### Sidhuvud och Sidfot
+
+#### Sidhuvud innehåller:
+- Organisationslogotyp
+- Organisationsnamn
+- Custom text: "EXEMPEL-DOKUMENT"
+
+#### Sidfot innehåller:
+- Sidnummer (Sida X/Y)
+- Utskriftsdatum
+
+### Globala uppdateringar
+
+Parametern `applicantName` demonstrerar **globala uppdateringar** - samma parameter visas på flera ställen:
+1. Under "Personlig information"
+2. Under "Bekräftelse" (överst)
+3. Under "Bekräftelse" (där det säger "Jag bekräftar...")
+
+Om användaren ändrar namnet på ett ställe, uppdateras det automatiskt på alla tre ställen.
+
+### Typografi och 3×3-layout (kravspec V9)
+
+Mallformatet stödjer typsnittsinformation på tre nivåer med arv:
+
+```json
+{
+  "mall": {
+    "defaultStyle": { "fontFamily": "Georgia, 'Times New Roman', serif", "fontSizePt": 11 },
+    "blocks": [
+      { "id": "block-intro", "style": { "fontSizePt": 12.5 } }
+    ],
+    "headerFooter": {
+      "headerFields": [
+        {
+          "id": "header-org",
+          "kind": "organisation",
+          "position": { "col": "center", "row": "top" },
+          "style": { "fontSizePt": 14, "bold": true }
+        }
+      ]
+    }
+  }
+}
+```
+
+- **Stildefinition** (`style`/`defaultStyle`): `fontFamily`, `fontSizePt`, `bold`, `italic`, `underline` — alla valfria; utelämnat attribut ärvs (fält/block → mallens standard → systemets grundstil).
+- **Position** (`position`): `col` = `left`/`center`/`right`, `row` = `top`/`middle`/`bottom`. Fält utan position hamnar i vänster/mitt-cellen; fält i samma cell staplas i listordning.
+- Alla fält är bakåtkompatibla — mallar utan dem fortsätter fungera.

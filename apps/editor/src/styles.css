@@ -66,12 +66,26 @@ input[type=text], input[type=number], input[type=date], select, textarea {
   box-shadow: 0 0 6px rgba(0,0,0,0.15);
 }
 .doc-header, .doc-footer {
-  display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--muted);
+  font-size: 12px; color: var(--muted);
   padding-bottom: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--border);
 }
 .doc-footer { border-bottom: none; border-top: 1px solid var(--border); margin-top: 16px; padding-top: 8px; margin-bottom: 0; }
 .doc-header img, .doc-footer img { max-height: 32px; max-width: 100px; object-fit: contain; }
-.doc-header input[type=text], .doc-footer input[type=text] { border: 1px dashed var(--border); background: transparent; font-size: 12px; }
+.doc-header input[type=text], .doc-footer input[type=text] {
+  border: 1px dashed var(--border); background: transparent;
+  /* Ärver dokumentets/fältets typografi (kravspec 6.0). */
+  font: inherit; text-decoration: inherit; color: inherit;
+  width: 100%;
+}
+
+/* 3x3-matris för sidhuvud/sidfot (kravspec 2.1). Tomma celler kollapsar. */
+.hf-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; column-gap: 12px; row-gap: 2px; align-items: center; }
+.hf-cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.hf-cell.hf-left { align-items: flex-start; text-align: left; }
+.hf-cell.hf-center { align-items: center; text-align: center; }
+.hf-cell.hf-right { align-items: flex-end; text-align: right; }
+.hf-cell.hf-center input[type=text] { text-align: center; }
+.hf-cell.hf-right input[type=text] { text-align: right; }
 
 .fred-block { position: relative; margin-bottom: 14px; padding: 6px; border-radius: 4px; }
 .fred-block.locked { background: #fafafa; }

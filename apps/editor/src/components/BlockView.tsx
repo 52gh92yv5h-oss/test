@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { ContentBlock, ParameterValue, renderContent, updateChipValues } from "@fred/shared";
+import { ContentBlock, ParameterValue, renderContent, styleDefToCss, updateChipValues } from "@fred/shared";
 import { useEditorStore } from "../store";
 
 function ToolbarButton({ label, title, onClick }: { label: string; title: string; onClick: () => void }) {
@@ -92,6 +92,11 @@ export default function BlockView({
 
   const canRemove = block.placement === "free";
 
+  // Blockets typografi; oangivna attribut ärvs via CSS från dokumentets
+  // defaultStyle (satt på .document-page). Användarens inline-formatering
+  // (execCommand) ligger i inner-HTML och vinner över detta.
+  const blockCss = styleDefToCss(block.style);
+
   return (
     <div className={`fred-block ${block.type}`}>
       <div className="fred-block-actions">
@@ -109,6 +114,7 @@ export default function BlockView({
       {block.type === "locked" ? (
         <div
           className="fred-block-content"
+          style={blockCss}
           dangerouslySetInnerHTML={{ __html: renderContent(block.content, parameterValues, parameters) }}
         />
       ) : (
@@ -117,6 +123,7 @@ export default function BlockView({
           <div
             ref={ref}
             className="fred-block-content"
+            style={blockCss}
             contentEditable
             suppressContentEditableWarning
             onInput={handleInput}

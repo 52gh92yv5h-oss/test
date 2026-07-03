@@ -38,11 +38,19 @@ const mall = {
   description: "",
   categoryId: null,
   orgScope: { mode: "all" },
+  defaultStyle: { fontFamily: "Georgia, serif", fontSizePt: 11 },
   headerFooter: {
     headerFields: [
       { id: "hf-logo", kind: "logo" },
       { id: "hf-org", kind: "organisation" },
-      { id: "hf-dnr", kind: "text", label: "Diarienummer", defaultText: "Dnr " },
+      {
+        id: "hf-dnr",
+        kind: "text",
+        label: "Diarienummer",
+        defaultText: "Dnr ",
+        position: { col: "right", row: "top" },
+        style: { bold: true, fontSizePt: 9 },
+      },
     ],
     footerFields: [{ id: "ff-1", kind: "text", label: "Sidfot", defaultText: "Utskrivet från Fred" }],
   },
@@ -63,7 +71,7 @@ const mall = {
     { id: "brådskande", label: "Brådskande", type: "boolean", defaultValue: false },
   ],
   blocks: [
-    { id: "b1", title: "Inledning", type: "locked", placement: "fixed", content: "<p>Beslut för {{namn}} den {{datum}}: {{beslut}}.</p>", order: 0 },
+    { id: "b1", title: "Inledning", type: "locked", placement: "fixed", content: "<p>Beslut för {{namn}} den {{datum}}: {{beslut}}.</p>", order: 0, style: { italic: true } },
     { id: "b2", title: "Brödtext", type: "editable", placement: "fixed", content: "<p>Hej {{namn}}, ditt ärende är {{beslut}}. {{motiv}}</p>", order: 1 },
     { id: "b3", title: "Fras: Överklagan", type: "editable", placement: "free", content: "<p>Du kan överklaga, {{namn}}.</p>", order: 2 },
   ],
@@ -89,6 +97,14 @@ check("redigerbart block innehåller inline-fält", r.doc.blocks[1].html.include
 check("nästlad param dold (bifall)", r.doc.params.find((p) => p.id === "motiv").visible === false);
 check("listvärde visas som etikett", r.doc.blocks[0].html.includes(">Bifall<"));
 check("header: logo + org + text", r.doc.header.length === 3 && r.doc.header[1].text === "Testkommunen");
+
+// --- typografi & 3x3-matris (kravspec V9) ---
+check("defaultStyleCss från mallen", r.doc.defaultStyleCss.includes("font-family:Georgia") && r.doc.defaultStyleCss.includes("font-size:11pt"), r.doc.defaultStyleCss);
+check("blockstil som CSS", r.doc.blocks[0].styleCss === "font-style:italic;", r.doc.blocks[0].styleCss);
+check("block utan stil ger tom CSS", r.doc.blocks[1].styleCss === "", r.doc.blocks[1].styleCss);
+check("fältposition i matrisen", r.doc.header[2].col === "right" && r.doc.header[2].row === "top");
+check("fält utan position -> vänster/mitt", r.doc.header[0].col === "left" && r.doc.header[0].row === "middle");
+check("fältstil som CSS", r.doc.header[2].styleCss.includes("font-weight:bold") && r.doc.header[2].styleCss.includes("font-size:9pt"), r.doc.header[2].styleCss);
 
 // --- global parameteruppdatering ---
 r = fred({ cmd: "set_param", id: "beslut", value: "avslag", now: "2026-07-03T10:01:00Z" });

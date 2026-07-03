@@ -1,5 +1,26 @@
 // Informationsmodell enligt Fred-kravspecifikationen, avsnitt 6.
 
+/**
+ * Stildefinition enligt kravspec 6.0. Alla attribut valfria; utelämnat
+ * attribut ärvs från nivån ovanför (fält/block -> mallens defaultStyle ->
+ * systemets grundstil).
+ */
+export interface StyleDef {
+  fontFamily?: string;
+  fontSizePt?: number;
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+}
+
+export type HFCol = "left" | "center" | "right";
+export type HFRow = "top" | "middle" | "bottom";
+
+export interface HFPosition {
+  col: HFCol;
+  row: HFRow;
+}
+
 export interface Organisation {
   id: string;
   name: string;
@@ -42,6 +63,8 @@ export interface ContentBlock {
   /** HTML med platshållare i formatet {{parameterId}}. */
   content: string;
   order: number;
+  /** Valfri typografi som ersätter mallens defaultStyle för blocket. */
+  style?: StyleDef;
 }
 
 export type HeaderFooterFieldKind = "logo" | "organisation" | "text";
@@ -51,6 +74,10 @@ export interface HeaderFooterField {
   kind: HeaderFooterFieldKind;
   label?: string;
   defaultText?: string;
+  /** Position i 3x3-matrisen; utelämnad = vänster/mitt. */
+  position?: HFPosition;
+  /** Valfri typografi för fältet. */
+  style?: StyleDef;
 }
 
 export interface HeaderFooterDefinition {
@@ -76,6 +103,8 @@ export interface Mall {
   description: string;
   categoryId: string | null;
   orgScope: OrgScope;
+  /** Standardtypografi för hela dokumentet (kravspec 6.2). */
+  defaultStyle?: StyleDef;
   headerFooter: HeaderFooterDefinition;
   parameters: ParameterDef[];
   blocks: ContentBlock[];

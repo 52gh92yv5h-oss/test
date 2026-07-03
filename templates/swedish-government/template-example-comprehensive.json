@@ -1,0 +1,333 @@
+{
+  "marker": "fred-mall",
+  "version": 1,
+  "mall": {
+    "id": "mall-comprehensive-example",
+    "name": "Omfattande exempel-mall (Alla konstruktioner)",
+    "description": "Denna mall demonstrerar ALLA möjliga konstruktioner i Fred-systemet: text, datum, nummer, boolean, listor, nästlade parametrar, samma parameter på flera ställen, låsta/redigerbara block, fria block, sidhuvud/sidfot med 3x3-positionering samt typografi på tre nivåer (mall-standard, block och fält).",
+    "categoryId": "examples",
+    "orgScope": {
+      "mode": "all"
+    },
+    "defaultStyle": {
+      "fontFamily": "Georgia, 'Times New Roman', serif",
+      "fontSizePt": 11
+    },
+    "headerFooter": {
+      "headerFields": [
+        {
+          "id": "header-logo",
+          "kind": "logo",
+          "label": "Organisationslogotyp",
+          "position": { "col": "left", "row": "top" }
+        },
+        {
+          "id": "header-org",
+          "kind": "organisation",
+          "position": { "col": "center", "row": "top" },
+          "style": { "fontSizePt": 14, "bold": true }
+        },
+        {
+          "id": "header-custom",
+          "kind": "text",
+          "label": "Dokumenttyp",
+          "defaultText": "EXEMPEL-DOKUMENT",
+          "position": { "col": "right", "row": "top" },
+          "style": { "bold": true, "fontSizePt": 9 }
+        }
+      ],
+      "footerFields": [
+        {
+          "id": "footer-page",
+          "kind": "text",
+          "label": "Sidnummer",
+          "defaultText": "Sida {{page}}/{{totalPages}}",
+          "position": { "col": "left", "row": "bottom" },
+          "style": { "fontSizePt": 8 }
+        },
+        {
+          "id": "footer-date",
+          "kind": "text",
+          "label": "Datum",
+          "defaultText": "Utskriftsdag: {{printDate}}",
+          "position": { "col": "right", "row": "bottom" },
+          "style": { "fontSizePt": 8, "italic": true }
+        }
+      ]
+    },
+    "parameters": [
+      {
+        "id": "applicantName",
+        "label": "Namn på ansökare",
+        "type": "text",
+        "defaultValue": "John Doe"
+      },
+      {
+        "id": "applicantEmail",
+        "label": "E-postadress",
+        "type": "text",
+        "defaultValue": ""
+      },
+      {
+        "id": "applicantPhone",
+        "label": "Telefonnummer",
+        "type": "text",
+        "defaultValue": ""
+      },
+      {
+        "id": "applicationDate",
+        "label": "Ansökningsdatum",
+        "type": "date",
+        "defaultValue": "2026-07-03"
+      },
+      {
+        "id": "birthDate",
+        "label": "Födelsedatum",
+        "type": "date",
+        "defaultValue": ""
+      },
+      {
+        "id": "startDate",
+        "label": "Startdatum",
+        "type": "date",
+        "defaultValue": ""
+      },
+      {
+        "id": "personalNumber",
+        "label": "Personnummer (YYYYMMDD-XXXX)",
+        "type": "text",
+        "defaultValue": ""
+      },
+      {
+        "id": "income",
+        "label": "Månadsinkomst (SEK)",
+        "type": "number",
+        "defaultValue": 0
+      },
+      {
+        "id": "expenses",
+        "label": "Månadskostnader (SEK)",
+        "type": "number",
+        "defaultValue": 0
+      },
+      {
+        "id": "percentage",
+        "label": "Procentsats (%)",
+        "type": "number",
+        "defaultValue": 100
+      },
+      {
+        "id": "hasFamily",
+        "label": "Har barn/familj?",
+        "type": "boolean",
+        "defaultValue": false
+      },
+      {
+        "id": "isStudent",
+        "label": "Studerar du?",
+        "type": "boolean",
+        "defaultValue": false
+      },
+      {
+        "id": "agreeToTerms",
+        "label": "Godkänner villkoren?",
+        "type": "boolean",
+        "defaultValue": false
+      },
+      {
+        "id": "educationLevel",
+        "label": "Utbildningsnivå",
+        "type": "list",
+        "options": [
+          {
+            "value": "grundskola",
+            "label": "Grundskola"
+          },
+          {
+            "value": "gymnasium",
+            "label": "Gymnasium"
+          },
+          {
+            "value": "universitet",
+            "label": "Universitet/Högskola"
+          },
+          {
+            "value": "forskargrad",
+            "label": "Forskargrad"
+          }
+        ],
+        "defaultValue": "gymnasium"
+      },
+      {
+        "id": "applicationReason",
+        "label": "Ansökningsgrund",
+        "type": "list",
+        "options": [
+          {
+            "value": "ekonomi",
+            "label": "Ekonomisk svårighet"
+          },
+          {
+            "value": "arbete",
+            "label": "Arbetslös"
+          },
+          {
+            "value": "sjuk",
+            "label": "Sjuk/arbetsoförmögen"
+          },
+          {
+            "value": "familj",
+            "label": "Familjesjäl"
+          }
+        ],
+        "defaultValue": ""
+      },
+      {
+        "id": "maritalStatus",
+        "label": "Civilstatus",
+        "type": "list",
+        "options": [
+          {
+            "value": "ensam",
+            "label": "Ensam"
+          },
+          {
+            "value": "gift",
+            "label": "Gift/Sambo"
+          },
+          {
+            "value": "skild",
+            "label": "Skild"
+          }
+        ],
+        "defaultValue": "ensam"
+      },
+      {
+        "id": "familyType",
+        "label": "Typ av familj",
+        "type": "list",
+        "options": [
+          {
+            "value": "barn",
+            "label": "Barn"
+          },
+          {
+            "value": "adopterad",
+            "label": "Adopterat barn"
+          },
+          {
+            "value": "styvbarn",
+            "label": "Styvbarn"
+          }
+        ],
+        "showWhen": true
+      },
+      {
+        "id": "numberOfChildren",
+        "label": "Antal barn",
+        "type": "number",
+        "defaultValue": 0,
+        "showWhen": true
+      },
+      {
+        "id": "childrenAges",
+        "label": "Barnens åldrar (kommaseparerat)",
+        "type": "text",
+        "defaultValue": "",
+        "showWhen": true
+      },
+      {
+        "id": "studentInstitution",
+        "label": "Utbildningsinstitution",
+        "type": "text",
+        "defaultValue": "",
+        "showWhen": false
+      },
+      {
+        "id": "studyProgram",
+        "label": "Utbildningsprogram",
+        "type": "text",
+        "defaultValue": "",
+        "showWhen": false
+      }
+    ],
+    "blocks": [
+      {
+        "id": "block-intro",
+        "title": "Introduktion",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<h1>Omfattande exempel-mall för Fred-systemet</h1><p>Detta är ett <strong>låst block</strong> som användaren <em>inte kan redigera</em>. Det innehåller introduktiv text från administratören. Blocket har en egen typografi (12,5 pt) som ersätter mallens standard (Georgia 11 pt).</p>",
+        "order": 1,
+        "style": { "fontSizePt": 12.5 }
+      },
+      {
+        "id": "block-personal-info",
+        "title": "Personlig information",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<h2>Personlig information</h2>\n<p><strong>Namn:</strong> {{applicantName}}</p>\n<p><strong>Personnummer:</strong> {{personalNumber}}</p>\n<p><strong>Födelsedatum:</strong> {{birthDate}}</p>\n<p><strong>E-post:</strong> {{applicantEmail}}</p>\n<p><strong>Telefon:</strong> {{applicantPhone}}</p>\n<p><strong>Civilstatus:</strong> {{maritalStatus}}</p>",
+        "order": 2
+      },
+      {
+        "id": "block-education",
+        "title": "Utbildning",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<h2>Utbildning och kompetens</h2>\n<p><strong>Utbildningsnivå:</strong> {{educationLevel}}</p>\n<p><strong>Studerar för närvarande:</strong> {{isStudent}}</p>\n<p><strong>Institution:</strong> {{studentInstitution}}</p>\n<p><strong>Utbildningsprogram:</strong> {{studyProgram}}</p>",
+        "order": 3
+      },
+      {
+        "id": "block-family",
+        "title": "Familjesituation",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<h2>Familjesituation</h2>\n<p><strong>Har familj:</strong> {{hasFamily}}</p>\n<p><strong>Familjetyp:</strong> {{familyType}}</p>\n<p><strong>Antal barn:</strong> {{numberOfChildren}}</p>\n<p><strong>Barnens åldrar:</strong> {{childrenAges}}</p>",
+        "order": 4
+      },
+      {
+        "id": "block-economy",
+        "title": "Ekonomisk situation",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<h2>Ekonomisk situation</h2>\n<p><strong>Månadsinkomst:</strong> {{income}} SEK</p>\n<p><strong>Månadskostnader:</strong> {{expenses}} SEK</p>\n<p><strong>Disponibel inkomst:</strong> {{disposableIncome}} SEK</p>\n<p>Beskriv din ekonomiska situation i detalj:</p>\n<p>{{economicDescription}}</p>",
+        "order": 5
+      },
+      {
+        "id": "block-reason",
+        "title": "Ansökningsgrund",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<h2>Grund för ansökan</h2>\n<p><strong>Ansökningsgrund:</strong> {{applicationReason}}</p>\n<p><strong>Ansökningsdatum:</strong> {{applicationDate}}</p>\n<p><strong>Startdatum:</strong> {{startDate}}</p>\n<p>Beskriv varför du ansöker:</p>\n<p>{{reasonDescription}}</p>",
+        "order": 6
+      },
+      {
+        "id": "block-documents",
+        "title": "Bifogade dokument",
+        "type": "editable",
+        "placement": "free",
+        "content": "<h3>Bifogat dokument</h3>\n<p><strong>Dokumenttyp:</strong> {{documentType}}</p>\n<p><strong>Beskrivning:</strong> {{documentDescription}}</p>",
+        "order": 7
+      },
+      {
+        "id": "block-additional",
+        "title": "Ytterligare information",
+        "type": "editable",
+        "placement": "free",
+        "content": "<h3>Tilläggsinformation</h3>\n<p>{{additionalInfo}}</p>",
+        "order": 8
+      },
+      {
+        "id": "block-confirmation",
+        "title": "Bekräftelse",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<h2>Bekräftelse</h2>\n<p><strong>Namn:</strong> {{applicantName}}</p>\n<p><strong>Godkänner villkoren:</strong> {{agreeToTerms}}</p>\n<p>Jag bekräftar att all information i denna ansökan är korrekt och sanningsenlig. Detta block är kursivt via blockets egen Stildefinition.</p>\n<p>Ansökan inlämnad: {{applicationDate}}</p>",
+        "order": 9,
+        "style": { "italic": true }
+      }
+    ],
+    "createdAt": "2026-07-03T12:16:05.102537Z",
+    "updatedAt": "2026-07-03T12:16:05.102537Z"
+  }
+}
