@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fred Editor</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%23185ABD'/%3E%3Ctext x='16' y='23' font-family='Georgia' font-size='19' fill='white' text-anchor='middle'%3EF%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css" data-inline>
+</head>
+<body>
+<div id="app">
+
+  <!-- ================= Startskärm ================= -->
+  <div class="start-screen" id="start-screen">
+    <div class="start-rail">
+      <div class="brand">F</div>
+      <button class="active" id="rail-home">
+        <svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7M5 10v10h5v-6h4v6h5V10"/></svg>
+        Start
+      </button>
+      <button id="rail-new">
+        <svg viewBox="0 0 24 24"><path d="M13 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9zM13 3v6h6"/></svg>
+        Nytt
+      </button>
+      <button id="rail-open">
+        <svg viewBox="0 0 24 24"><path d="M3 7v12h15l3-8H7L5 17M3 7l2-3h6l2 2h6v3"/></svg>
+        Öppna
+      </button>
+    </div>
+    <div class="start-main">
+      <h1 id="greeting">God dag</h1>
+
+      <h2>Nytt dokument</h2>
+      <div class="cat-chips" id="cat-chips"></div>
+      <div class="tpl-grid" id="tpl-grid"></div>
+
+      <h2>Senaste</h2>
+      <div class="recent-list" id="recent-list"></div>
+
+      <h2>Öppna filer</h2>
+      <div class="open-actions">
+        <button id="open-session-btn">Öppna dokument (.json)…</button>
+        <button id="open-mall-btn">Läs in mall…</button>
+        <button id="open-orgs-btn">Läs in organisationer…</button>
+        <button id="open-import-btn">Importera uppgifter (JSON)…</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Dokumentvy ================= -->
+  <div id="editor-screen" hidden>
+
+    <div class="titlebar">
+      <span class="autosave" title="Dokumentet autosparas lokalt"><span class="pill"></span> Autospara <b id="autosave-state">På</b></span>
+      <div class="qat">
+        <button id="qat-save" title="Spara (Ctrl+S)"><svg viewBox="0 0 24 24"><path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7zM7 3v5h8V3zM7 13h10v8H7z"/></svg></button>
+        <button id="qat-undo" title="Ångra (Ctrl+Z)"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5v3.5h5A6.5 6.5 0 0 1 20.5 14 6.5 6.5 0 0 1 14 20.5H8v-3h6a3.5 3.5 0 0 0 0-7H9z"/></svg></button>
+        <button id="qat-redo" title="Gör om (Ctrl+Y)"><svg viewBox="0 0 24 24" style="transform:scaleX(-1)"><path d="M9 14 4 9l5-5v3.5h5A6.5 6.5 0 0 1 20.5 14 6.5 6.5 0 0 1 14 20.5H8v-3h6a3.5 3.5 0 0 0 0-7H9z"/></svg></button>
+      </div>
+      <div class="title-center">
+        <span class="doc-title" id="doc-title">Dokument1 – Fred</span>
+        <span class="title-search" id="title-search">
+          <svg viewBox="0 0 24 24"><path d="M10 2a8 8 0 1 0 4.9 14.3l5.4 5.4 1.4-1.4-5.4-5.4A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/></svg>
+          Sök
+        </span>
+      </div>
+      <div class="win-controls"><span>—</span><span>▢</span><span>✕</span></div>
+    </div>
+
+    <div class="ribbon-tabs" id="ribbon-tabs">
+      <button class="tab file" id="tab-arkiv">Arkiv</button>
+      <button class="tab active" data-panel="ribbon-start">Start</button>
+      <button class="tab" data-panel="ribbon-infoga">Infoga</button>
+      <button class="tab" data-panel="ribbon-granska">Granska</button>
+      <button class="tab" data-panel="ribbon-visa">Visa</button>
+    </div>
+
+    <!-- ===== Start ===== -->
+    <div class="ribbon" id="ribbon-start">
+      <div class="ribbon-group">
+        <div class="rg-content">
+          <button class="rbtn blue" id="act-paste">
+            <svg viewBox="0 0 24 24"><path d="M9 4h6M9 4a2 2 0 0 1 6 0M9 4H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2M9 10h6M9 14h6"/></svg>
+            Klistra in
+          </button>
+          <div class="rstack">
+            <button class="rsmall" id="act-cut" title="Klipp ut (Ctrl+X)"><svg viewBox="0 0 24 24"><path d="M9.6 12 4 4l1.7-1L12 10l6.3-7L20 4l-5.6 8 5.6 8-1.7 1L12 14l-6.3 7L4 20z"/></svg></button>
+            <button class="rsmall" id="act-copy" title="Kopiera (Ctrl+C)"><svg viewBox="0 0 24 24"><path d="M8 8h12v12H8zM4 16V4h12v2H6v10z"/></svg></button>
+          </div>
+        </div>
+        <div class="rg-label">Urklipp</div>
+      </div>
+
+      <div class="ribbon-group">
+        <div class="rg-content">
+          <div class="rstack">
+            <div class="rrow">
+              <select class="font-name" id="font-name">
+                <option>Calibri</option><option>Calibri Light</option><option>Georgia</option>
+                <option>Times New Roman</option><option>Arial</option><option>Segoe UI</option>
+              </select>
+              <select class="font-size" id="font-size">
+                <option>8</option><option>9</option><option>10</option><option selected>11</option>
+                <option>12</option><option>14</option><option>16</option><option>18</option>
+                <option>20</option><option>24</option><option>28</option>
+              </select>
+            </div>
+            <div class="rrow">
+              <button class="rsmall" id="act-bold" title="Fetstil (Ctrl+B)"><span class="fmt-letter b">F</span></button>
+              <button class="rsmall" id="act-italic" title="Kursiv (Ctrl+I)"><span class="fmt-letter i">K</span></button>
+              <button class="rsmall" id="act-underline" title="Understruken (Ctrl+U)"><span class="fmt-letter u">U</span></button>
+              <button class="rsmall" id="act-clear" title="Radera all formatering"><span class="fmt-letter">A✗</span></button>
+            </div>
+          </div>
+        </div>
+        <div class="rg-label">Tecken</div>
+      </div>
+
+      <div class="ribbon-group">
+        <div class="rg-content">
+          <div class="rstack">
+            <div class="rrow">
+              <button class="rsmall" id="act-ul" title="Punktlista"><svg viewBox="0 0 24 24"><path d="M4 5.5A1.5 1.5 0 1 1 4 8.5 1.5 1.5 0 0 1 4 5.5zM4 10.5A1.5 1.5 0 1 1 4 13.5 1.5 1.5 0 0 1 4 10.5zM4 15.5A1.5 1.5 0 1 1 4 18.5 1.5 1.5 0 0 1 4 15.5zM8 6h13v2H8zM8 11h13v2H8zM8 16h13v2H8z"/></svg></button>
+              <button class="rsmall" id="act-ol" title="Numrerad lista"><svg viewBox="0 0 24 24"><path d="M3 5h1v4M3 9h2M8 6h13v2H8zM8 11h13v2H8zM8 16h13v2H8zM3 13h2l-2 3h2"/> </svg></button>
+            </div>
+            <div class="rrow">
+              <button class="rsmall" id="act-left" title="Vänsterjustera"><svg viewBox="0 0 24 24"><path d="M3 5h18v2H3zM3 9h12v2H3zM3 13h18v2H3zM3 17h12v2H3z"/></svg></button>
+              <button class="rsmall" id="act-center" title="Centrera"><svg viewBox="0 0 24 24"><path d="M3 5h18v2H3zM6 9h12v2H6zM3 13h18v2H3zM6 17h12v2H6z"/></svg></button>
+              <button class="rsmall" id="act-right" title="Högerjustera"><svg viewBox="0 0 24 24"><path d="M3 5h18v2H3zM9 9h12v2H9zM3 13h18v2H3zM9 17h12v2H9z"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="rg-label">Stycke</div>
+      </div>
+
+      <div class="ribbon-group">
+        <div class="rg-content">
+          <button class="style-chip s-normal" data-style="P"><span class="prev">AaBbCcDd</span><span class="name">Normal</span></button>
+          <button class="style-chip s-h1" data-style="H1"><span class="prev">AaBbCc</span><span class="name">Rubrik 1</span></button>
+          <button class="style-chip s-h2" data-style="H2"><span class="prev">AaBbCcDd</span><span class="name">Rubrik 2</span></button>
+        </div>
+        <div class="rg-label">Format</div>
+      </div>
+
+      <div class="ribbon-group">
+        <div class="rg-content">
+          <div class="rstack">
+            <button class="rsmall" id="act-find" title="Sök (Ctrl+F)" style="width:auto;padding:0 8px;font-size:12px">🔍 Sök</button>
+            <button class="rsmall" id="act-replace" title="Ersätt (Ctrl+H)" style="width:auto;padding:0 8px;font-size:12px">ab↔ Ersätt</button>
+            <button class="rsmall" id="act-selectall" title="Markera allt (Ctrl+A)" style="width:auto;padding:0 8px;font-size:12px">▭ Markera allt</button>
+          </div>
+        </div>
+        <div class="rg-label">Redigering</div>
+      </div>
+    </div>
+
+    <!-- ===== Infoga ===== -->
+    <div class="ribbon" id="ribbon-infoga" hidden>
+      <div class="ribbon-group">
+        <div class="rg-content">
+          <button class="rbtn" id="act-pagebreak">
+            <svg viewBox="0 0 24 24"><path d="M5 3h14v6H5zM5 15h14v6H5zM3 12h3M9 12h3M15 12h3M21 12h0"/></svg>
+            Sidbrytning
+          </button>
+        </div>
+        <div class="rg-label">Sidor</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="rg-content">
+          <button class="rbtn blue" id="act-phrases">
+            <svg viewBox="0 0 24 24"><path d="M4 5h16M4 9h16M4 13h9M15 17l3 3 5-5M4 17h7"/></svg>
+            Fras<br>(snabbdelar)
+          </button>
+        </div>
+        <div class="rg-label">Fraser</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="rg-content">
+          <button class="rbtn" id="act-header">
+            <svg viewBox="0 0 24 24"><path d="M4 3h16v18H4zM4 8h16M7 5.5h6"/></svg>
+            Sidhuvud
+          </button>
+          <button class="rbtn" id="act-footer">
+            <svg viewBox="0 0 24 24"><path d="M4 3h16v18H4zM4 16h16M7 18.5h6"/></svg>
+            Sidfot
+          </button>
+        </div>
+        <div class="rg-label">Sidhuvud och sidfot</div>
+      </div>
+    </div>
+
+    <!-- ===== Granska ===== -->
+    <div class="ribbon" id="ribbon-granska" hidden>
+      <div class="ribbon-group">
+        <div class="rg-content">
+          <button class="rbtn" id="act-wordcount">
+            <svg viewBox="0 0 24 24"><path d="M4 5h16M4 9h16M4 13h10M4 17h7M16 15l2 4 2-4M16.5 18h3"/></svg>
+            Ordantal
+          </button>
+        </div>
+        <div class="rg-label">Verifiering</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="rg-content">
+          <button class="rbtn" disabled>
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18M12 3c-3 3.5-3 14 0 18"/></svg>
+            Svenska<br>(Sverige)
+          </button>
+        </div>
+        <div class="rg-label">Språk</div>
+      </div>
+    </div>
+
+    <!-- ===== Visa ===== -->
+    <div class="ribbon" id="ribbon-visa" hidden>
+      <div class="ribbon-group">
+        <div class="rg-content">
+          <button class="rbtn" id="act-navpane">
+            <svg viewBox="0 0 24 24"><path d="M3 4h18v16H3zM8 4v16M10 8h9M10 12h9M10 16h6"/></svg>
+            Navigerings-<br>fönster
+          </button>
+        </div>
+        <div class="rg-label">Visa</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="rg-content">
+          <button class="rbtn" id="act-zoom100">
+            <svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg>
+            100&nbsp;%
+          </button>
+          <button class="rbtn" id="act-zoomin">
+            <svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6M7 10h6M10 7v6"/></svg>
+            Zooma in
+          </button>
+          <button class="rbtn" id="act-zoomout">
+            <svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6M7 10h6"/></svg>
+            Zooma ut
+          </button>
+        </div>
+        <div class="rg-label">Zoom</div>
+      </div>
+    </div>
+
+    <div class="workspace">
+      <!-- Navigeringsfönster (sök) -->
+      <div class="navpane" id="navpane" hidden>
+        <header>Navigering <button id="nav-close" title="Stäng">✕</button></header>
+        <div class="nav-search">
+          <input id="nav-input" type="text" placeholder="Sök i dokumentet">
+          <button id="nav-prev" title="Föregående">▲</button>
+          <button id="nav-next" title="Nästa">▼</button>
+        </div>
+        <div class="nav-results" id="nav-results">Skriv för att söka i dokumentet.</div>
+      </div>
+
+      <div class="canvas" id="canvas-el">
+        <div class="ruler"></div>
+        <div class="zoomwrap" id="zoomwrap">
+          <div class="page doc-typo" id="page">
+            <header class="page-hf page-header" id="page-header"></header>
+            <div id="doc-blocks"></div>
+            <footer class="page-hf page-footer" id="page-footer"></footer>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="statusbar">
+      <span class="sb" id="sb-page">Sida 1 av 1</span>
+      <span class="sb" id="sb-words">0 ord</span>
+      <span class="sb">Svenska (Sverige)</span>
+      <span class="sb" id="sb-saved"></span>
+      <span class="spacer"></span>
+      <div class="zoom-slider sb">
+        <button class="sb" id="zoom-minus" style="padding:0 4px">−</button>
+        <input type="range" id="zoom-range" min="50" max="200" step="10" value="100">
+        <button class="sb" id="zoom-plus" style="padding:0 4px">+</button>
+        <span id="zoom-val" style="width:44px;text-align:right">100 %</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Backstage (Arkiv) ================= -->
+  <div class="backstage" id="backstage" hidden>
+    <div class="bs-rail">
+      <button class="bs-back" id="bs-back">⟵</button>
+      <button class="bs-item" data-bs="info">Info</button>
+      <button class="bs-item" data-bs="new">Nytt</button>
+      <button class="bs-item" data-bs="open">Öppna</button>
+      <hr>
+      <button class="bs-item" data-bs="save">Spara</button>
+      <button class="bs-item" data-bs="saveas">Spara som</button>
+      <hr>
+      <button class="bs-item" data-bs="print">Skriv ut</button>
+      <button class="bs-item" data-bs="export">Exportera</button>
+      <hr>
+      <button class="bs-item" data-bs="close">Stäng</button>
+    </div>
+    <div class="bs-main" id="bs-main"></div>
+  </div>
+
+  <input type="file" id="file-input" accept="application/json,.json" hidden>
+</div>
+
+<script src="demo-data.js" data-inline></script>
+<template id="fred-wasm-data"><!--__WASM__--></template>
+<script src="app.js" data-inline></script>
+</body>
+</html>
