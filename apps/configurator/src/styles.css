@@ -12,16 +12,24 @@
 
 * { box-sizing: border-box; }
 
+html, body { height: 100%; }
+
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
   font-size: 14px;
+  /* iOS Safari: lås fönstret så att skärmtangentbordet inte panorerar bort
+     layouten – all rullning sker i .content i stället. */
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 #root {
   display: flex;
-  height: 100vh;
+  height: 100%;
 }
 
 .app-shell {
@@ -69,6 +77,8 @@ body {
   flex: 1;
   overflow-y: auto;
   padding: 24px 32px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .panel {

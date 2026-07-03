@@ -27,14 +27,24 @@ body {
   color: var(--text);
   background: var(--canvas-bg);
   overflow: hidden;
+  /* iOS Safari: lås fönstret så att skärmtangentbordet inte kan panorera
+     bort layouten – all rullning sker i .canvas i stället. */
+  position: fixed;
+  inset: 0;
+  width: 100%;
 }
 
-button { font-family: inherit; font-size: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+button { font-family: inherit; font-size: inherit; color: inherit; background: none; border: none; cursor: pointer; touch-action: manipulation; }
 button:disabled { opacity: 0.4; cursor: default; }
 input, select { font-family: inherit; }
 [hidden] { display: none !important; }
 
 #app { display: flex; flex-direction: column; height: 100%; }
+
+/* Dokumentvyn måste själv vara en flex-kolumn med begränsad höjd,
+   annars växer arbetsytan förbi fönstret och rullningen hamnar utanför
+   dokumentytan (märks framför allt på touchskärmar). */
+#editor-screen { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 
 /* ============================= Namnlist ============================= */
 
@@ -214,7 +224,11 @@ input, select { font-family: inherit; }
 .nav-results .hit.cur { border-color: var(--word-blue); background: #eff6fc; }
 
 /* Dokumentyta */
-.canvas { flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center; }
+.canvas {
+  flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain; /* hindra rullningen från att "smitta" fönstret på touchskärm */
+}
 
 .ruler {
   position: sticky; top: 0; z-index: 5;
@@ -298,7 +312,9 @@ input, select { font-family: inherit; }
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   padding: 1px; font-size: 11px; color: var(--muted);
 }
-.doc-block:hover .block-tools { display: flex; }
+.doc-block:hover .block-tools,
+.doc-block:focus-within .block-tools { display: flex; } /* focus-within: touchskärmar utan hover */
+.doc-block { outline: none; }
 .block-tools .tag { padding: 0 6px; font-size: 10px; display: inline-flex; align-items: center; gap: 3px; }
 .block-tools .tag svg { width: 10px; height: 10px; fill: var(--muted); }
 .block-tools button { width: 22px; height: 20px; display: grid; place-items: center; border-radius: 2px; font-size: 11px; color: var(--text); }
@@ -461,7 +477,7 @@ mark.fred-hit.cur { background: #ffb900; }
 /* ============================= Utskrift / PDF ============================= */
 
 @media print {
-  body { overflow: visible; background: #fff; }
+  body { overflow: visible; background: #fff; position: static; }
   .titlebar, .ribbon-tabs, .ribbon, .statusbar, .navpane, .ruler, .block-tools, .toast { display: none !important; }
   .workspace { display: block; }
   .canvas { overflow: visible; display: block; }
