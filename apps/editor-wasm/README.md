@@ -32,14 +32,40 @@ inline-fält (`<span class="fred-cc">`).
 
 * Namnlist med Autospara, snabbåtkomst (Spara/Ångra/Gör om) och sökruta.
 * Menyflikar: Arkiv (backstage), Start, Infoga, Granska, Visa.
-* A4-sida med linjal, Calibri 11 pt, rubrikstilar i Word-blått.
-* Statusfält med sidräkning, ordantal, språk och zoomreglage.
+* A4-sida med linjal, Calibri 11 pt som grundstil, rubrikstilar i Word-blått.
+* Statusfält med sidräkning, ordantal, språk, **versionsnummer** och
+  zoomreglage. Versionen hämtas från Rust-motorn (`ping`-kommandot, som
+  läser `engine/Cargo.toml`) och visas även på startskärmen och under
+  Arkiv → Info.
 * Parametrar är innehållskontroller i texten: tomma fält visar grå
   platshållare, klick gör fältet skrivbart på plats (text/nummer) eller
   öppnar en dropdown (lista/ja–nej/datum). Alla förekomster av samma
   parameter uppdateras medan man skriver (global uppdatering).
 * Låsta block kan inte redigeras, men deras parameterfält går att fylla i.
 * Fraser (fria block) infogas via Infoga → Fras (snabbdelar).
+
+## Typografi & sidhuvud/sidfot (kravspec V10)
+
+* Mallens `defaultStyle` (typsnitt, storlek i pt, fet/kursiv/understruken)
+  appliceras på hela sidan; block och sidhuvud/sidfot-fält kan ha egna
+  `style`-definitioner som ersätter standarden attribut för attribut.
+  Motorn konverterar stilarna till CSS (`styleCss` i rendermodellen).
+* Sidhuvud och sidfot renderas som en **3×3-matris**: varje fält har en
+  `position` (kolumn vänster/mitten/höger × rad topp/mitt/botten); fält utan
+  position hamnar i vänster/mitt och fält i samma cell staplas i listordning.
+
+## Sparande
+
+* På skrivbordswebbläsare sparas dokument via klassisk nedladdning, med
+  bekräftelse-toast.
+* På iOS/iPadOS och i inbäddade miljöer (iframe, t.ex. artifact-visning)
+  öppnas i stället en **spara-dialog** med tre metoder – *Dela…* (spara till
+  appen Filer via delningsarket), *Ladda ner* och *Kopiera text* – där varje
+  metod ger synlig återkoppling och misslyckanden visas i dialogen i stället
+  för att falla tyst.
+* Autosparning sker fortlöpande till `localStorage` ("✓ Sparat" i
+  statusfältet) och dokumenten kan återupptas från startskärmens
+  Senaste-lista.
 
 ## Bygga & testa
 

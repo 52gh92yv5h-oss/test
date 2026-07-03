@@ -1,10 +1,11 @@
 // Lokal filhantering. Fred gör aldrig nätverksanrop - allt sker via
-// File System Access API (Chromium) med fallback till Web Share API
-// (iOS/iPadOS Safari, där varken File System Access API eller
-// <a download> ger ett tillförlitligt sätt att spara filen), därefter
-// klassisk nedladdning och som sista utväg en manuell kopiera-ruta.
+// File System Access API (Chromium desktop) eller klassisk nedladdning.
+// I miljöer där ingen tyst metod är pålitlig (iOS/iPadOS samt inbäddade
+// iframes som artifact-visningen på claude.ai) visas i stället en
+// spara-dialog där användaren själv väljer Dela / Ladda ner / Kopiera
+// och varje metod ger synlig återkoppling.
 
-import { presentTextForManualSave, showToast } from "./ui";
+import { presentSaveDialog, showToast } from "./ui";
 
 type SaveFilePickerOptions = {
   suggestedName?: string;
@@ -30,12 +31,12 @@ const JSON_TYPE = {
  * Hur en spara-operation faktiskt utfördes, så att anroparen kan ge korrekt
  * återkoppling.
  * - `filesystem`  – sparad direkt till disk via File System Access API.
- * - `shared`      – skickad till delningsarket (användaren valde destination).
  * - `downloaded`  – nedladdad via webbläsaren.
- * - `manual`      – ingen automatisk metod fanns; kopiera-ruta visades.
- * - `cancelled`   – användaren avbröt spara-dialogen/delningen.
+ * - `dialog`      – spara-dialogen visades; den ger själv återkoppling
+ *                   per metod (Dela / Ladda ner / Kopiera).
+ * - `cancelled`   – användaren avbröt spara-dialogen.
  */
-export type SaveMethod = "filesystem" | "shared" | "downloaded" | "manual" | "cancelled";
+export type SaveMethod = "filesystem" | "downloaded" | "dialog" | "cancelled";
 
 /** Sant på iOS/iPadOS där en nedladdningslänk inte är ett tillförlitligt sätt att spara. */
 function isDownloadUnreliable(): boolean {
@@ -49,38 +50,16 @@ function isDownloadUnreliable(): boolean {
 }
 
 /**
- * iOS/iPadOS Safari saknar File System Access API, och `<a download>` med en
- * Blob-URL öppnar där ofta bara texten i en ny flik i stället för att spara.
- * Web Share API med en `File` låter användaren spara till appen Filer via
- * delningsarket. Vissa iOS-versioner vägrar dela filer med typen
- * `application/json`, så vi försöker även med `text/plain` (filnamnet med
- * ändelsen `.json` bevaras ändå).
+ * Sant när appen körs inbäddad i en annan sida (t.ex. artifact-visningen på
+ * claude.ai). Sandboxade iframes kan blockera File System API, Web Share och
+ * nedladdningar var för sig – där ska spara-dialogen användas så att varje
+ * misslyckande blir synligt i stället för tyst.
  */
-async function trySaveViaShare(
-  text: string,
-  suggestedName: string,
-): Promise<"shared" | "cancelled" | "unavailable"> {
-  if (typeof navigator === "undefined" || !navigator.canShare || !navigator.share) {
-    return "unavailable";
-  }
-  const candidates = [
-    new File([text], suggestedName, { type: "application/json" }),
-    new File([text], suggestedName, { type: "text/plain" }),
-  ];
-  const file = candidates.find((f) => {
-    try {
-      return navigator.canShare!({ files: [f] });
-    } catch {
-      return false;
-    }
-  });
-  if (!file) return "unavailable";
+function isEmbedded(): boolean {
   try {
-    await navigator.share({ files: [file] });
-    return "shared";
-  } catch (err) {
-    if (err instanceof DOMException && err.name === "AbortError") return "cancelled";
-    return "unavailable";
+    return typeof window !== "undefined" && window.self !== window.top;
+  } catch {
+    return true; // cross-origin-åtkomst till window.top kastar => inbäddad
   }
 }
 
@@ -98,16 +77,21 @@ function triggerDownload(text: string, suggestedName: string): void {
 
 /**
  * Sparar godtycklig data som en lokal JSON-fil och rapporterar hur det gick.
- * Visar ingen UI själv (utom den manuella kopiera-rutan när inget annat
- * fungerar) – använd {@link saveJsonWithFeedback} för färdig återkoppling.
+ * I pålitliga miljöer sker sparandet tyst (filsystem-dialog eller
+ * nedladdning); i osäkra miljöer (iOS/iPadOS eller inbäddad iframe) visas
+ * spara-dialogen där användaren väljer metod med synlig återkoppling.
+ * Använd {@link saveJsonWithFeedback} för färdiga toast-meddelanden.
  */
 export async function saveJsonToLocalFile(
   data: unknown,
   suggestedName: string,
 ): Promise<SaveMethod> {
   const text = JSON.stringify(data, null, 2);
+  const embedded = isEmbedded();
 
-  if (typeof window !== "undefined" && window.showSaveFilePicker) {
+  // File System Access API blockeras i cross-origin-iframes – hoppa över den
+  // direkt i inbäddat läge så att användaren inte möts av ett tyst fel.
+  if (!embedded && typeof window !== "undefined" && window.showSaveFilePicker) {
     try {
       const handle = await window.showSaveFilePicker({ suggestedName, types: [JSON_TYPE] });
       const writable = await handle.createWritable();
@@ -120,15 +104,9 @@ export async function saveJsonToLocalFile(
     }
   }
 
-  const share = await trySaveViaShare(text, suggestedName);
-  if (share === "shared") return "shared";
-  if (share === "cancelled") return "cancelled";
-
-  // Ingen delning tillgänglig. På iOS är en nedladdningslänk opålitlig –
-  // visa i stället en kopiera-ruta så att data garanterat kan sparas.
-  if (isDownloadUnreliable()) {
-    presentTextForManualSave(text, suggestedName);
-    return "manual";
+  if (embedded || isDownloadUnreliable()) {
+    presentSaveDialog(text, suggestedName);
+    return "dialog";
   }
 
   triggerDownload(text, suggestedName);
@@ -149,14 +127,11 @@ export async function saveJsonWithFeedback(
     case "filesystem":
       showToast(`${label} sparades (${suggestedName})`, { variant: "success" });
       break;
-    case "shared":
-      showToast(`${label} skickades till Dela – välj var den ska sparas`, { variant: "success" });
-      break;
     case "downloaded":
       showToast(`${label} laddades ner (${suggestedName})`, { variant: "success" });
       break;
-    case "manual":
-      showToast("Kopiera texten för att spara filen", { variant: "info" });
+    case "dialog":
+      // Spara-dialogen ger själv återkoppling per vald metod.
       break;
     case "cancelled":
       // Ingen återkoppling – användaren avbröt medvetet.

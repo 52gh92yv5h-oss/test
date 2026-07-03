@@ -95,12 +95,13 @@ async function copyText(text: string): Promise<boolean> {
 }
 
 /**
- * Sista utväg när varken filsystem-API, delning eller nedladdning fungerar
- * (t.ex. äldre iOS där en nedladdningslänk bara öppnar texten i en ny flik).
- * Visar innehållet i en markerbar ruta så att användaren garanterat kan
- * kopiera det och spara manuellt.
+ * Spara-dialog för miljöer där ingen tyst spar-metod är pålitlig (iOS/iPadOS
+ * och inbäddade iframes som artifact-visningen, där webbläsaren kan blockera
+ * File System API, Web Share och nedladdningar var för sig). Varje metod
+ * triggas av sin egen knapp – med egen användargest – och misslyckanden
+ * visas synligt i dialogen i stället för att kedjan faller tyst.
  */
-export function presentTextForManualSave(text: string, filename: string): void {
+export function presentSaveDialog(text: string, filename: string): void {
   if (typeof document === "undefined") return;
 
   const overlay = document.createElement("div");
@@ -131,14 +132,27 @@ export function presentTextForManualSave(text: string, filename: string): void {
   } as CSSStyleDeclaration);
 
   const heading = document.createElement("h2");
-  heading.textContent = "Spara filen manuellt";
+  heading.textContent = `Spara ${filename}`;
   Object.assign(heading.style, { margin: "0", fontSize: "18px" } as CSSStyleDeclaration);
 
   const info = document.createElement("p");
   info.textContent =
-    `Din webbläsare kan inte spara filer automatiskt. Kopiera texten nedan och ` +
-    `klistra in den i en ny fil med namnet "${filename}" (t.ex. i appen Filer eller Anteckningar).`;
+    "Välj hur du vill spara filen. På iPad/iPhone fungerar Dela bäst " +
+    "(välj ”Spara i Filer” i delningsarket). Om inget annat fungerar kan du " +
+    "alltid kopiera texten och klistra in den i en ny fil.";
   Object.assign(info.style, { margin: "0", fontSize: "13px", color: "#555" } as CSSStyleDeclaration);
+
+  const status = document.createElement("p");
+  Object.assign(status.style, {
+    margin: "0",
+    fontSize: "13px",
+    color: "#b3261e",
+    minHeight: "1em",
+  } as CSSStyleDeclaration);
+  const setStatus = (msg: string, ok = false) => {
+    status.textContent = msg;
+    status.style.color = ok ? "#1f7a44" : "#b3261e";
+  };
 
   const ta = document.createElement("textarea");
   ta.value = text;
@@ -146,7 +160,7 @@ export function presentTextForManualSave(text: string, filename: string): void {
   Object.assign(ta.style, {
     width: "100%",
     flex: "1",
-    minHeight: "180px",
+    minHeight: "140px",
     fontFamily: "ui-monospace, Menlo, Consolas, monospace",
     fontSize: "12px",
     border: "1px solid #d8dbe0",
@@ -154,6 +168,7 @@ export function presentTextForManualSave(text: string, filename: string): void {
     padding: "8px",
     resize: "vertical",
     whiteSpace: "pre",
+    display: "none",
   } as CSSStyleDeclaration);
 
   const buttons = document.createElement("div");
@@ -181,15 +196,35 @@ export function presentTextForManualSave(text: string, filename: string): void {
 
   const close = () => overlay.remove();
 
-  const copyBtn = mkButton("Kopiera text", true);
-  copyBtn.onclick = async () => {
-    const ok = await copyText(text);
-    showToast(ok ? "Texten kopierad" : "Kunde inte kopiera – markera och kopiera manuellt", {
-      variant: ok ? "success" : "error",
-    });
-  };
+  // Dela – visas bara om webbläsaren accepterar att dela filen.
+  const shareFile = [
+    new File([text], filename, { type: "application/json" }),
+    new File([text], filename, { type: "text/plain" }),
+  ].find((f) => {
+    try {
+      return navigator.canShare?.({ files: [f] }) ?? false;
+    } catch {
+      return false;
+    }
+  });
+  if (shareFile && navigator.share) {
+    const shareBtn = mkButton("Dela…", true);
+    shareBtn.onclick = () => {
+      navigator
+        .share!({ files: [shareFile] })
+        .then(() => {
+          showToast(`${filename} skickades till Dela – välj var den ska sparas`, { variant: "success" });
+          close();
+        })
+        .catch((err: unknown) => {
+          if (err instanceof DOMException && err.name === "AbortError") return; // användaren stängde delningsarket
+          setStatus("Delning tillåts inte här – prova Ladda ner eller Kopiera text.");
+        });
+    };
+    buttons.appendChild(shareBtn);
+  }
 
-  const downloadBtn = mkButton("Ladda ner ändå", false);
+  const downloadBtn = mkButton("Ladda ner", !shareFile);
   downloadBtn.onclick = () => {
     const blob = new Blob([text], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -200,20 +235,34 @@ export function presentTextForManualSave(text: string, filename: string): void {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+    setStatus("Nedladdning startad – kontrollera Hämtade filer. Kom inget? Använd Kopiera text.", true);
   };
+  buttons.appendChild(downloadBtn);
+
+  const copyBtn = mkButton("Kopiera text", false);
+  copyBtn.onclick = async () => {
+    ta.style.display = "block";
+    ta.focus();
+    ta.select();
+    const ok = await copyText(text);
+    setStatus(
+      ok
+        ? `Texten kopierad – klistra in i en ny fil med namnet "${filename}".`
+        : "Kunde inte kopiera automatiskt – markera texten och kopiera manuellt.",
+      ok,
+    );
+  };
+  buttons.appendChild(copyBtn);
 
   const closeBtn = mkButton("Stäng", false);
   closeBtn.onclick = close;
+  buttons.appendChild(closeBtn);
 
   overlay.addEventListener("click", (e) => {
     if (e.target === overlay) close();
   });
 
-  buttons.append(copyBtn, downloadBtn, closeBtn);
-  panel.append(heading, info, ta, buttons);
+  panel.append(heading, info, status, ta, buttons);
   overlay.appendChild(panel);
   document.body.appendChild(overlay);
-
-  ta.focus();
-  ta.select();
 }

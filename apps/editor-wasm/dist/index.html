@@ -1219,56 +1219,13 @@ mark.fred-hit.cur { background: #ffb900; }
     return iOS || iPadOS;
   }
 
-  // Sista utväg: visa innehållet i en markerbar ruta så att användaren
-  // garanterat kan kopiera och spara manuellt (t.ex. äldre iOS).
-  function manualSaveDialog(filename, text) {
-    const dlg = showDialog({
-      title: "Spara filen manuellt",
-      body: `<p style="margin:0 0 8px;font-size:13px;color:#555">Din webbläsare kan inte spara filer automatiskt. Kopiera texten och klistra in den i en ny fil med namnet "${esc(filename)}".</p>
-             <textarea id="manual-save-text" readonly style="width:100%;min-height:180px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;white-space:pre">${esc(text)}</textarea>`,
-      buttons: [
-        { label: "Kopiera text", primary: true, onClick: (d) => {
-            const ta = d.querySelector("#manual-save-text");
-            ta.focus(); ta.select();
-            let ok = false;
-            try { ok = document.execCommand("copy"); } catch { ok = false; }
-            if (!ok && navigator.clipboard) navigator.clipboard.writeText(text).then(() => toast("Texten kopierad"));
-            else toast(ok ? "Texten kopierad" : "Markera texten och kopiera manuellt");
-            return false; // håll dialogen öppen
-          } },
-        { label: "Stäng" },
-      ],
-    });
-    const ta = dlg.querySelector("#manual-save-text");
-    if (ta) { ta.focus(); ta.select(); }
+  // Sant när appen körs inbäddad i en annan sida (t.ex. artifact-visning).
+  // Sandboxade iframes kan blockera Web Share och nedladdningar var för sig.
+  function isEmbedded() {
+    try { return window.self !== window.top; } catch { return true; }
   }
 
-  // Sparordning: Web Share API (iOS/iPadOS, sparar till appen Filer via
-  // delningsarket) → klassisk nedladdning → manuell kopiera-ruta. Vissa
-  // iOS-versioner vägrar dela filer med typen application/json, så vi provar
-  // även text/plain (filnamnets .json-ändelse bevaras ändå).
-  /** @returns {Promise<"shared"|"downloaded"|"manual"|"cancelled">} */
-  async function download(filename, text) {
-    if (navigator.canShare && navigator.share) {
-      const candidates = [
-        new File([text], filename, { type: "application/json" }),
-        new File([text], filename, { type: "text/plain" }),
-      ];
-      const file = candidates.find((f) => { try { return navigator.canShare({ files: [f] }); } catch { return false; } });
-      if (file) {
-        try {
-          await navigator.share({ files: [file] });
-          return "shared";
-        } catch (err) {
-          if (err && err.name === "AbortError") return "cancelled";
-          // Faller igenom till nedladdning om delningen strular.
-        }
-      }
-    }
-    if (isDownloadUnreliable()) {
-      manualSaveDialog(filename, text);
-      return "manual";
-    }
+  function triggerDownload(filename, text) {
     const blob = new Blob([text], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -1277,7 +1234,86 @@ mark.fred-hit.cur { background: #ffb900; }
     a.click();
     a.remove();
     URL.revokeObjectURL(a.href);
-    return "downloaded";
+  }
+
+  // Spara-dialog för osäkra miljöer (iOS/iPadOS eller inbäddad iframe):
+  // varje metod triggas av sin egen knapp med egen användargest, och
+  // misslyckanden visas synligt i stället för att kedjan faller tyst.
+  function saveDialog(filename, text) {
+    const shareFile = (navigator.canShare && navigator.share)
+      ? [
+          new File([text], filename, { type: "application/json" }),
+          new File([text], filename, { type: "text/plain" }),
+        ].find((f) => { try { return navigator.canShare({ files: [f] }); } catch { return false; } })
+      : null;
+
+    const buttons = [];
+    if (shareFile) {
+      buttons.push({
+        label: "Dela…", primary: true,
+        onClick: (d) => {
+          navigator.share({ files: [shareFile] })
+            .then(() => {
+              toast(`${filename} skickades till Dela – välj var den ska sparas.`);
+              const scrim = d.closest(".dlg-scrim");
+              if (scrim) scrim.remove();
+            })
+            .catch((err) => {
+              if (err && err.name === "AbortError") return; // användaren stängde delningsarket
+              const st = d.querySelector("#save-status");
+              if (st) st.textContent = "Delning tillåts inte här – prova Ladda ner eller Kopiera text.";
+            });
+          return false; // dialogen stängs av handlern ovan vid lyckad delning
+        },
+      });
+    }
+    buttons.push({
+      label: "Ladda ner", primary: !shareFile,
+      onClick: (d) => {
+        triggerDownload(filename, text);
+        const st = d.querySelector("#save-status");
+        if (st) { st.textContent = "Nedladdning startad – kontrollera Hämtade filer. Kom inget? Använd Kopiera text."; st.style.color = "#1f7a44"; }
+        return false;
+      },
+    });
+    buttons.push({
+      label: "Kopiera text",
+      onClick: (d) => {
+        const ta = d.querySelector("#save-text");
+        ta.style.display = "block";
+        ta.focus(); ta.select();
+        let ok = false;
+        try { ok = document.execCommand("copy"); } catch { ok = false; }
+        if (!ok && navigator.clipboard) navigator.clipboard.writeText(text).then(() => toast("Texten kopierad"));
+        const st = d.querySelector("#save-status");
+        if (st) {
+          st.textContent = ok
+            ? `Texten kopierad – klistra in i en ny fil med namnet "${filename}".`
+            : "Markera texten och kopiera manuellt.";
+          st.style.color = ok ? "#1f7a44" : "#b3261e";
+        }
+        return false;
+      },
+    });
+    buttons.push({ label: "Stäng" });
+
+    showDialog({
+      title: `Spara ${filename}`,
+      body: `<p style="margin:0 0 8px;font-size:13px;color:#555">Välj hur du vill spara filen. På iPad/iPhone fungerar Dela bäst (välj &rdquo;Spara i Filer&rdquo;). Om inget annat fungerar kan du alltid kopiera texten.</p>
+             <p id="save-status" style="margin:0 0 8px;font-size:13px;color:#b3261e;min-height:1em"></p>
+             <textarea id="save-text" readonly style="display:none;width:100%;min-height:140px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;white-space:pre">${esc(text)}</textarea>`,
+      buttons,
+    });
+  }
+
+  /** @returns {Promise<"downloaded"|"dialog">} */
+  async function download(filename, text) {
+    if (!isEmbedded() && !isDownloadUnreliable()) {
+      triggerDownload(filename, text);
+      return "downloaded";
+    }
+    saveDialog(filename, text);
+    return "dialog";
   }
 
   function pickFile(onLoaded) {
@@ -1867,10 +1903,8 @@ mark.fred-hit.cur { background: #ffb900; }
       .replace(/[åä]/g, "a").replace(/ö/g, "o")
       .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "dokument";
     const method = await download(`${name}.fred.json`, JSON.stringify(res.file, null, 2));
-    if (method === "shared") toast("Dokumentet skickades till Dela – välj var det ska sparas.");
-    else if (method === "downloaded") toast("Dokumentet har sparats som fil.");
-    else if (method === "manual") toast("Kopiera texten för att spara dokumentet.");
-    // "cancelled": ingen återkoppling – användaren avbröt delningen.
+    if (method === "downloaded") toast("Dokumentet har sparats som fil.");
+    // "dialog": spara-dialogen ger själv återkoppling per vald metod.
   }
 
   on("qat-undo", doUndo);

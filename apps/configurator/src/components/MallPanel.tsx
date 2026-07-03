@@ -15,6 +15,7 @@ import { useConfiguratorStore } from "../store";
 import ParametersEditor from "./ParametersEditor";
 import BlocksEditor from "./BlocksEditor";
 import StyleEditor from "./StyleEditor";
+import HeaderFooterPreview from "./HeaderFooterPreview";
 
 const HF_COLS: { value: HFCol; label: string }[] = [
   { value: "left", label: "Vänster" },
@@ -288,6 +289,7 @@ export default function MallPanel() {
             }
           />
         </div>
+        <HeaderFooterPreview />
       </div>
 
       <div className="panel">

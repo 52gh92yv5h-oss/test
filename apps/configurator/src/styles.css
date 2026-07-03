@@ -177,3 +177,24 @@ button.subtle {
 hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 
 .logo-preview { max-height: 40px; max-width: 120px; object-fit: contain; }
+
+/* ---------- Förhandsgranskning av sidhuvud/sidfot ---------- */
+/* Samma 3x3-mönster som editorn (kravspec 2.1). Tomma celler kollapsar. */
+.hf-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; column-gap: 12px; row-gap: 2px; align-items: center; }
+.hf-cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.hf-cell.hf-left { align-items: flex-start; text-align: left; }
+.hf-cell.hf-center { align-items: center; text-align: center; }
+.hf-cell.hf-right { align-items: flex-end; text-align: right; }
+
+.hf-preview { margin-top: 16px; }
+.hf-preview-page {
+  background: #fff; border: 1px solid var(--border); border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  max-width: 640px; padding: 20px 24px;
+}
+.hf-preview-page img { max-height: 32px; max-width: 100px; object-fit: contain; }
+.hf-preview-header { padding-bottom: 8px; border-bottom: 1px solid var(--border); font-size: 12px; color: #555; }
+.hf-preview-footer { padding-top: 8px; border-top: 1px solid var(--border); font-size: 12px; color: #555; }
+.hf-preview-body { padding: 14px 0; color: #999; font-size: 12px; }
+.hf-preview-body p { margin: 0 0 6px; }
+.hf-preview-placeholder { color: #aaa; font-style: italic; }

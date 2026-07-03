@@ -106,25 +106,31 @@ Varje mall följer Fred-systemets datamodell (kravspecifikation V8):
 
 ## Logotyper
 
-Logotyperna är professionellt designade SVG-illustrationer och lagras som base64-kodade data-URLs i organisationsfilen. Varje logotyp inkluderar:
-- Organisationsnamnet på logotypen
-- En sköldsform som symboliserar myndighet och officiell status
-- En färgkodad design unik för varje organisation
-- Professionell layout lämplig för dokumentsidhuvuden
+Logotyperna lagras som base64-kodade data-URL:er i `organisations.json` och
+renderas i dokumentens sidhuvuden i Fred Editor, i konfiguratorns
+förhandsgranskning av sidhuvud/sidfot samt vid PDF-export.
 
-### Färgkodning per myndighet:
+**Nuvarande status: platshållare.** Organisationsfilen innehåller för
+närvarande genererade platshållar-logotyper (färgkodade SVG:er), eftersom
+utvecklingsmiljöns nätverkspolicy inte tillåter hämtning från internet.
 
-| Myndighet | Färg | Hex-kod |
-|-----------|------|---------|
-| Arbetsförmedlingen | Blå | #0066CC, #1E90FF |
-| Skatteverket | Röd | #CC0000, #FF3333 |
-| Försäkringskassan | Grön | #009933, #33CC66 |
-| CSN | Orange | #FF9900, #FFAA33 |
-| Migrationsverket | Violett | #663399, #9966CC |
-| Polismyndigheten | Mörkblå | #003366, #0066AA |
-| Kronofogdemyndigheten | Grå | #333333, #666666 |
+### Hämta riktiga logotyper
 
-Logotyperna renderas direkt i dokumentens sidhuvuden när dokumentet visas i Fred Editor och vid PDF-export.
+Kör hämtskriptet från repots rot i en miljö med nätverksåtkomst till
+`wikimedia.org`:
+
+```bash
+node scripts/fetch-logos.mjs
+```
+
+Skriptet söker upp respektive myndighets logotyp på Wikimedia Commons,
+bäddar in den som data-URL i `organisations.json` och antecknar källan i
+fältet `logoSource`. Ingen mall behöver ändras — mallarna refererar
+organisationer via id.
+
+**Varumärkesnot:** Myndighetslogotyperna tillhör respektive myndighet och
+används i mallarna endast för att återge korrekt avsändare i dokument som
+utfärdas i myndighetens namn.
 
 ## Använda filformatet
 
@@ -152,7 +158,7 @@ För att anpassa mallarna:
 
 1. Ladda organisationsfilen och hierarkin i Fred Konfigurator
 2. Importera mallarna
-3. I Fred Editor kan använder sedan:
+3. I Fred Editor kan användaren sedan:
    - Välja en mall baserad på myndighetshierarkin
    - Fylla i parametervärden
    - Redigera innehållet i redigerbara block
