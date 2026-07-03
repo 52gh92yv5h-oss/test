@@ -1,8 +1,10 @@
 // Lokal filhantering. Fred gör aldrig nätverksanrop - allt sker via
 // File System Access API (Chromium) med fallback till Web Share API
 // (iOS/iPadOS Safari, där varken File System Access API eller
-// <a download> ger ett tillförlitligt sätt att spara filen) och därefter
-// klassisk nedladdning i övriga webbläsare.
+// <a download> ger ett tillförlitligt sätt att spara filen), därefter
+// klassisk nedladdning och som sista utväg en manuell kopiera-ruta.
+
+import { presentTextForManualSave, showToast } from "./ui";
 
 type SaveFilePickerOptions = {
   suggestedName?: string;
@@ -25,46 +27,65 @@ const JSON_TYPE = {
 };
 
 /**
- * iOS/iPadOS Safari saknar File System Access API, och `<a download>` med
- * en Blob-URL öppnar där ofta bara JSON-texten i en ny flik i stället för
- * att spara filen (ingen "Ladda ner"-dialog finns). Web Share API med en
- * `File` låter användaren spara till appen Filer via delningsarket, och är
- * det tillförlitliga sättet att spara på iOS/iPadOS.
+ * Hur en spara-operation faktiskt utfördes, så att anroparen kan ge korrekt
+ * återkoppling.
+ * - `filesystem`  – sparad direkt till disk via File System Access API.
+ * - `shared`      – skickad till delningsarket (användaren valde destination).
+ * - `downloaded`  – nedladdad via webbläsaren.
+ * - `manual`      – ingen automatisk metod fanns; kopiera-ruta visades.
+ * - `cancelled`   – användaren avbröt spara-dialogen/delningen.
  */
-async function trySaveViaShare(file: File): Promise<boolean> {
-  if (typeof navigator === "undefined" || !navigator.canShare?.({ files: [file] })) return false;
+export type SaveMethod = "filesystem" | "shared" | "downloaded" | "manual" | "cancelled";
+
+/** Sant på iOS/iPadOS där en nedladdningslänk inte är ett tillförlitligt sätt att spara. */
+function isDownloadUnreliable(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  const platform = navigator.platform || "";
+  const iOS = /iP(hone|ad|od)/.test(ua) || /iP(hone|ad|od)/.test(platform);
+  // iPadOS 13+ maskerar sig som macOS men har pekskärm.
+  const iPadOS = /Mac/.test(platform) && (navigator.maxTouchPoints ?? 0) > 1;
+  return iOS || iPadOS;
+}
+
+/**
+ * iOS/iPadOS Safari saknar File System Access API, och `<a download>` med en
+ * Blob-URL öppnar där ofta bara texten i en ny flik i stället för att spara.
+ * Web Share API med en `File` låter användaren spara till appen Filer via
+ * delningsarket. Vissa iOS-versioner vägrar dela filer med typen
+ * `application/json`, så vi försöker även med `text/plain` (filnamnet med
+ * ändelsen `.json` bevaras ändå).
+ */
+async function trySaveViaShare(
+  text: string,
+  suggestedName: string,
+): Promise<"shared" | "cancelled" | "unavailable"> {
+  if (typeof navigator === "undefined" || !navigator.canShare || !navigator.share) {
+    return "unavailable";
+  }
+  const candidates = [
+    new File([text], suggestedName, { type: "application/json" }),
+    new File([text], suggestedName, { type: "text/plain" }),
+  ];
+  const file = candidates.find((f) => {
+    try {
+      return navigator.canShare!({ files: [f] });
+    } catch {
+      return false;
+    }
+  });
+  if (!file) return "unavailable";
   try {
     await navigator.share({ files: [file] });
-    return true;
+    return "shared";
   } catch (err) {
-    if (err instanceof DOMException && err.name === "AbortError") return true; // användaren avbröt delningen
-    return false;
+    if (err instanceof DOMException && err.name === "AbortError") return "cancelled";
+    return "unavailable";
   }
 }
 
-export async function saveJsonToLocalFile(data: unknown, suggestedName: string): Promise<void> {
-  const text = JSON.stringify(data, null, 2);
-
-  if (typeof window !== "undefined" && window.showSaveFilePicker) {
-    try {
-      const handle = await window.showSaveFilePicker({
-        suggestedName,
-        types: [JSON_TYPE],
-      });
-      const writable = await handle.createWritable();
-      await writable.write(text);
-      await writable.close();
-      return;
-    } catch (err) {
-      if (err instanceof DOMException && err.name === "AbortError") return;
-      // Faller igenom till nästa metod om API:et strular.
-    }
-  }
-
+function triggerDownload(text: string, suggestedName: string): void {
   const blob = new Blob([text], { type: "application/json" });
-  const file = new File([blob], suggestedName, { type: "application/json" });
-  if (await trySaveViaShare(file)) return;
-
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -73,6 +94,75 @@ export async function saveJsonToLocalFile(data: unknown, suggestedName: string):
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+/**
+ * Sparar godtycklig data som en lokal JSON-fil och rapporterar hur det gick.
+ * Visar ingen UI själv (utom den manuella kopiera-rutan när inget annat
+ * fungerar) – använd {@link saveJsonWithFeedback} för färdig återkoppling.
+ */
+export async function saveJsonToLocalFile(
+  data: unknown,
+  suggestedName: string,
+): Promise<SaveMethod> {
+  const text = JSON.stringify(data, null, 2);
+
+  if (typeof window !== "undefined" && window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({ suggestedName, types: [JSON_TYPE] });
+      const writable = await handle.createWritable();
+      await writable.write(text);
+      await writable.close();
+      return "filesystem";
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") return "cancelled";
+      // Faller igenom till nästa metod om API:et strular.
+    }
+  }
+
+  const share = await trySaveViaShare(text, suggestedName);
+  if (share === "shared") return "shared";
+  if (share === "cancelled") return "cancelled";
+
+  // Ingen delning tillgänglig. På iOS är en nedladdningslänk opålitlig –
+  // visa i stället en kopiera-ruta så att data garanterat kan sparas.
+  if (isDownloadUnreliable()) {
+    presentTextForManualSave(text, suggestedName);
+    return "manual";
+  }
+
+  triggerDownload(text, suggestedName);
+  return "downloaded";
+}
+
+/**
+ * Sparar och visar en toast med tydlig återkoppling. `label` är en kort,
+ * läsbar beskrivning av vad som sparades, t.ex. "Mallen" eller "Dokumentet".
+ */
+export async function saveJsonWithFeedback(
+  data: unknown,
+  suggestedName: string,
+  label = "Filen",
+): Promise<SaveMethod> {
+  const method = await saveJsonToLocalFile(data, suggestedName);
+  switch (method) {
+    case "filesystem":
+      showToast(`${label} sparades (${suggestedName})`, { variant: "success" });
+      break;
+    case "shared":
+      showToast(`${label} skickades till Dela – välj var den ska sparas`, { variant: "success" });
+      break;
+    case "downloaded":
+      showToast(`${label} laddades ner (${suggestedName})`, { variant: "success" });
+      break;
+    case "manual":
+      showToast("Kopiera texten för att spara filen", { variant: "info" });
+      break;
+    case "cancelled":
+      // Ingen återkoppling – användaren avbröt medvetet.
+      break;
+  }
+  return method;
 }
 
 export async function openJsonFromLocalFile<T>(): Promise<T | null> {

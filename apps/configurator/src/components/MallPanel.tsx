@@ -9,7 +9,7 @@ import {
   flattenCategories,
   newId,
   openJsonFromLocalFile,
-  saveJsonToLocalFile,
+  saveJsonWithFeedback,
 } from "@fred/shared";
 import { useConfiguratorStore } from "../store";
 import ParametersEditor from "./ParametersEditor";
@@ -141,7 +141,7 @@ export default function MallPanel() {
 
   const handleSave = () => {
     const payload: MallFile = { marker: FRED_MALL_FILE_MARKER, version: 1, mall };
-    void saveJsonToLocalFile(payload, `${mall.id}.json`);
+    void saveJsonWithFeedback(payload, `${mall.id}.json`, "Mallen");
   };
 
   const handleOpen = async () => {

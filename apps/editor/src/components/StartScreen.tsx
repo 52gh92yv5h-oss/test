@@ -4,6 +4,7 @@ import {
   FRED_MALL_FILE_MARKER,
   FRED_ORG_FILE_MARKER,
   FRED_SESSION_FILE_MARKER,
+  FRED_VERSION,
   HierarchyFile,
   Mall,
   MallFile,
@@ -88,7 +89,9 @@ export default function StartScreen() {
 
   return (
     <div className="start-screen">
-      <h1>Fred Editor</h1>
+      <h1>
+        Fred Editor <span className="app-version">v{FRED_VERSION}</span>
+      </h1>
       <p className="muted">Fristående, offline ordbehandling baserad på lokala mallar.</p>
 
       <div className="card">

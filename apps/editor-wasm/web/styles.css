@@ -397,7 +397,8 @@ mark.fred-hit.cur { background: #ffb900; }
 .start-rail button:hover, .start-rail button.active { background: var(--word-blue-dark); }
 
 .start-main { flex: 1; overflow: auto; padding: 28px 48px; }
-.start-main h1 { font-size: 26px; font-weight: 400; margin-bottom: 20px; color: var(--text); }
+.start-main h1 { font-size: 26px; font-weight: 400; margin-bottom: 4px; color: var(--text); }
+.start-main .app-version { font-size: 13px; color: #605e5c; margin-bottom: 20px; }
 .start-main h2 { font-size: 15px; font-weight: 600; margin: 26px 0 10px; }
 
 .cat-chips { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }

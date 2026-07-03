@@ -6,7 +6,7 @@ import {
   fileToDataUrl,
   newId,
   openJsonFromLocalFile,
-  saveJsonToLocalFile,
+  saveJsonWithFeedback,
 } from "@fred/shared";
 import { useConfiguratorStore } from "../store";
 
@@ -30,7 +30,7 @@ export default function OrganisationsPanel() {
       version: 1,
       organisations,
     };
-    void saveJsonToLocalFile(payload, "organisationer.json");
+    void saveJsonWithFeedback(payload, "organisationer.json", "Organisationerna");
   };
 
   const handleOpen = async () => {

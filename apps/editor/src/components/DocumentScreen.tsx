@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import {
   FRED_SESSION_FILE_MARKER,
+  FRED_VERSION,
   SessionFile,
-  saveJsonToLocalFile,
+  saveJsonWithFeedback,
   styleDefToCss,
 } from "@fred/shared";
 import { useEditorStore } from "../store";
@@ -56,7 +57,7 @@ export default function DocumentScreen() {
 
   const handleSaveSession = () => {
     const payload: SessionFile = { marker: FRED_SESSION_FILE_MARKER, version: 1, session };
-    void saveJsonToLocalFile(payload, `${session.id}.json`);
+    void saveJsonWithFeedback(payload, `${session.id}.json`, "Dokumentet");
   };
 
   return (
@@ -70,6 +71,7 @@ export default function DocumentScreen() {
           <button onClick={() => setSearchOpen(true)} title="Sök (Ctrl+F)">🔍 Sök</button>
           <button onClick={handleSaveSession}>💾 Spara dokument</button>
           <button className="primary" onClick={() => window.print()}>🖶 Skriv ut / PDF</button>
+          <span className="app-version" title="Version">v{FRED_VERSION}</span>
         </div>
         <div className="editor-body">
           {/* Mallens defaultStyle sätts på sidan; block/fält utan egen stil ärver via CSS. */}

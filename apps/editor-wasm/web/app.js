@@ -141,25 +141,65 @@
     return dlg;
   }
 
-  // iOS/iPadOS Safari saknar en tillförlitlig nedladdningsdialog: <a download>
-  // med en Blob-URL öppnar där ofta bara JSON-texten i en ny flik i stället
-  // för att spara filen. Web Share API med en `File` ger ett sätt att spara
-  // till appen Filer via delningsarket, och används därför i första hand när
-  // det finns stöd (avgörs synkront innan någon await, så användargesten
-  // som utlöste sparandet bevaras).
-  /** @returns {Promise<boolean>} false om användaren avbröt delningen utan att spara. */
+  // Sant på iOS/iPadOS där en nedladdningslänk inte tillförlitligt sparar filen.
+  function isDownloadUnreliable() {
+    const ua = navigator.userAgent || "", plat = navigator.platform || "";
+    const iOS = /iP(hone|ad|od)/.test(ua) || /iP(hone|ad|od)/.test(plat);
+    const iPadOS = /Mac/.test(plat) && (navigator.maxTouchPoints || 0) > 1; // iPadOS 13+ maskerar sig som macOS
+    return iOS || iPadOS;
+  }
+
+  // Sista utväg: visa innehållet i en markerbar ruta så att användaren
+  // garanterat kan kopiera och spara manuellt (t.ex. äldre iOS).
+  function manualSaveDialog(filename, text) {
+    const dlg = showDialog({
+      title: "Spara filen manuellt",
+      body: `<p style="margin:0 0 8px;font-size:13px;color:#555">Din webbläsare kan inte spara filer automatiskt. Kopiera texten och klistra in den i en ny fil med namnet "${esc(filename)}".</p>
+             <textarea id="manual-save-text" readonly style="width:100%;min-height:180px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;white-space:pre">${esc(text)}</textarea>`,
+      buttons: [
+        { label: "Kopiera text", primary: true, onClick: (d) => {
+            const ta = d.querySelector("#manual-save-text");
+            ta.focus(); ta.select();
+            let ok = false;
+            try { ok = document.execCommand("copy"); } catch { ok = false; }
+            if (!ok && navigator.clipboard) navigator.clipboard.writeText(text).then(() => toast("Texten kopierad"));
+            else toast(ok ? "Texten kopierad" : "Markera texten och kopiera manuellt");
+            return false; // håll dialogen öppen
+          } },
+        { label: "Stäng" },
+      ],
+    });
+    const ta = dlg.querySelector("#manual-save-text");
+    if (ta) { ta.focus(); ta.select(); }
+  }
+
+  // Sparordning: Web Share API (iOS/iPadOS, sparar till appen Filer via
+  // delningsarket) → klassisk nedladdning → manuell kopiera-ruta. Vissa
+  // iOS-versioner vägrar dela filer med typen application/json, så vi provar
+  // även text/plain (filnamnets .json-ändelse bevaras ändå).
+  /** @returns {Promise<"shared"|"downloaded"|"manual"|"cancelled">} */
   async function download(filename, text) {
-    const blob = new Blob([text], { type: "application/json" });
-    const file = new File([blob], filename, { type: "application/json" });
-    if (navigator.canShare && navigator.share && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file] });
-        return true;
-      } catch (err) {
-        if (err && err.name === "AbortError") return false; // användaren avbröt delningen
-        // Faller igenom till nedladdningsmetoden nedan om delningen strular.
+    if (navigator.canShare && navigator.share) {
+      const candidates = [
+        new File([text], filename, { type: "application/json" }),
+        new File([text], filename, { type: "text/plain" }),
+      ];
+      const file = candidates.find((f) => { try { return navigator.canShare({ files: [f] }); } catch { return false; } });
+      if (file) {
+        try {
+          await navigator.share({ files: [file] });
+          return "shared";
+        } catch (err) {
+          if (err && err.name === "AbortError") return "cancelled";
+          // Faller igenom till nedladdning om delningen strular.
+        }
       }
     }
+    if (isDownloadUnreliable()) {
+      manualSaveDialog(filename, text);
+      return "manual";
+    }
+    const blob = new Blob([text], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = filename;
@@ -167,7 +207,7 @@
     a.click();
     a.remove();
     URL.revokeObjectURL(a.href);
-    return true;
+    return "downloaded";
   }
 
   function pickFile(onLoaded) {
@@ -756,8 +796,11 @@
       .toLowerCase()
       .replace(/[åä]/g, "a").replace(/ö/g, "o")
       .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "dokument";
-    const saved = await download(`${name}.fred.json`, JSON.stringify(res.file, null, 2));
-    if (saved) toast("Dokumentet har sparats som fil.");
+    const method = await download(`${name}.fred.json`, JSON.stringify(res.file, null, 2));
+    if (method === "shared") toast("Dokumentet skickades till Dela – välj var det ska sparas.");
+    else if (method === "downloaded") toast("Dokumentet har sparats som fil.");
+    else if (method === "manual") toast("Kopiera texten för att spara dokumentet.");
+    // "cancelled": ingen återkoppling – användaren avbröt delningen.
   }
 
   on("qat-undo", doUndo);
@@ -984,7 +1027,8 @@
           <dt>Mall</dt><dd>${esc(currentMall?.name || "–")} (${esc(currentMall?.id || "")})</dd>
           <dt>Utfärdande organisation</dt><dd>${esc(org?.name || "–")}</dd>
           <dt>Senast ändrat</dt><dd>${doc?.updatedAt ? new Date(doc.updatedAt).toLocaleString("sv-SE") : "–"}</dd>
-          <dt>Motor</dt><dd>fred-engine (WebAssembly)</dd></dl>`);
+          <dt>Motor</dt><dd>fred-engine (WebAssembly)</dd>
+          <dt>Version</dt><dd>${esc(window.FRED_APP_VERSION ? "v" + window.FRED_APP_VERSION : "–")}</dd></dl>`);
         break;
       }
       case "new":
@@ -1095,6 +1139,17 @@
   // ===================== Start & extern applikationsstart =====================
 
   await initWasm();
+  // Hämta motorns version (från engine/Cargo.toml) och visa den i gränssnittet.
+  const pong = fred({ cmd: "ping" });
+  const appVersion = pong.ok && pong.version ? pong.version : "";
+  if (appVersion) {
+    const label = `Fred Editor v${appVersion}`;
+    const startEl = $("start-version");
+    if (startEl) startEl.textContent = label;
+    const sbEl = $("sb-version");
+    if (sbEl) sbEl.textContent = `v${appVersion}`;
+    window.FRED_APP_VERSION = appVersion;
+  }
   fred({ cmd: "load_organisations", organisations });
   renderStart();
 
