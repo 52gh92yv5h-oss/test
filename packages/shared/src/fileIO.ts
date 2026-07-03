@@ -1,6 +1,8 @@
 // Lokal filhantering. Fred gör aldrig nätverksanrop - allt sker via
-// File System Access API (Chromium) med fallback till klassisk
-// nedladdning/uppladdning i webbläsare som saknar stöd.
+// File System Access API (Chromium) med fallback till Web Share API
+// (iOS/iPadOS Safari, där varken File System Access API eller
+// <a download> ger ett tillförlitligt sätt att spara filen) och därefter
+// klassisk nedladdning i övriga webbläsare.
 
 type SaveFilePickerOptions = {
   suggestedName?: string;
@@ -22,8 +24,27 @@ const JSON_TYPE = {
   accept: { "application/json": [".json"] },
 };
 
+/**
+ * iOS/iPadOS Safari saknar File System Access API, och `<a download>` med
+ * en Blob-URL öppnar där ofta bara JSON-texten i en ny flik i stället för
+ * att spara filen (ingen "Ladda ner"-dialog finns). Web Share API med en
+ * `File` låter användaren spara till appen Filer via delningsarket, och är
+ * det tillförlitliga sättet att spara på iOS/iPadOS.
+ */
+async function trySaveViaShare(file: File): Promise<boolean> {
+  if (typeof navigator === "undefined" || !navigator.canShare?.({ files: [file] })) return false;
+  try {
+    await navigator.share({ files: [file] });
+    return true;
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") return true; // användaren avbröt delningen
+    return false;
+  }
+}
+
 export async function saveJsonToLocalFile(data: unknown, suggestedName: string): Promise<void> {
   const text = JSON.stringify(data, null, 2);
+
   if (typeof window !== "undefined" && window.showSaveFilePicker) {
     try {
       const handle = await window.showSaveFilePicker({
@@ -36,10 +57,14 @@ export async function saveJsonToLocalFile(data: unknown, suggestedName: string):
       return;
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") return;
-      // Faller igenom till nedladdningsmetoden nedan om API:et strular.
+      // Faller igenom till nästa metod om API:et strular.
     }
   }
+
   const blob = new Blob([text], { type: "application/json" });
+  const file = new File([blob], suggestedName, { type: "application/json" });
+  if (await trySaveViaShare(file)) return;
+
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;

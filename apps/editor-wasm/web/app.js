@@ -141,14 +141,33 @@
     return dlg;
   }
 
-  function download(filename, text) {
+  // iOS/iPadOS Safari saknar en tillförlitlig nedladdningsdialog: <a download>
+  // med en Blob-URL öppnar där ofta bara JSON-texten i en ny flik i stället
+  // för att spara filen. Web Share API med en `File` ger ett sätt att spara
+  // till appen Filer via delningsarket, och används därför i första hand när
+  // det finns stöd (avgörs synkront innan någon await, så användargesten
+  // som utlöste sparandet bevaras).
+  /** @returns {Promise<boolean>} false om användaren avbröt delningen utan att spara. */
+  async function download(filename, text) {
+    const blob = new Blob([text], { type: "application/json" });
+    const file = new File([blob], filename, { type: "application/json" });
+    if (navigator.canShare && navigator.share && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file] });
+        return true;
+      } catch (err) {
+        if (err && err.name === "AbortError") return false; // användaren avbröt delningen
+        // Faller igenom till nedladdningsmetoden nedan om delningen strular.
+      }
+    }
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+    a.href = URL.createObjectURL(blob);
     a.download = filename;
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(a.href);
+    return true;
   }
 
   function pickFile(onLoaded) {
@@ -728,7 +747,7 @@
   function doUndo() { flushAll(); refreshFull(fred({ cmd: "undo" })); }
   function doRedo() { flushAll(); refreshFull(fred({ cmd: "redo" })); }
 
-  function saveToFile() {
+  async function saveToFile() {
     flushAll();
     const res = fred({ cmd: "save_session" });
     if (!res.ok) { toast(res.error); return; }
@@ -737,8 +756,8 @@
       .toLowerCase()
       .replace(/[åä]/g, "a").replace(/ö/g, "o")
       .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "dokument";
-    download(`${name}.fred.json`, JSON.stringify(res.file, null, 2));
-    toast("Dokumentet har sparats som fil.");
+    const saved = await download(`${name}.fred.json`, JSON.stringify(res.file, null, 2));
+    if (saved) toast("Dokumentet har sparats som fil.");
   }
 
   on("qat-undo", doUndo);
