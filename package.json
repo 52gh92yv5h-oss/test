@@ -15,6 +15,7 @@
     "build": "npm run build:editor && npm run build:configurator",
     "typecheck": "npm run typecheck -w packages/shared -w apps/editor -w apps/configurator",
     "build:editor-wasm": "npm run build -w apps/editor-wasm",
-    "test:editor-wasm": "npm run test -w apps/editor-wasm"
+    "test:editor-wasm": "npm run test -w apps/editor-wasm",
+    "fetch:logos": "node scripts/fetch-logos.mjs"
   }
 }
