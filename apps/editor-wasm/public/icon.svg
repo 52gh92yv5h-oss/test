@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#39B7D6"/>
+      <stop offset="100%" stop-color="#0B6F88"/>
+    </linearGradient>
+
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Badge background -->
+  <path d="M60 60 h332 a60 60 0 0 1 60 60 v272 a60 60 0 0 1 -60 60 h-20 l-60 40 10-40 h-262 a60 60 0 0 1 -60 -60 v-272 a60 60 0 0 1 60 -60 z"
+        fill="url(#bg)" filter="url(#shadow)"/>
+
+  <!-- Outer rings -->
+  <circle cx="256" cy="230" r="185" fill="none" stroke="#083B4A" stroke-width="8"/>
+  <circle cx="256" cy="230" r="172" fill="none" stroke="#7FE6FF" stroke-opacity="0.35" stroke-width="3"/>
+
+  <!-- Title -->
+  <text x="256" y="95"
+        text-anchor="middle"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="52"
+        font-weight="700"
+        fill="#FFFFFF">FRED</text>
+
+  <!-- Document stack -->
+  <g transform="translate(140 135)">
+    <rect x="12" y="18" width="160" height="190" rx="16" fill="#BFEFFF" stroke="#083B4A" stroke-width="5"/>
+    <rect x="6" y="9" width="160" height="190" rx="16" fill="#D6F7FF" stroke="#083B4A" stroke-width="5"/>
+
+    <!-- Front page -->
+    <path d="M0 0 h128 l38 38 v152 a16 16 0 0 1 -16 16 h-134 a16 16 0 0 1 -16 -16 v-174 a16 16 0 0 1 16 -16 z"
+          fill="#FFFFFF" stroke="#083B4A" stroke-width="5"/>
+    <path d="M128 0 v22 a16 16 0 0 0 16 16 h22"
+          fill="#DCEFF5" stroke="#083B4A" stroke-width="5"/>
+
+    <!-- Small logo box -->
+    <rect x="24" y="24" width="46" height="46" rx="10" fill="#0B6F88"/>
+    <text x="47" y="55"
+          text-anchor="middle"
+          font-family="Arial, Helvetica, sans-serif"
+          font-size="28"
+          font-weight="700"
+          fill="#FFFFFF">P</text>
+
+    <!-- Text lines -->
+    <g stroke="#0B6F88" stroke-width="5" stroke-linecap="round">
+      <line x1="84" y1="36" x2="122" y2="36"/>
+      <line x1="24" y1="88" x2="132" y2="88"/>
+      <line x1="24" y1="108" x2="132" y2="108"/>
+      <line x1="24" y1="128" x2="120" y2="128"/>
+      <line x1="24" y1="148" x2="108" y2="148"/>
+    </g>
+  </g>
+
+  <!-- Pencil -->
+  <g transform="translate(300 250) rotate(-20)">
+    <rect x="0" y="-12" width="116" height="24" rx="12"
+          fill="#1C7F99" stroke="#083B4A" stroke-width="5"/>
+    <path d="M116 -12 L146 0 L116 12 Z"
+          fill="#F2C38B" stroke="#083B4A" stroke-width="5"/>
+    <path d="M146 0 L156 0 L146 6 Z" fill="#333"/>
+
+    <!-- Decorative stripes -->
+    <g stroke="#7FE6FF" stroke-width="3">
+      <line x1="24" y1="-10" x2="40" y2="10"/>
+      <line x1="48" y1="-10" x2="64" y2="10"/>
+      <line x1="72" y1="-10" x2="88" y2="10"/>
+    </g>
+  </g>
+
+  <!-- Subtitle -->
+  <text x="256" y="410"
+        text-anchor="middle"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="38"
+        font-weight="500"
+        fill="#FFFFFF">PRO EDITOR</text>
+</svg>
