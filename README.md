@@ -1,7 +1,7 @@
 # Fred (Fras-EDitor)
 
 Fred är ett fristående, helt offline ordbehandlingssystem baserat på lokala
-JSON-konfigurationer. **Version 1.0.0** (visas i respektive apps gränssnitt).
+JSON-konfigurationer. **Version 1.1.0** (visas i respektive apps gränssnitt).
 
 Se `kravspecifikation.md` för den fullständiga kravspecifikationen (V12).
 
@@ -79,6 +79,13 @@ uppdatera Pages-sajten. Windows-exen byggs av `windows-editor.yml`
   pålitligt; spara-dialog med *Dela / Ladda ner / Kopiera text* på
   iOS/iPadOS och i inbäddade miljöer.
 - **Utskrift/PDF** via webbläsarens utskriftsdialog.
+- **Appikoner** (1.1.0): varje app har en egen ikon med SVG-designoriginal i
+  `apps/*/public/icon.svg`. Favicon är inbakad som data-URL i respektive
+  HTML (syns även i nedladdad enfils-app), PWA:erna får PNG-ikoner via
+  manifestet och Windows-exe:n har ikonen inbäddad (`icon.ico`).
+  Rasterversionerna regenereras med `node scripts/generate-icons.mjs`
+  (service worker-cachen bumpas i `build-pages.mjs` så installerade PWA:er
+  uppdateras).
 
 ## Utveckling
 
@@ -190,7 +197,7 @@ att återge korrekt avsändare i dokument som utfärdas i myndighetens namn.
 
 ## Status
 
-Version 1.0.0 täcker kravspecifikationens kärnflöden (V12). Ej
+Version 1.1.0 täcker kravspecifikationens kärnflöden (V12). Ej
 implementerat ännu: fullständig sidhuvud/sidfot-repetition per utskriven
 sida (renderas en gång per dokument) samt installationsprogram utöver
 enfils-`index.html`/Windows-exen.

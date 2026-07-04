@@ -103,6 +103,11 @@ Ett separat verktyg dedikerat till administratörer för att skapa, konfigurera 
 * **Enkel installation:** Det ska vara enkelt att installera både Fred Editor och Fred Konfiguratör. Ingen serverinstallation krävs.
 * **Katalogbaserad körning:** Det ska finnas en installationsfil eller "run-fil" per app, så att man enkelt kan lägga applikationen i en lokal katalog och köra den därifrån.
 * **Synligt versionsnummer:** Varje applikation ska visa sitt versionsnummer i gränssnittet (t.ex. på startskärmen och i statusfält/verktygsfält), så att användare och support enkelt kan avgöra vilken version som körs.
+* **Appikoner:** Varje applikation ska ha en egen igenkännbar ikon som visas:
+  * i webbläsarens flik (favicon) — även när appen körs från en nedladdad enfils-HTML (`file://`) eller inbäddad, vilket kräver att ikonen är inbakad i HTML-filen och inte refereras som separat fil,
+  * som hemskärms-/skrivbordsikon när appen installeras som PWA (ikonerna refereras från webbmanifestet),
+  * som programikon för Windows-applikationen (inbäddad i exe-filen och därmed synlig på skrivbordet, i Utforskaren och i aktivitetsfältet).
+  * Ikonernas designoriginal är SVG-filer per app; rasterversionerna (PNG/ICO) genereras från originalen med ett skript i repot.
 * **Windows-applikation:** Fred Editor ska även finnas som native Windows-program (C# med WebView2) som återanvänder den fristående editorn och därmed har full funktionsparitet. Programmet byggs och verifieras via CI och levereras som självständig exe utan krav på förinstallerad .NET-runtime.
 
 ---

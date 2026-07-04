@@ -37,6 +37,11 @@ Resultatet hamnar i `apps/editor-windows/bin/Release/net8.0-windows/win-x64/publ
 (`FredEditor.exe` + `app/index.html`, ~156 MB självständig exe utan
 .NET-installationskrav).
 
+**Programikon:** `icon.ico` bäddas in i exen via `<ApplicationIcon>` i
+`FredEditor.csproj` och syns på skrivbordet, i Utforskaren och i
+aktivitetsfältet. Designoriginalet är `public/icon.svg`; regenerera
+ico-filen med `node scripts/generate-icons.mjs` från repo-roten.
+
 Obs: exen kan **byggas** på Linux men bara **köras** på Windows — därför
 sker körverifieringen i GitHub Actions-workflowet på en Windows-runner.
 
