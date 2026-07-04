@@ -7,7 +7,10 @@
     <Nullable>enable</Nullable>
     <RootNamespace>FredEditor</RootNamespace>
     <AssemblyName>FredEditor</AssemblyName>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
+    <!-- Programikon (skrivbord/utforskaren/aktivitetsfältet). Genereras från
+         public/icon.svg med: node scripts/generate-icons.mjs (repo-roten). -->
+    <ApplicationIcon>icon.ico</ApplicationIcon>
     <!-- Gör att projektet kan korskompileras för Windows från Linux/macOS. -->
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <!-- WebView2-loadern packas in i exen vid PublishSingleFile. -->
