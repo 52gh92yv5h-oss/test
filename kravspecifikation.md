@@ -1,4 +1,4 @@
-# Kravspecifikation: Fred (Fras-EDitor) (V11)
+# Kravspecifikation: Fred (Fras-EDitor) (V12)
 
 Detta dokument sammanställer kraven för utvecklingen av Fred (Fras-EDitor) – ett fristående, helt isolerat ordbehandlingssystem baserat på lokala JSON-konfigurationer. Systemet ska köras i en webbläsarmiljö och består av två separata applikationer: en Editor för slutanvändare och en Konfiguratör för administratörer.
 
@@ -11,6 +11,8 @@ Detta dokument sammanställer kraven för utvecklingen av Fred (Fras-EDitor) –
   * **Fred Konfiguratör (administratör)** – för att skapa och underhålla mallar.
 * **Lokal filhantering:** Fred ska inte använda någon central databas eller molnsynk. All konfiguration, dataimport och sessionssparande sker via lokala filer.
 * **Standardiserat dataformat:** JSON ska användas som format för import, konfiguration och strukturering av mallparametrar.
+* **En enhetlig konfigurationsfil:** Organisationer, mallhierarki och samtliga mallar beskrivs tillsammans i **en enda konfigurationsfil** (JSON, markör `fred-konfiguration`). Administratören hanterar därmed en fil – inte separata filer per mall, organisationslista och hierarki. Se avsnitt 6.1.
+* **Delad lokal lagring (webbläsarbrygga):** När Fred Konfiguratör och Fred Editor körs från samma webbursprung (protokoll + domän + port) ska Konfiguratörens ändringar automatiskt speglas till webbläsarens lokala lagring (`localStorage`), och Editorn ska läsa in den delade konfigurationen vid start – utan manuell filhantering. Bryggan är en bekvämlighet, inte den primära distributionsvägen: den fungerar inte mellan olika ursprung (t.ex. separata artifact-URL:er) eller i den fristående Windows-appen. Filexport/-import enligt punkten ovan ska därför alltid fungera oberoende av bryggan.
 * **Flera organisationer:** Fred ska ha stöd för flera olika organisationer (vanligtvis runt 2–3 stycken).
 
 ---
@@ -31,6 +33,7 @@ Fred Editor är verktyget där användaren väljer mall, fyller i uppgifter, red
 * **Typografi från mallen:** Dokumentets typsnitt, textstorlek och stil (fet, kursiv, understruken) definieras i mallen och tillämpas automatiskt när dokumentet öppnas i Fred Editor. Typografi kan anges som en standard för hela dokumentet samt överstyras per innehållsblock och per sidhuvud/sidfot-fält (se avsnitt 3 och 6).
 
 ### 2.2 Dataimport & Parameterstyrning
+* **Inläsning av konfiguration:** Editorn ska kunna läsa in en konfigurationsfil (avsnitt 6.1) via en enda åtgärd på startskärmen ("Öppna konfigurationsfil"), varvid filens organisationer, hierarki och samtliga mallar blir tillgängliga. Om en delad konfiguration finns i webbläsarens lokala lagring (avsnitt 1) läses den in automatiskt vid start. Den inbyggda standardmallen är alltid tillgänglig oavsett inläst konfiguration.
 * **JSON-import:** Fred Editor ska kunna ta emot en lokal importfil i JSON-format innehållandes namn, organisation och andra uppgifter som automatiskt infogas på rätt platser i mallen.
 * **Multi-nivå parametrar:** Parametrarna som ges till mallarna ska kunna vara på flera nivåer (nästlade val). Det ska finnas ett system för texterna och hur de ska infogas baserat på dessa val.
 * **Global uppdatering:** En parameter anges en gång och uppdateras direkt på alla förekomster globalt i dokumentet när värdet ändras.
@@ -70,7 +73,10 @@ Ett separat verktyg dedikerat till administratörer för att skapa, konfigurera 
   * *Arvsregel:* Om ingen stil anges på block- eller fältnivå ärvs mallens standardstil. Om mallen saknar standardstil används systemets grundstil. Varje enskilt stilattribut ärvs separat (t.ex. kan ett block ange endast storlek och ärva typsnittet).
 * **Sidhuvud/sidfot-layout:** Administratören ska för varje fält i sidhuvud och sidfot kunna ange en position i 3×3-matrisen (kolumn: vänster/mitten/höger, rad: topp/mitt/botten).
 * **Förhandsgranskning av sidhuvud/sidfot:** Konfiguratören ska visa en visuell förhandsgranskning av hur sidhuvud och sidfot kommer att se ut i det färdiga dokumentet – med fältens positioner i 3×3-matrisen, organisationens logotyp och namn samt tillämpad typografi. Förhandsgranskningen ska uppdateras direkt när fält, positioner eller stilar ändras, och administratören ska kunna välja vilken organisation som förhandsgranskningen visar.
-* **Enkel JSON-konfiguration:** Formatet på konfigurationen ska vara JSON. Mallarna ska sparas och konfigureras som lokala JSON-filer.
+* **Enkel JSON-konfiguration:** Formatet på konfigurationen ska vara JSON. Hela mallbiblioteket (organisationer, hierarki och samtliga mallar) sparas och öppnas som **en** lokal konfigurationsfil (avsnitt 6.1) via gemensamma åtgärder: *Ny konfiguration*, *Öppna konfigurationsfil* och *Spara konfigurationsfil*.
+* **Flera mallar i samma arbetsyta:** Konfiguratören ska kunna hantera en lista av mallar i samma konfiguration – skapa ny, duplicera, ta bort och välja vilken mall som redigeras.
+* **Fördefinierad mallbunt:** Konfiguratören ska erbjuda en inbyggd, fördefinierad mallbunt (svenska myndighetsmallar med tillhörande organisationer och hierarki) som med en åtgärd kan slås ihop med den aktuella arbetsytan. Buntens innehåll är inbakat i applikationen (ingen nätverksåtkomst) och inlinas i den konfigurationsfil som administratören sedan sparar ner.
+* **Automatisk spegling till Editorn:** Ändringar i Konfiguratören ska automatiskt (med kort fördröjning) speglas till den delade lokala lagringen enligt avsnitt 1, så att en Editor som körs från samma webbursprung ser ändringarna vid nästa start utan filhantering.
 * **Förhandsinnehåll & Ordning:** Administratören bestämmer ordningen på alla fasta block i mallen och kan fylla i fördefinierad text i blocken.
 * **Definition av fria block (Fraser):** Administratören ska kunna markera valda block i mallen som "fria" (fraser), vilket innebär dataladdning att de inte har en fast plats från start utan lämnas tillgängliga för slutanvändaren att infoga fritt via Fred Editor.
 * **Hantering av parameternivåer:** Administratören ska kunna konfigurera mallarna och parametrarna på several nivåer samt definiera standardvärden.
@@ -113,16 +119,26 @@ En återanvändbar struktur för typsnittsinformation som refereras från Mall, 
 * **Kursiv** (`italic`, ja/nej)
 * **Understruken** (`underline`, ja/nej)
 
-*Bakåtkompatibilitet:* Befintliga mallfiler utan stilfält förblir giltiga; avsaknad av stilfält innebär att systemets grundstil används.
+*Bakåtkompatibilitet:* Befintliga mallar utan stilfält förblir giltiga; avsaknad av stilfält innebär att systemets grundstil används.
 
-### 6.1 Organisation
+### 6.1 Konfigurationsfil
+Den enhetliga lokala JSON-fil som skapas i Fred Konfiguratör och läses in i Fred Editor. Filen identifieras med markören `fred-konfiguration` och ett versionsnummer, och innehåller hela mallbiblioteket:
+* **Markör** (`marker`, alltid `"fred-konfiguration"` – skiljer filen från t.ex. dokumentfiler)
+* **Version** (`version`, formatversion, för närvarande `1`)
+* **Organisationer** (`organisations`, lista enligt 6.1.1)
+* **Mallhierarki** (`hierarchy`, trädstruktur enligt 6.1.3)
+* **Mallar** (`mallar`, lista enligt 6.1.2)
+
+Samma struktur används för den delade lokala lagringen (avsnitt 1) och för de mallbuntar som levereras med repositoryt (`templates/*/config.json`).
+
+#### 6.1.1 Organisation
 Informationsobjekt som hanterar Freds organisationer.
 * **Organisations-ID** (Unik identifierare)
 * **Organisationsnamn** (Textsträng)
 * **Logotyp** (Referens/sökväg till lokal bildfil)
 
-### 6.2 Mall (Konfiguration)
-Informationsobjekt för de lokala JSON-filer som skapas i Fred Konfiguratör.
+#### 6.1.2 Mall
+Informationsobjekt för de mallar som skapas i Fred Konfiguratör.
 * **Mall-ID** (Unik identifierare)
 * **Namn & Beskrivning** (Textsträngar)
 * **Hierarkiplacering** (Referens till kategori/nod i navigeringsstrukturen)
@@ -144,7 +160,13 @@ Informationsobjekt för de lokala JSON-filer som skapas i Fred Konfiguratör.
   * Förhandsinnehåll (Grundtext med platshållare för parametrar)
   * Typografi (`style`, valfri Stildefinition enligt 6.0 som ersätter mallens standardtypografi för blocket)
 
-### 6.3 Dokument / Session (Sparfil)
+#### 6.1.3 Mallhierarki
+Struktur som används för att organisera mallbiblioteket i Fred Editors gränssnitt.
+* **Kategori-ID** (Unik identifierare)
+* **Kategorinamn** (Textsträng)
+* **Relationer** (Referenser till underkategorier eller kopplade Mall-ID:n)
+
+### 6.2 Dokument / Session (Sparfil)
 Informationsobjekt för den lokala fil som sparas i Fred Editor för fortsatt redigering.
 * **Dokument-ID** (Unik identifierare)
 * **Mall-referens** (ID till ursprunglig mall – låst efter skapande)
@@ -152,9 +174,3 @@ Informationsobjekt för den lokala fil som sparas i Fred Editor för fortsatt re
 * **Parametervärden** (Lista som mappar Parameter-ID till användarens faktiska eller programmatiskt tilldelade värden)
 * **Struktur av använda block:** En lista över de block som faktiskt ingår i dokumentet (inklusive de specifika fraser som användaren har valt att infoga och deras placering).
 * **Användargenererad text** (De ändringar, formateringar och fritexter som användaren lagt till i de redigerbara blocken)
-
-### 6.4 Mallhierarki
-Struktur som används för att organisera mallbiblioteket i Fred Editors gränssnitt.
-* **Kategori-ID** (Unik identifierare)
-* **Kategorinamn** (Textsträng)
-* **Relationer** (Referenser till underkategorier eller kopplade Mall-ID:n)

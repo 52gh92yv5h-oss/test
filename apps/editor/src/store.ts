@@ -1,11 +1,13 @@
 import { create } from "zustand";
 import {
   CategoryNode,
+  ConfigFile,
   ContentBlock,
   DocumentSession,
   Mall,
   Organisation,
   ParameterValue,
+  loadSharedConfig,
 } from "@fred/shared";
 import { createSession, insertFreeBlockInstance } from "./sessionEngine";
 import { BUILTIN_MALL, BUILTIN_ORGANISATION } from "./builtin";
@@ -34,6 +36,8 @@ interface EditorState {
   loadOrganisations: (orgs: Organisation[]) => void;
   loadTemplate: (mall: Mall) => void;
   loadHierarchy: (root: CategoryNode) => void;
+  /** Läser in en enhetlig konfigurationsfil (kravspec V12) i en åtgärd. */
+  loadConfigFile: (config: ConfigFile) => void;
   setPendingLaunch: (launch: PendingLaunch | null) => void;
 
   startNewSession: (templateId: string, organisationId: string) => void;
@@ -92,6 +96,15 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     }
   },
   loadHierarchy: (hierarchy) => set({ hierarchy }),
+  loadConfigFile: (config) => {
+    get().loadOrganisations(config.organisations);
+    set({ hierarchy: config.hierarchy });
+    // loadTemplate per mall så att en väntande extern start (kravspec
+    // avsnitt 4) triggas om dess mall ingår i konfigurationen.
+    for (const mall of config.mallar) {
+      get().loadTemplate(mall);
+    }
+  },
   setPendingLaunch: (pendingLaunch) => set({ pendingLaunch }),
 
   startNewSession: (templateId, organisationId) => {
@@ -217,3 +230,13 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     });
   },
 }));
+
+// Delad konfiguration (kravspec V12): om Konfiguratorn körs från samma
+// webbursprung har den speglat sin konfiguration till localStorage - läs
+// in den direkt vid start så att administratörens ändringar syns i Editorn
+// utan filhantering. Den inbyggda standardmallen finns alltid kvar, och
+// "Öppna konfigurationsfil" fungerar oberoende av detta.
+const sharedConfig = loadSharedConfig();
+if (sharedConfig) {
+  useEditorStore.getState().loadConfigFile(sharedConfig);
+}

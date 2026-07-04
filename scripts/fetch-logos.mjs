@@ -1,6 +1,8 @@
 // Hämtar riktiga myndighetslogotyper från Wikimedia (Commons + en.wikipedia)
-// och bäddar in dem som base64-data-URL:er i
-// templates/swedish-government/organisations.json.
+// och bäddar in dem som base64-data-URL:er i organisationslistan i
+// templates/swedish-government/config.json. Kör därefter
+// scripts/generate-config-bundles.mjs för att uppdatera de inbakade
+// TS-konstanterna i apparna.
 //
 //   node scripts/fetch-logos.mjs
 //
@@ -17,7 +19,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const ORG_FILE = join(root, "templates/swedish-government/organisations.json");
+const CONFIG_FILE = join(root, "templates/swedish-government/config.json");
 
 // Känd filtitel per organisation (verifierade mot respektive wiki) samt
 // sökterm som fallback om titeln skulle försvinna/döpas om.
@@ -134,11 +136,11 @@ async function fetchLogo({ wiki, title, search }) {
   };
 }
 
-const orgFile = JSON.parse(readFileSync(ORG_FILE, "utf8"));
+const configFile = JSON.parse(readFileSync(CONFIG_FILE, "utf8"));
 let updated = 0;
 const failures = [];
 
-for (const org of orgFile.organisations) {
+for (const org of configFile.organisations) {
   const src = SOURCES[org.id];
   if (!src) continue;
   try {
@@ -156,8 +158,9 @@ for (const org of orgFile.organisations) {
 }
 
 if (updated > 0) {
-  writeFileSync(ORG_FILE, JSON.stringify(orgFile, null, 2) + "\n");
-  console.log(`\n${updated} logotyper inbäddade i ${ORG_FILE}`);
+  writeFileSync(CONFIG_FILE, JSON.stringify(configFile, null, 2) + "\n");
+  console.log(`\n${updated} logotyper inbäddade i ${CONFIG_FILE}`);
+  console.log("Kör nu: node scripts/generate-config-bundles.mjs");
 }
 if (failures.length > 0) {
   console.error(`\n${failures.length} logotyper kunde inte hämtas. Kontrollera nätverksåtkomsten till wikimedia.org/wikipedia.org.`);

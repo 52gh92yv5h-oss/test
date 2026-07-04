@@ -1,21 +1,18 @@
 import {
-  FRED_MALL_FILE_MARKER,
   HFCol,
   HFRow,
   HeaderFooterField,
-  MallFile,
   OrgScope,
   addTemplateToNode,
   flattenCategories,
   newId,
-  openJsonFromLocalFile,
-  saveJsonWithFeedback,
 } from "@fred/shared";
 import { useConfiguratorStore } from "../store";
 import ParametersEditor from "./ParametersEditor";
 import BlocksEditor from "./BlocksEditor";
 import StyleEditor from "./StyleEditor";
 import HeaderFooterPreview from "./HeaderFooterPreview";
+import MallarListPanel from "./MallarListPanel";
 
 const HF_COLS: { value: HFCol; label: string }[] = [
   { value: "left", label: "Vänster" },
@@ -130,37 +127,34 @@ function HeaderFooterFieldsEditor({
 }
 
 export default function MallPanel() {
-  const mall = useConfiguratorStore((s) => s.mall);
+  const mallar = useConfiguratorStore((s) => s.mallar);
+  const selectedMallId = useConfiguratorStore((s) => s.selectedMallId);
   const updateMall = useConfiguratorStore((s) => s.updateMall);
-  const setMall = useConfiguratorStore((s) => s.setMall);
-  const resetMall = useConfiguratorStore((s) => s.resetMall);
   const organisations = useConfiguratorStore((s) => s.organisations);
   const hierarchy = useConfiguratorStore((s) => s.hierarchy);
   const setHierarchy = useConfiguratorStore((s) => s.setHierarchy);
 
   const categories = flattenCategories(hierarchy);
+  const mall = mallar.find((m) => m.id === selectedMallId);
 
-  const handleSave = () => {
-    const payload: MallFile = { marker: FRED_MALL_FILE_MARKER, version: 1, mall };
-    void saveJsonWithFeedback(payload, `${mall.id}.json`, "Mallen");
-  };
-
-  const handleOpen = async () => {
-    const data = await openJsonFromLocalFile<MallFile>();
-    if (data?.marker === FRED_MALL_FILE_MARKER) {
-      setMall(data.mall);
-    }
-  };
+  if (!mall) {
+    return (
+      <div>
+        <MallarListPanel />
+        <p className="muted">
+          Välj en mall i listan ovan, eller skapa en ny. Hela konfigurationen
+          (organisationer, hierarki och samtliga mallar) sparas som en enda
+          fil via "Spara konfigurationsfil".
+        </p>
+      </div>
+    );
+  }
 
   const orgScope: OrgScope = mall.orgScope;
 
   return (
     <div>
-      <div className="toolbar">
-        <button onClick={resetMall}>+ Ny mall</button>
-        <button onClick={handleOpen}>Öppna mall.json</button>
-        <button className="primary" onClick={handleSave}>Spara mall.json</button>
-      </div>
+      <MallarListPanel />
 
       <div className="panel">
         <h2>Grunduppgifter</h2>

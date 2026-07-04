@@ -1,14 +1,10 @@
 import { useState } from "react";
 import {
   CategoryNode,
-  FRED_HIERARCHY_FILE_MARKER,
-  HierarchyFile,
   addChildCategory,
   newId,
-  openJsonFromLocalFile,
   removeCategory,
   renameCategory,
-  saveJsonWithFeedback,
 } from "@fred/shared";
 import { useConfiguratorStore } from "../store";
 
@@ -70,32 +66,15 @@ function Node({ node, depth }: { node: CategoryNode; depth: number }) {
 
 export default function HierarchyPanel() {
   const hierarchy = useConfiguratorStore((s) => s.hierarchy);
-  const setHierarchy = useConfiguratorStore((s) => s.setHierarchy);
-
-  const handleSave = () => {
-    const payload: HierarchyFile = { marker: FRED_HIERARCHY_FILE_MARKER, version: 1, root: hierarchy };
-    void saveJsonWithFeedback(payload, "hierarki.json", "Mallhierarkin");
-  };
-
-  const handleOpen = async () => {
-    const data = await openJsonFromLocalFile<HierarchyFile>();
-    if (data?.marker === FRED_HIERARCHY_FILE_MARKER) {
-      setHierarchy(data.root);
-    }
-  };
 
   return (
     <div>
-      <div className="toolbar">
-        <button onClick={handleOpen}>Öppna hierarki.json</button>
-        <button onClick={handleSave}>Spara hierarki.json</button>
-      </div>
       <div className="panel">
         <h2>Mallhierarki</h2>
         <p className="muted">
           Hierarkin används enbart för navigering och val av mall i Fred Editor. Den påverkar
           inte dokumentets innehåll. En mall kan bara ligga på en plats i hierarkin (styrs i
-          mall-fliken).
+          mall-fliken). Hierarkin sparas som en del av den gemensamma konfigurationsfilen.
         </p>
         <Node node={hierarchy} depth={0} />
       </div>
