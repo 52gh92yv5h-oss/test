@@ -9,12 +9,13 @@ import {
   flattenCategories,
   newId,
   openJsonFromLocalFile,
-  saveJsonToLocalFile,
+  saveJsonWithFeedback,
 } from "@fred/shared";
 import { useConfiguratorStore } from "../store";
 import ParametersEditor from "./ParametersEditor";
 import BlocksEditor from "./BlocksEditor";
 import StyleEditor from "./StyleEditor";
+import HeaderFooterPreview from "./HeaderFooterPreview";
 
 const HF_COLS: { value: HFCol; label: string }[] = [
   { value: "left", label: "Vänster" },
@@ -141,7 +142,7 @@ export default function MallPanel() {
 
   const handleSave = () => {
     const payload: MallFile = { marker: FRED_MALL_FILE_MARKER, version: 1, mall };
-    void saveJsonToLocalFile(payload, `${mall.id}.json`);
+    void saveJsonWithFeedback(payload, `${mall.id}.json`, "Mallen");
   };
 
   const handleOpen = async () => {
@@ -288,6 +289,7 @@ export default function MallPanel() {
             }
           />
         </div>
+        <HeaderFooterPreview />
       </div>
 
       <div className="panel">

@@ -69,6 +69,89 @@
   const DOC_KEY = "fred-doc-";
   const RECENT_LIMIT = 8;
 
+  // ============ Parameterläge (kravspec 2.2, V11) ============
+  // paramMode: "inline" (fält i löptexten) eller "panel" (sidopanel).
+  // panelSide: "left"/"right". panelHidden gäller endast inline-läget.
+  const PREFS_KEY = "fred-wasm-ui-prefs";
+  let uiPrefs = { paramMode: "inline", panelSide: "right", panelHidden: true };
+  try {
+    const saved = JSON.parse(localStorage.getItem(PREFS_KEY) || "{}");
+    if (saved.paramMode === "panel") uiPrefs.paramMode = "panel";
+    if (saved.panelSide === "left") uiPrefs.panelSide = "left";
+    if (typeof saved.panelHidden === "boolean") uiPrefs.panelHidden = saved.panelHidden;
+  } catch { /* trasig lagring – kör standardvärden */ }
+
+  function savePrefs() {
+    try { localStorage.setItem(PREFS_KEY, JSON.stringify(uiPrefs)); } catch { /* lagring avstängd */ }
+  }
+
+  function applyUiPrefs() {
+    document.body.classList.toggle("param-mode-panel", uiPrefs.paramMode === "panel");
+    document.body.classList.toggle("pane-left", uiPrefs.panelSide === "left");
+    const paneVisible = uiPrefs.paramMode === "panel" || !uiPrefs.panelHidden;
+    $("parampane").hidden = !paneVisible || !model;
+    const modeLabel = $("parammode-label");
+    if (modeLabel) modeLabel.innerHTML = uiPrefs.paramMode === "inline" ? "Panel-<br>läge" : "Inline-<br>läge";
+    const paneLabel = $("parampane-label");
+    if (paneLabel) paneLabel.innerHTML = uiPrefs.panelHidden ? "Visa<br>panel" : "Dölj<br>panel";
+    const paneBtn = $("act-parampane");
+    if (paneBtn) paneBtn.disabled = uiPrefs.paramMode === "panel"; // alltid synlig i panel-läge
+    if (paneVisible && model) renderParamPane();
+  }
+
+  /** Bygger parameterpanelen från motorns rendermodell. */
+  function renderParamPane() {
+    const host = $("pp-list");
+    if (!host || !model) return;
+    host.innerHTML = "";
+    const params = model.doc.params.filter((p) => p.visible !== false);
+    if (!params.length) {
+      host.innerHTML = '<p style="color:#605e5c;font-size:12px">Mallen har inga parametrar.</p>';
+      return;
+    }
+    for (const p of params) {
+      const row = document.createElement("div");
+      row.className = "pp-row";
+      const label = document.createElement("label");
+      label.textContent = p.label;
+      row.appendChild(label);
+      let input;
+      if (p.type === "boolean") {
+        input = document.createElement("select");
+        input.innerHTML = '<option value="false">Nej</option><option value="true">Ja</option>';
+        input.value = String(p.value === true);
+        input.addEventListener("change", () => setFromPane(p.id, input.value === "true"));
+      } else if (p.type === "list") {
+        input = document.createElement("select");
+        input.innerHTML = '<option value="">(välj)</option>' +
+          (p.options || []).map((o) => `<option value="${esc(o.value)}">${esc(o.label)}</option>`).join("");
+        input.value = p.value == null ? "" : String(p.value);
+        input.addEventListener("change", () => setFromPane(p.id, input.value || null));
+      } else {
+        input = document.createElement("input");
+        input.type = p.type === "number" ? "number" : p.type === "date" ? "date" : "text";
+        input.value = p.value == null ? "" : String(p.value);
+        input.addEventListener("change", () => {
+          const v = input.value === "" ? null : (p.type === "number" ? Number(input.value) : input.value);
+          setFromPane(p.id, v);
+        });
+      }
+      input.dataset.paramId = p.id;
+      row.appendChild(input);
+      host.appendChild(row);
+    }
+  }
+
+  function setFromPane(id, value) {
+    const res = fred({ cmd: "set_param", id, value });
+    if (!res.ok) { toast(res.error); return; }
+    model = res;
+    syncChips();
+    updateQat();
+    scheduleAutosave();
+    renderParamPane(); // synlighet för nästlade parametrar kan ha ändrats
+  }
+
   // ===================== Småhjälpare =====================
 
   function esc(s) {
@@ -141,14 +224,109 @@
     return dlg;
   }
 
-  function download(filename, text) {
+  // Sant på iOS/iPadOS där en nedladdningslänk inte tillförlitligt sparar filen.
+  function isDownloadUnreliable() {
+    const ua = navigator.userAgent || "", plat = navigator.platform || "";
+    const iOS = /iP(hone|ad|od)/.test(ua) || /iP(hone|ad|od)/.test(plat);
+    const iPadOS = /Mac/.test(plat) && (navigator.maxTouchPoints || 0) > 1; // iPadOS 13+ maskerar sig som macOS
+    return iOS || iPadOS;
+  }
+
+  // Sant när appen körs inbäddad i en annan sida (t.ex. artifact-visning).
+  // Sandboxade iframes kan blockera Web Share och nedladdningar var för sig.
+  function isEmbedded() {
+    try { return window.self !== window.top; } catch { return true; }
+  }
+
+  function triggerDownload(filename, text) {
+    const blob = new Blob([text], { type: "application/json" });
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+    a.href = URL.createObjectURL(blob);
     a.download = filename;
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(a.href);
+  }
+
+  // Spara-dialog för osäkra miljöer (iOS/iPadOS eller inbäddad iframe):
+  // varje metod triggas av sin egen knapp med egen användargest, och
+  // misslyckanden visas synligt i stället för att kedjan faller tyst.
+  function saveDialog(filename, text) {
+    const shareFile = (navigator.canShare && navigator.share)
+      ? [
+          new File([text], filename, { type: "application/json" }),
+          new File([text], filename, { type: "text/plain" }),
+        ].find((f) => { try { return navigator.canShare({ files: [f] }); } catch { return false; } })
+      : null;
+
+    const buttons = [];
+    if (shareFile) {
+      buttons.push({
+        label: "Dela…", primary: true,
+        onClick: (d) => {
+          navigator.share({ files: [shareFile] })
+            .then(() => {
+              toast(`${filename} skickades till Dela – välj var den ska sparas.`);
+              const scrim = d.closest(".dlg-scrim");
+              if (scrim) scrim.remove();
+            })
+            .catch((err) => {
+              if (err && err.name === "AbortError") return; // användaren stängde delningsarket
+              const st = d.querySelector("#save-status");
+              if (st) st.textContent = "Delning tillåts inte här – prova Ladda ner eller Kopiera text.";
+            });
+          return false; // dialogen stängs av handlern ovan vid lyckad delning
+        },
+      });
+    }
+    buttons.push({
+      label: "Ladda ner", primary: !shareFile,
+      onClick: (d) => {
+        triggerDownload(filename, text);
+        const st = d.querySelector("#save-status");
+        if (st) { st.textContent = "Nedladdning startad – kontrollera Hämtade filer. Kom inget? Använd Kopiera text."; st.style.color = "#1f7a44"; }
+        return false;
+      },
+    });
+    buttons.push({
+      label: "Kopiera text",
+      onClick: (d) => {
+        const ta = d.querySelector("#save-text");
+        ta.style.display = "block";
+        ta.focus(); ta.select();
+        let ok = false;
+        try { ok = document.execCommand("copy"); } catch { ok = false; }
+        if (!ok && navigator.clipboard) navigator.clipboard.writeText(text).then(() => toast("Texten kopierad"));
+        const st = d.querySelector("#save-status");
+        if (st) {
+          st.textContent = ok
+            ? `Texten kopierad – klistra in i en ny fil med namnet "${filename}".`
+            : "Markera texten och kopiera manuellt.";
+          st.style.color = ok ? "#1f7a44" : "#b3261e";
+        }
+        return false;
+      },
+    });
+    buttons.push({ label: "Stäng" });
+
+    showDialog({
+      title: `Spara ${filename}`,
+      body: `<p style="margin:0 0 8px;font-size:13px;color:#555">Välj hur du vill spara filen. På iPad/iPhone fungerar Dela bäst (välj &rdquo;Spara i Filer&rdquo;). Om inget annat fungerar kan du alltid kopiera texten.</p>
+             <p id="save-status" style="margin:0 0 8px;font-size:13px;color:#b3261e;min-height:1em"></p>
+             <textarea id="save-text" readonly style="display:none;width:100%;min-height:140px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;white-space:pre">${esc(text)}</textarea>`,
+      buttons,
+    });
+  }
+
+  /** @returns {Promise<"downloaded"|"dialog">} */
+  async function download(filename, text) {
+    if (!isEmbedded() && !isDownloadUnreliable()) {
+      triggerDownload(filename, text);
+      return "downloaded";
+    }
+    saveDialog(filename, text);
+    return "dialog";
   }
 
   function pickFile(onLoaded) {
@@ -313,6 +491,7 @@
     autosave();
     model = null;
     currentMall = null;
+    $("parampane").hidden = true;
     $("editor-screen").hidden = true;
     $("backstage").hidden = true;
     $("start-screen").hidden = false;
@@ -395,6 +574,7 @@
     syncChips();
     updateQat();
     updateStatus();
+    applyUiPrefs();
   }
 
   /** Global uppdatering: speglar motorns parametervärden i alla inline-fält. */
@@ -422,6 +602,7 @@
     syncChips();
     updateQat();
     scheduleAutosave();
+    if (!$("parampane").hidden) renderParamPane();
     return true;
   }
 
@@ -719,6 +900,21 @@
   });
 
   on("act-navpane", () => toggleNavpane());
+  on("act-parammode", () => {
+    uiPrefs.paramMode = uiPrefs.paramMode === "inline" ? "panel" : "inline";
+    savePrefs();
+    applyUiPrefs();
+  });
+  on("act-paramside", () => {
+    uiPrefs.panelSide = uiPrefs.panelSide === "right" ? "left" : "right";
+    savePrefs();
+    applyUiPrefs();
+  });
+  on("act-parampane", () => {
+    uiPrefs.panelHidden = !uiPrefs.panelHidden;
+    savePrefs();
+    applyUiPrefs();
+  });
   on("act-find", () => toggleNavpane(true));
   on("act-replace", () => openReplaceDialog());
   on("title-search", () => toggleNavpane(true));
@@ -728,7 +924,7 @@
   function doUndo() { flushAll(); refreshFull(fred({ cmd: "undo" })); }
   function doRedo() { flushAll(); refreshFull(fred({ cmd: "redo" })); }
 
-  function saveToFile() {
+  async function saveToFile() {
     flushAll();
     const res = fred({ cmd: "save_session" });
     if (!res.ok) { toast(res.error); return; }
@@ -737,8 +933,9 @@
       .toLowerCase()
       .replace(/[åä]/g, "a").replace(/ö/g, "o")
       .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "dokument";
-    download(`${name}.fred.json`, JSON.stringify(res.file, null, 2));
-    toast("Dokumentet har sparats som fil.");
+    const method = await download(`${name}.fred.json`, JSON.stringify(res.file, null, 2));
+    if (method === "downloaded") toast("Dokumentet har sparats som fil.");
+    // "dialog": spara-dialogen ger själv återkoppling per vald metod.
   }
 
   on("qat-undo", doUndo);
@@ -965,7 +1162,8 @@
           <dt>Mall</dt><dd>${esc(currentMall?.name || "–")} (${esc(currentMall?.id || "")})</dd>
           <dt>Utfärdande organisation</dt><dd>${esc(org?.name || "–")}</dd>
           <dt>Senast ändrat</dt><dd>${doc?.updatedAt ? new Date(doc.updatedAt).toLocaleString("sv-SE") : "–"}</dd>
-          <dt>Motor</dt><dd>fred-engine (WebAssembly)</dd></dl>`);
+          <dt>Motor</dt><dd>fred-engine (WebAssembly)</dd>
+          <dt>Version</dt><dd>${esc(window.FRED_APP_VERSION ? "v" + window.FRED_APP_VERSION : "–")}</dd></dl>`);
         break;
       }
       case "new":
@@ -1076,6 +1274,17 @@
   // ===================== Start & extern applikationsstart =====================
 
   await initWasm();
+  // Hämta motorns version (från engine/Cargo.toml) och visa den i gränssnittet.
+  const pong = fred({ cmd: "ping" });
+  const appVersion = pong.ok && pong.version ? pong.version : "";
+  if (appVersion) {
+    const label = `Fred Editor v${appVersion}`;
+    const startEl = $("start-version");
+    if (startEl) startEl.textContent = label;
+    const sbEl = $("sb-version");
+    if (sbEl) sbEl.textContent = `v${appVersion}`;
+    window.FRED_APP_VERSION = appVersion;
+  }
   fred({ cmd: "load_organisations", organisations });
   renderStart();
 

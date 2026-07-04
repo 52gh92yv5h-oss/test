@@ -1,0 +1,52 @@
+name: Bygg Windows-editorn (C# + WebView2)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/editor-windows/**"
+      - "apps/editor-wasm/**"
+      - ".github/workflows/windows-editor.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Bygg den fristående editorn (WASM) som C#-skalet bäddar in.
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Bygg WASM-editorn
+        run: node apps/editor-wasm/scripts/build.mjs
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Publicera Windows-exen
+        run: dotnet publish apps/editor-windows/FredEditor.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true
+
+      # Rökverifiering: exen finns och har rimlig storlek.
+      - name: Verifiera artefakten
+        shell: pwsh
+        run: |
+          $exe = "apps/editor-windows/bin/Release/net8.0-windows/win-x64/publish/FredEditor.exe"
+          if (-not (Test-Path $exe)) { throw "FredEditor.exe saknas" }
+          $size = (Get-Item $exe).Length
+          if ($size -lt 50MB) { throw "FredEditor.exe misstänkt liten: $size byte" }
+          Write-Host "OK: FredEditor.exe $([math]::Round($size/1MB)) MB"
+
+      - name: Ladda upp artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FredEditor-win-x64
+          path: |
+            apps/editor-windows/bin/Release/net8.0-windows/win-x64/publish/FredEditor.exe
+            apps/editor-windows/bin/Release/net8.0-windows/win-x64/publish/app/
+          if-no-files-found: error

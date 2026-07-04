@@ -21,7 +21,12 @@ export default function App() {
 
   useEffect(() => {
     const launch = parseLaunchParam();
-    if (launch?.templateId) setPendingLaunch(launch);
+    if (!launch?.templateId) return;
+    setPendingLaunch(launch);
+    // Om mallen redan finns (t.ex. den inbyggda standardmallen) startar
+    // sessionen direkt — annars väntar pendingLaunch tills mallfilen läses in.
+    const existing = useEditorStore.getState().templates[launch.templateId];
+    if (existing) useEditorStore.getState().loadTemplate(existing);
   }, [setPendingLaunch]);
 
   return screen === "start" ? <StartScreen /> : <DocumentScreen />;

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FRED_VERSION } from "@fred/shared";
 import OrganisationsPanel from "./components/OrganisationsPanel";
 import HierarchyPanel from "./components/HierarchyPanel";
 import MallPanel from "./components/MallPanel";
@@ -11,7 +12,9 @@ export default function App() {
   return (
     <div className="app-shell">
       <nav className="nav">
-        <h1>Fred Konfigurator</h1>
+        <h1>
+          Fred Konfigurator <span className="app-version">v{FRED_VERSION}</span>
+        </h1>
         <button className={tab === "mall" ? "active" : ""} onClick={() => setTab("mall")}>
           Mall
         </button>

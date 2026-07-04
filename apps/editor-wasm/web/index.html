@@ -30,6 +30,7 @@
     </div>
     <div class="start-main">
       <h1 id="greeting">God dag</h1>
+      <div class="app-version" id="start-version"></div>
 
       <h2>Nytt dokument</h2>
       <div class="cat-chips" id="cat-chips"></div>
@@ -225,6 +226,23 @@
       </div>
       <div class="ribbon-group">
         <div class="rg-content">
+          <button class="rbtn" id="act-parammode" title="Växla var parametrar anges: direkt i dokumentet eller i en panel">
+            <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h7M17 14l3 3-6 6h-3v-3z"/></svg>
+            <span id="parammode-label">Panel-<br>läge</span>
+          </button>
+          <button class="rbtn" id="act-paramside" title="Flytta parameterpanelen till andra sidan">
+            <svg viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>
+            Panelsida
+          </button>
+          <button class="rbtn" id="act-parampane" title="Visa eller dölj parameterpanelen (endast i inline-läge)">
+            <svg viewBox="0 0 24 24"><path d="M3 4h18v16H3zM15 4v16"/></svg>
+            <span id="parampane-label">Visa<br>panel</span>
+          </button>
+        </div>
+        <div class="rg-label">Parametrar</div>
+      </div>
+      <div class="ribbon-group">
+        <div class="rg-content">
           <button class="rbtn" id="act-zoom100">
             <svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg>
             100&nbsp;%
@@ -264,12 +282,19 @@
           </div>
         </div>
       </div>
+
+      <!-- Parameterpanel (kravspec 2.2, V11) – vänster/höger valbart -->
+      <aside class="parampane" id="parampane" hidden>
+        <header>Parametrar</header>
+        <div class="pp-list" id="pp-list"></div>
+      </aside>
     </div>
 
     <div class="statusbar">
       <span class="sb" id="sb-page">Sida 1 av 1</span>
       <span class="sb" id="sb-words">0 ord</span>
       <span class="sb">Svenska (Sverige)</span>
+      <span class="sb" id="sb-version"></span>
       <span class="sb" id="sb-saved"></span>
       <span class="spacer"></span>
       <div class="zoom-slider sb">

@@ -1,4 +1,4 @@
-# Kravspecifikation: Fred (Fras-EDitor) (V9)
+# Kravspecifikation: Fred (Fras-EDitor) (V11)
 
 Detta dokument sammanställer kraven för utvecklingen av Fred (Fras-EDitor) – ett fristående, helt isolerat ordbehandlingssystem baserat på lokala JSON-konfigurationer. Systemet ska köras i en webbläsarmiljö och består av två separata applikationer: en Editor för slutanvändare och en Konfiguratör för administratörer.
 
@@ -21,6 +21,7 @@ Fred Editor är verktyget där användaren väljer mall, fyller i uppgifter, red
 
 ### 2.1 Textredigering & Dokumentstruktur
 * **Grundmallar:** Ett dokument måste alltid baseras på en mall. Användaren väljer mall innan dokumentet skapas, och mallen kan inte bytas i efterhand. Fred Editor laddar malldokumentet med en stor mängd fördefinierad text från start.
+* **Inbyggd standardmall:** Editorn ska levereras med en inbyggd, enkel standardmall för ett fiktivt företag (inklusive logotyp), användbar direkt utan att externa mallfiler läses in. Standardmallen ska finnas i samtliga editorvarianter.
 * **Dokumentstorlek:** Dokumenten är normalt 1–5 sidor långa.
 * **Sidhuvud och Sidfot:** Stöd för att producera dokument som har sidhuvud och sidfot. Följande specifika fält ska kunna definieras till sidhuvud och sidfot:
   * En logotyp (kopplad till den organisation som utfärdar dokumentet).
@@ -34,6 +35,7 @@ Fred Editor är verktyget där användaren väljer mall, fyller i uppgifter, red
 * **Multi-nivå parametrar:** Parametrarna som ges till mallarna ska kunna vara på flera nivåer (nästlade val). Det ska finnas ett system för texterna och hur de ska infogas baserat på dessa val.
 * **Global uppdatering:** En parameter anges en gång och uppdateras direkt på alla förekomster globalt i dokumentet när värdet ändras.
 * **Parametertyper:** Parametrar ska kunna vara text, datum, numeriska värden, ja/nej samt listor. Ingen strikt validering krävs för inmatning.
+* **Parameterinmatningsläge (valbart):** Användaren ska kunna välja om parametrar anges *inline* direkt i dokumentet (klick på parameterfältet öppnar redigering på plats) eller i en *panel* vid sidan av dokumentet. Panelens placering (vänster eller höger om dokumentet) ska vara valbar. I inline-läget ska panelen kunna döljas; i panel-läget visas den alltid. Användarens val sparas lokalt per användare och gäller nästa gång editorn öppnas.
 
 ### 2.3 Redigeringsfunktioner och Gränssnitt
 * **Generell upplevelse:** Fred Editor ska upplevas som en modern ordbehandlare likt Microsoft Word, fast med reducerad funktionalitet.
@@ -51,6 +53,7 @@ Fred Editor är verktyget där användaren väljer mall, fyller i uppgifter, red
 ### 2.4 Export och Sessionshantering
 * **Utskrift & PDF-export:** Fred Editor ska kunna skriva ut och spara information i PDF-form. Den exporterade PDF-filen ska motsvara dokumentets visuella innehåll i editorn. Detta inkluderar mallens typografi (typsnitt, storlek, stil) samt sidhuvud/sidfot-fältens positioner i 3×3-matrisen.
 * **Spara pågående arbete:** Man ska kunna spara ett ifyllt dokument som en lokal fil och återöppna det för att redigera vidare vid ett annat tillfälle.
+* **Återkoppling vid sparande:** Varje spara-åtgärd ska ge synlig återkoppling om utfallet (t.ex. en avisering om att filen sparats, laddats ner eller skickats till delning). I miljöer där webbläsaren inte tillåter tyst filsparning (t.ex. iOS/iPadOS eller när appen körs inbäddad i en annan sida) ska en spara-dialog visas där användaren själv väljer metod – *Dela*, *Ladda ner* eller *Kopiera text* – och där misslyckade metoder redovisas synligt i stället för att falla tyst.
 
 ---
 
@@ -66,6 +69,7 @@ Ett separat verktyg dedikerat till administratörer för att skapa, konfigurera 
   * *Sidhuvud/sidfot-nivå:* En valfri stil (`style`) per fält i sidhuvud och sidfot.
   * *Arvsregel:* Om ingen stil anges på block- eller fältnivå ärvs mallens standardstil. Om mallen saknar standardstil används systemets grundstil. Varje enskilt stilattribut ärvs separat (t.ex. kan ett block ange endast storlek och ärva typsnittet).
 * **Sidhuvud/sidfot-layout:** Administratören ska för varje fält i sidhuvud och sidfot kunna ange en position i 3×3-matrisen (kolumn: vänster/mitten/höger, rad: topp/mitt/botten).
+* **Förhandsgranskning av sidhuvud/sidfot:** Konfiguratören ska visa en visuell förhandsgranskning av hur sidhuvud och sidfot kommer att se ut i det färdiga dokumentet – med fältens positioner i 3×3-matrisen, organisationens logotyp och namn samt tillämpad typografi. Förhandsgranskningen ska uppdateras direkt när fält, positioner eller stilar ändras, och administratören ska kunna välja vilken organisation som förhandsgranskningen visar.
 * **Enkel JSON-konfiguration:** Formatet på konfigurationen ska vara JSON. Mallarna ska sparas och konfigureras som lokala JSON-filer.
 * **Förhandsinnehåll & Ordning:** Administratören bestämmer ordningen på alla fasta block i mallen och kan fylla i fördefinierad text i blocken.
 * **Definition av fria block (Fraser):** Administratören ska kunna markera valda block i mallen som "fria" (fraser), vilket innebär dataladdning att de inte har en fast plats från start utan lämnas tillgängliga för slutanvändaren att infoga fritt via Fred Editor.
@@ -92,6 +96,8 @@ Ett separat verktyg dedikerat till administratörer för att skapa, konfigurera 
 
 * **Enkel installation:** Det ska vara enkelt att installera både Fred Editor och Fred Konfiguratör. Ingen serverinstallation krävs.
 * **Katalogbaserad körning:** Det ska finnas en installationsfil eller "run-fil" per app, så att man enkelt kan lägga applikationen i en lokal katalog och köra den därifrån.
+* **Synligt versionsnummer:** Varje applikation ska visa sitt versionsnummer i gränssnittet (t.ex. på startskärmen och i statusfält/verktygsfält), så att användare och support enkelt kan avgöra vilken version som körs.
+* **Windows-applikation:** Fred Editor ska även finnas som native Windows-program (C# med WebView2) som återanvänder den fristående editorn och därmed har full funktionsparitet. Programmet byggs och verifieras via CI och levereras som självständig exe utan krav på förinstallerad .NET-runtime.
 
 ---
 

@@ -106,25 +106,43 @@ Varje mall följer Fred-systemets datamodell (kravspecifikation V8):
 
 ## Logotyper
 
-Logotyperna är professionellt designade SVG-illustrationer och lagras som base64-kodade data-URLs i organisationsfilen. Varje logotyp inkluderar:
-- Organisationsnamnet på logotypen
-- En sköldsform som symboliserar myndighet och officiell status
-- En färgkodad design unik för varje organisation
-- Professionell layout lämplig för dokumentsidhuvuden
+Logotyperna lagras som base64-kodade data-URL:er i `organisations.json` och
+renderas i dokumentens sidhuvuden i Fred Editor, i konfiguratorns
+förhandsgranskning av sidhuvud/sidfot samt vid PDF-export.
 
-### Färgkodning per myndighet:
+**Nuvarande status: riktiga logotyper.** Organisationsfilen innehåller
+respektive myndighets riktiga logotyp, hämtad från Wikimedia. Källan
+antecknas per organisation i fältet `logoSource`:
 
-| Myndighet | Färg | Hex-kod |
-|-----------|------|---------|
-| Arbetsförmedlingen | Blå | #0066CC, #1E90FF |
-| Skatteverket | Röd | #CC0000, #FF3333 |
-| Försäkringskassan | Grön | #009933, #33CC66 |
-| CSN | Orange | #FF9900, #FFAA33 |
-| Migrationsverket | Violett | #663399, #9966CC |
-| Polismyndigheten | Mörkblå | #003366, #0066AA |
-| Kronofogdemyndigheten | Grå | #333333, #666666 |
+| Myndighet | Källa |
+|-----------|-------|
+| Arbetsförmedlingen | Commons: `File:Arbetsförmedlingen logo.svg` |
+| Skatteverket | en.wikipedia: `File:Skatteverket Logo.svg` |
+| Försäkringskassan | Commons: `File:Logo Försäkringskassan.svg` |
+| CSN | Commons: `File:Centrala Studiestödsnämnden logo.svg` |
+| Migrationsverket | Commons: `File:Logotyp för Migrationsverket.svg` |
+| Polismyndigheten | Commons: `File:Polisen vapen.svg` (polisens vapen) |
+| Kronofogdemyndigheten | Commons: `File:Logo Kronofogdemyndigheten.svg` |
 
-Logotyperna renderas direkt i dokumentens sidhuvuden när dokumentet visas i Fred Editor och vid PDF-export.
+### Uppdatera logotyperna
+
+Kör hämtskriptet från repots rot i en miljö med nätverksåtkomst till
+`*.wikimedia.org`/`*.wikipedia.org`:
+
+```bash
+NODE_USE_ENV_PROXY=1 node scripts/fetch-logos.mjs
+```
+
+(`NODE_USE_ENV_PROXY=1` behövs bara bakom en utgående proxy, t.ex. i
+Claude Code-miljöer — Nodes `fetch` följer annars inte `HTTPS_PROXY`.)
+
+Skriptet hämtar en 400 px PNG-thumb av respektive logotyp, bäddar in den
+som data-URL i `organisations.json` och uppdaterar `logoSource`. Ingen mall
+behöver ändras — mallarna refererar organisationer via id.
+
+**Varumärkesnot:** Myndighetslogotyperna tillhör respektive myndighet och
+används i mallarna endast för att återge korrekt avsändare i dokument som
+utfärdas i myndighetens namn.
 
 ## Använda filformatet
 
@@ -152,7 +170,7 @@ För att anpassa mallarna:
 
 1. Ladda organisationsfilen och hierarkin i Fred Konfigurator
 2. Importera mallarna
-3. I Fred Editor kan använder sedan:
+3. I Fred Editor kan användaren sedan:
    - Välja en mall baserad på myndighetshierarkin
    - Fylla i parametervärden
    - Redigera innehållet i redigerbara block

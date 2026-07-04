@@ -8,7 +8,7 @@ import {
   openJsonFromLocalFile,
   removeCategory,
   renameCategory,
-  saveJsonToLocalFile,
+  saveJsonWithFeedback,
 } from "@fred/shared";
 import { useConfiguratorStore } from "../store";
 
@@ -74,7 +74,7 @@ export default function HierarchyPanel() {
 
   const handleSave = () => {
     const payload: HierarchyFile = { marker: FRED_HIERARCHY_FILE_MARKER, version: 1, root: hierarchy };
-    void saveJsonToLocalFile(payload, "hierarki.json");
+    void saveJsonWithFeedback(payload, "hierarki.json", "Mallhierarkin");
   };
 
   const handleOpen = async () => {

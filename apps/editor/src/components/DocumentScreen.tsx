@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
 import {
   FRED_SESSION_FILE_MARKER,
+  FRED_VERSION,
   SessionFile,
-  saveJsonToLocalFile,
+  flattenParameters,
+  saveJsonWithFeedback,
   styleDefToCss,
 } from "@fred/shared";
 import { useEditorStore } from "../store";
 import { saveAutosave } from "../autosave";
+import { UiPrefs, loadUiPrefs, saveUiPrefs } from "../uiPrefs";
 import HeaderFooterView from "./HeaderFooterView";
 import BlockView from "./BlockView";
 import ParameterPanel from "./ParameterPanel";
 import PhraseSidebar from "./PhraseSidebar";
 import SearchBar from "./SearchBar";
+import InlineParamEditor from "./InlineParamEditor";
 
 export default function DocumentScreen() {
   const session = useEditorStore((s) => s.session);
@@ -24,6 +28,16 @@ export default function DocumentScreen() {
   const future = useEditorStore((s) => s.future);
   const [sidebarTab, setSidebarTab] = useState<"parametrar" | "fraser">("parametrar");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [prefs, setPrefs] = useState<UiPrefs>(() => loadUiPrefs());
+  const [inlineEdit, setInlineEdit] = useState<{ paramId: string; x: number; y: number } | null>(null);
+
+  const updatePrefs = (patch: Partial<UiPrefs>) => {
+    setPrefs((p) => {
+      const next = { ...p, ...patch };
+      saveUiPrefs(next);
+      return next;
+    });
+  };
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -56,24 +70,83 @@ export default function DocumentScreen() {
 
   const handleSaveSession = () => {
     const payload: SessionFile = { marker: FRED_SESSION_FILE_MARKER, version: 1, session };
-    void saveJsonToLocalFile(payload, `${session.id}.json`);
+    void saveJsonWithFeedback(payload, `${session.id}.json`, "Dokumentet");
   };
+
+  // Inline-läge (kravspec 2.2, V11): klick på en parameter-chip i dokumentet
+  // öppnar den flytande redigeraren. Chips är contenteditable=false, så
+  // klicket stör inte markören i redigerbara block.
+  const handleDocumentClick = (e: React.MouseEvent) => {
+    if (prefs.paramMode !== "inline") return;
+    const chip = (e.target as HTMLElement).closest<HTMLElement>(".fred-param-chip");
+    if (!chip?.dataset.paramId) return;
+    const rect = chip.getBoundingClientRect();
+    setInlineEdit({ paramId: chip.dataset.paramId, x: rect.left, y: rect.bottom });
+  };
+
+  const inlineDef = inlineEdit
+    ? flattenParameters(mall.parameters).find((d) => d.id === inlineEdit.paramId)
+    : undefined;
+
+  const panelVisible = prefs.paramMode === "panel" || !prefs.panelHidden;
+
+  const sidebar = panelVisible && (
+    <div className={`sidebar ${prefs.panelSide === "left" ? "sidebar-left" : ""}`}>
+      <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
+        <button
+          className={sidebarTab === "parametrar" ? "primary" : ""}
+          onClick={() => setSidebarTab("parametrar")}
+        >
+          Parametrar
+        </button>
+        <button className={sidebarTab === "fraser" ? "primary" : ""} onClick={() => setSidebarTab("fraser")}>
+          Fraser
+        </button>
+      </div>
+      {sidebarTab === "parametrar" ? <ParameterPanel /> : <PhraseSidebar />}
+    </div>
+  );
 
   return (
     <div className="editor-shell">
+      {prefs.panelSide === "left" && sidebar}
       <div className="editor-main">
         <div className="editor-topbar">
           <button onClick={goToStart}>← Start</button>
           <span className="title">{mall.name}</span>
+          <button
+            onClick={() => updatePrefs({ paramMode: prefs.paramMode === "panel" ? "inline" : "panel" })}
+            title="Växla var parametrar anges: i panelen eller direkt i dokumentet"
+          >
+            {prefs.paramMode === "panel" ? "✏ Inline-läge" : "🗂 Panel-läge"}
+          </button>
+          <button
+            onClick={() => updatePrefs({ panelSide: prefs.panelSide === "right" ? "left" : "right" })}
+            title="Flytta panelen till andra sidan"
+          >
+            ⇄ Panelsida
+          </button>
+          {prefs.paramMode === "inline" && (
+            <button
+              onClick={() => updatePrefs({ panelHidden: !prefs.panelHidden })}
+              title="Visa eller dölj panelen (endast i inline-läge)"
+            >
+              {prefs.panelHidden ? "◧ Visa panel" : "◨ Dölj panel"}
+            </button>
+          )}
           <button onClick={undo} disabled={history.length === 0} title="Ångra (Ctrl+Z)">↶ Ångra</button>
           <button onClick={redo} disabled={future.length === 0} title="Gör om (Ctrl+Y)">↷ Gör om</button>
           <button onClick={() => setSearchOpen(true)} title="Sök (Ctrl+F)">🔍 Sök</button>
           <button onClick={handleSaveSession}>💾 Spara dokument</button>
           <button className="primary" onClick={() => window.print()}>🖶 Skriv ut / PDF</button>
+          <span className="app-version" title="Version">v{FRED_VERSION}</span>
         </div>
-        <div className="editor-body">
+        <div className="editor-body" onClick={handleDocumentClick}>
           {/* Mallens defaultStyle sätts på sidan; block/fält utan egen stil ärver via CSS. */}
-          <div className="document-page" style={styleDefToCss(mall.defaultStyle)}>
+          <div
+            className={`document-page ${prefs.paramMode === "inline" ? "inline-params" : ""}`}
+            style={styleDefToCss(mall.defaultStyle)}
+          >
             <HeaderFooterView fields={mall.headerFooter.headerFields} organisation={organisation} as="header" />
             {sortedBlocks.map((used, i) => {
               const blockDef = mall.blocks.find((b) => b.id === used.blockId);
@@ -92,21 +165,15 @@ export default function DocumentScreen() {
           </div>
         </div>
       </div>
-      <div className="sidebar">
-        <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
-          <button
-            className={sidebarTab === "parametrar" ? "primary" : ""}
-            onClick={() => setSidebarTab("parametrar")}
-          >
-            Parametrar
-          </button>
-          <button className={sidebarTab === "fraser" ? "primary" : ""} onClick={() => setSidebarTab("fraser")}>
-            Fraser
-          </button>
-        </div>
-        {sidebarTab === "parametrar" ? <ParameterPanel /> : <PhraseSidebar />}
-      </div>
+      {prefs.panelSide === "right" && sidebar}
       {searchOpen && <SearchBar onClose={() => setSearchOpen(false)} />}
+      {inlineEdit && inlineDef && (
+        <InlineParamEditor
+          def={inlineDef}
+          anchor={{ x: inlineEdit.x, y: inlineEdit.y }}
+          onClose={() => setInlineEdit(null)}
+        />
+      )}
     </div>
   );
 }
