@@ -406,7 +406,7 @@
       card.addEventListener("click", () => newDocumentFlow(mall));
       grid.appendChild(card);
     }
-    if (!visible.length) grid.innerHTML = '<p style="color:#605e5c;font-size:13px">Inga mallar i den här kategorin. Läs in mallfiler under Öppna filer.</p>';
+    if (!visible.length) grid.innerHTML = '<p style="color:#605e5c;font-size:13px">Inga mallar i den här kategorin. Öppna en konfigurationsfil under Öppna filer.</p>';
 
     const recent = $("recent-list");
     recent.innerHTML = "";
@@ -1173,6 +1173,7 @@
       case "open":
         h1.textContent = "Öppna";
         main.appendChild(bsRow("Öppna dokument", "Fortsätt arbeta med en sparad .fred.json-fil.", () => { $("backstage").hidden = true; openSessionFile(); }));
+        main.appendChild(bsRow("Öppna konfigurationsfil", "Läs in organisationer, hierarki och mallar från en fred-konfiguration.json.", () => { $("backstage").hidden = true; openConfigFile(); }));
         main.appendChild(bsRow("Importera uppgifter", "Fyll i parametrar från en JSON-importfil.", () => { $("backstage").hidden = true; openImportFile(); }));
         break;
       case "save":
@@ -1202,7 +1203,7 @@
       const session = data.marker === "fred-session" ? data.session : data.templateId ? data : null;
       if (!session) { toast("Filen är inte en Fred-dokumentfil."); return; }
       const mall = mallar.find((m) => m.id === session.templateId);
-      if (!mall) { toast("Läs in dokumentets mall först (Läs in mall)."); return; }
+      if (!mall) { toast("Läs in dokumentets mall först (Öppna konfigurationsfil)."); return; }
       const res = fred({ cmd: "open_session", mall, session, seed: Date.now() });
       if (!res.ok) { toast(res.error); return; }
       currentMall = mall;
@@ -1210,23 +1211,24 @@
     });
   }
 
-  function openMallFile() {
+  // Enhetlig konfigurationsfil (kravspec V12): organisationer, hierarki och
+  // samtliga mallar i en fil. Inbyggd demo-data behålls; filens innehåll
+  // vinner vid krockande id:n.
+  function openConfigFile() {
     pickFile((data) => {
-      const mall = data.marker === "fred-mall" ? data.mall : data.blocks ? data : null;
-      if (!mall) { toast("Filen är inte en Fred-mall."); return; }
-      mallar = [...mallar.filter((m) => m.id !== mall.id), mall];
-      toast(`Mallen "${mall.name}" har lästs in.`);
-      renderStart();
-    });
-  }
-
-  function openOrgsFile() {
-    pickFile((data) => {
-      const orgs = data.marker === "fred-organisationer" ? data.organisations : Array.isArray(data) ? data : null;
-      if (!orgs) { toast("Filen är inte en organisationsfil."); return; }
-      organisations = orgs;
+      if (data?.marker !== "fred-konfiguration" ||
+          !Array.isArray(data.organisations) || !Array.isArray(data.mallar)) {
+        toast("Filen är inte en Fred-konfigurationsfil.");
+        return;
+      }
+      const orgIds = new Set(data.organisations.map((o) => o.id));
+      organisations = [...organisations.filter((o) => !orgIds.has(o.id)), ...data.organisations];
+      const mallIds = new Set(data.mallar.map((m) => m.id));
+      mallar = [...mallar.filter((m) => !mallIds.has(m.id)), ...data.mallar];
+      if (data.hierarchy) hierarchy = data.hierarchy;
+      activeCategory = null;
       fred({ cmd: "load_organisations", organisations });
-      toast(`${orgs.length} organisationer inlästa.`);
+      toast(`Konfiguration inläst: ${data.organisations.length} organisation(er), ${data.mallar.length} mall(ar).`);
       renderStart();
     });
   }
@@ -1250,8 +1252,7 @@
   }
 
   on("open-session-btn", openSessionFile);
-  on("open-mall-btn", openMallFile);
-  on("open-orgs-btn", openOrgsFile);
+  on("open-config-btn", openConfigFile);
   on("open-import-btn", openImportFile);
   on("rail-open", () => openSessionFile());
   on("rail-new", () => window.scrollTo(0, 0));

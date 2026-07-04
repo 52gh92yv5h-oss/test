@@ -1,12 +1,8 @@
 import { useRef } from "react";
 import {
   Organisation,
-  OrganisationsFile,
-  FRED_ORG_FILE_MARKER,
   fileToDataUrl,
   newId,
-  openJsonFromLocalFile,
-  saveJsonWithFeedback,
 } from "@fred/shared";
 import { useConfiguratorStore } from "../store";
 
@@ -15,7 +11,6 @@ export default function OrganisationsPanel() {
   const addOrganisation = useConfiguratorStore((s) => s.addOrganisation);
   const updateOrganisation = useConfiguratorStore((s) => s.updateOrganisation);
   const removeOrganisation = useConfiguratorStore((s) => s.removeOrganisation);
-  const setOrganisations = useConfiguratorStore((s) => s.setOrganisations);
   const fileInputs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const handleLogoChange = async (org: Organisation, file: File | undefined) => {
@@ -24,30 +19,12 @@ export default function OrganisationsPanel() {
     updateOrganisation(org.id, { logoDataUrl: dataUrl });
   };
 
-  const handleSave = () => {
-    const payload: OrganisationsFile = {
-      marker: FRED_ORG_FILE_MARKER,
-      version: 1,
-      organisations,
-    };
-    void saveJsonWithFeedback(payload, "organisationer.json", "Organisationerna");
-  };
-
-  const handleOpen = async () => {
-    const data = await openJsonFromLocalFile<OrganisationsFile>();
-    if (data?.marker === FRED_ORG_FILE_MARKER) {
-      setOrganisations(data.organisations);
-    }
-  };
-
   return (
     <div>
       <div className="toolbar">
         <button className="primary" onClick={() => addOrganisation({ id: newId("org"), name: "Ny organisation" })}>
           + Ny organisation
         </button>
-        <button onClick={handleOpen}>Öppna organisationer.json</button>
-        <button onClick={handleSave}>Spara organisationer.json</button>
       </div>
 
       <div className="panel">

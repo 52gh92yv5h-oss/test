@@ -138,16 +138,8 @@ export interface DocumentSession {
   updatedAt: string;
 }
 
-export const FRED_MALL_FILE_MARKER = "fred-mall" as const;
 export const FRED_SESSION_FILE_MARKER = "fred-session" as const;
-export const FRED_ORG_FILE_MARKER = "fred-organisationer" as const;
-export const FRED_HIERARCHY_FILE_MARKER = "fred-hierarki" as const;
-
-export interface MallFile {
-  marker: typeof FRED_MALL_FILE_MARKER;
-  version: 1;
-  mall: Mall;
-}
+export const FRED_CONFIG_FILE_MARKER = "fred-konfiguration" as const;
 
 export interface SessionFile {
   marker: typeof FRED_SESSION_FILE_MARKER;
@@ -155,16 +147,18 @@ export interface SessionFile {
   session: DocumentSession;
 }
 
-export interface OrganisationsFile {
-  marker: typeof FRED_ORG_FILE_MARKER;
+/**
+ * Den enhetliga konfigurationsfilen (kravspec V12): organisationer,
+ * mallhierarki och samtliga mallar i en och samma fil. Ersätter de
+ * tidigare separata filerna för organisationer, hierarki och enskilda
+ * mallar - administratören hanterar nu bara en fil.
+ */
+export interface ConfigFile {
+  marker: typeof FRED_CONFIG_FILE_MARKER;
   version: 1;
   organisations: Organisation[];
-}
-
-export interface HierarchyFile {
-  marker: typeof FRED_HIERARCHY_FILE_MARKER;
-  version: 1;
-  root: CategoryNode;
+  hierarchy: CategoryNode;
+  mallar: Mall[];
 }
 
 export interface ImportParametersFile {

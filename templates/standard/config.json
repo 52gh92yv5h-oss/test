@@ -1,14 +1,4 @@
-// Inbyggd standardkonfiguration (kravspec V12): en enhetlig ConfigFile med
-// organisation, hierarki och affärsbrevsmall för det fiktiva företaget
-// Exempelbolaget AB, tillgänglig utan att externa filer läses in.
-// Logotypen är egendesignad för Fred (CC0).
-//
-// Genererad fil - regenerera via
-// node scripts/generate-config-bundles.mjs från
-// templates/standard/config.json. Redigera inte för hand.
-import { ConfigFile } from "@fred/shared";
-
-export const BUILTIN_CONFIG: ConfigFile = {
+{
   "marker": "fred-konfiguration",
   "version": 1,
   "organisations": [
@@ -181,11 +171,4 @@ export const BUILTIN_CONFIG: ConfigFile = {
       "updatedAt": "2026-07-04T00:00:00Z"
     }
   ]
-} as unknown as ConfigFile;
-
-export const BUILTIN_ORGANISATION = BUILTIN_CONFIG.organisations[0];
-export const BUILTIN_MALL = BUILTIN_CONFIG.mallar[0];
-
-// Datum-parametern förifylls med dagens datum vid appstart.
-const datumDef = BUILTIN_MALL.parameters.find((p) => p.id === "datum");
-if (datumDef) datumDef.defaultValue = new Date().toISOString().slice(0, 10);
+}

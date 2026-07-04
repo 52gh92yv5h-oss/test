@@ -198,3 +198,25 @@ hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 .hf-preview-body { padding: 14px 0; color: #999; font-size: 12px; }
 .hf-preview-body p { margin: 0 0 6px; }
 .hf-preview-placeholder { color: #aaa; font-style: italic; }
+
+/* ---------- Enhetlig konfiguration (V12) ---------- */
+.nav-config-actions {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 0 16px 14px; border-bottom: 1px solid rgba(255,255,255,0.15);
+  margin-top: 12px; margin-bottom: 10px;
+}
+.nav-config-actions button {
+  text-align: left; font-size: 12.5px; padding: 6px 10px;
+  border: 1px solid rgba(255,255,255,0.25); border-radius: 4px;
+}
+.nav-config-actions button.primary-nav { background: rgba(255,255,255,0.15); font-weight: 600; }
+.nav-config-actions button:hover { background: rgba(255,255,255,0.12); }
+
+.template-list-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px;
+  margin-bottom: 6px; cursor: pointer; background: #fff;
+}
+.template-list-item:hover { border-color: var(--accent); }
+.template-list-item.selected { border-color: var(--accent); background: #eef4fc; }
+.template-list-item button { padding: 2px 8px; font-size: 12px; }

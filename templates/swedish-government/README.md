@@ -1,11 +1,13 @@
 # Svenska myndighetsdokumentmallar
 
-Detta katalog innehåller 10 dokumentmallar för Fred-systemet, baserade på vanliga dokumenttyper från svenska myndigheter.
+Denna katalog innehåller **en enhetlig konfigurationsfil**, `config.json`, med hela mallbiblioteket för svenska myndigheter: 7 organisationer (med logotyper), mallhierarkin och 11 mallar — 10 myndighetsmallar plus en omfattande exempel-mall. Filen följer Fred-systemets konfigurationsformat (markör `fred-konfiguration`, kravspecifikation V12 avsnitt 6.1).
+
+Samma innehåll är även inbakat i Fred Konfigurator som den fördefinierade mallbunten bakom knappen *"+ Sveriges myndighetsmallar"* (`apps/configurator/src/predefinedBundle.ts`, genererad med `node scripts/generate-config-bundles.mjs`).
 
 ## Exempel-mall (För demonstation av alla möjligheter)
 
 ### **EXEMPEL: Omfattande mall - Alla konstruktioner**
-- **Fil:** `template-example-comprehensive.json`
+- **Mall-ID:** `mall-comprehensive-example`
 - **Användning:** Demonstrerar ALLA möjliga konstruktioner i Fred-systemet
 - **Innehål:** Denna mall visar exempel på:
   - **Text-parametrar:** Namn, e-post, telefonnummer
@@ -30,73 +32,76 @@ Detta katalog innehåller 10 dokumentmallar för Fred-systemet, baserade på van
 ## Mallar för svenska myndigheter
 
 ### 1. **Arbetsförmedlingen - Personlig handlingsplan**
-- **Fil:** `template-1-arbetsformedlingen-handlingsplan.json`
+- **Mall-ID:** `mall-arb-handlingsplan`
 - **Användning:** Handlingsplan för arbetssökande som registreras tillsammans med Arbetsförmedlingen
 - **Myndighet:** Arbetsförmedlingen
 - **Parametrar:** Namn, personnummer, arbetsmarknadsmål, åtgärder, tidplaner
 
 ### 2. **Skatteverket - Arbetsgivardeklaration**
-- **Fil:** `template-2-skatteverket-arbetsgivardeklaration.json`
+- **Mall-ID:** `mall-skatt-agdekl`
 - **Användning:** Månatlig rapportering av arbetsgivaravgifter
 - **Myndighet:** Skatteverket
 - **Parametrar:** Organisationsnummer, anställdas uppgifter, löner, arbetsgivaravgifter
 
 ### 3. **Försäkringskassan - Läkarintyg för sjukpenning**
-- **Fil:** `template-3-forsaksringskassan-lakarintyg.json`
+- **Mall-ID:** `mall-fk-lakarintyg`
 - **Användning:** Medicinsk bedömning för sjukpenning/sjukskrivning
 - **Myndighet:** Försäkringskassan
 - **Parametrar:** Diagnos, sjukskrivningsgrad, perioder, arbetsförmåga, behandlingsplan
 
 ### 4. **Försäkringskassan - Föräldrapenning ansökan**
-- **Fil:** `template-4-forsaksringskassan-foraldrapenning.json`
+- **Mall-ID:** `mall-fk-foraldrapenning`
 - **Användning:** Ansökan för graviditets- och föräldrapenning
 - **Myndighet:** Försäkringskassan
 - **Parametrar:** Ansökares info, barnets info, tidsperiod, typ av föräldrapenning
 
 ### 5. **CSN - Studiefinansiering ansökan**
-- **Fil:** `template-5-csn-studiestod.json`
+- **Mall-ID:** `mall-csn-studielan`
 - **Användning:** Ansökan om statligt studiestöd och studielån
 - **Myndighet:** Centrala studiestödsnämnden (CSN)
 - **Parametrar:** Studentinfo, utbildningsprogram, institution, förvändade kostnader
 
 ### 6. **Försäkringskassan - Boendebidrags ansökan**
-- **Fil:** `template-6-forsaksringskassan-boendebidraget.json`
+- **Mall-ID:** `mall-fk-boendebidraget`
 - **Användning:** Ansökan för ekonomiskt stöd till boende
 - **Myndighet:** Försäkringskassan
 - **Parametrar:** Ansökares info, bostadsadress, hyra, inkomst, familjemedlemmar
 
 ### 7. **Skatteverket - Anmälan om start av näringsverksamhet**
-- **Fil:** `template-7-skatteverket-naring.json`
+- **Mall-ID:** `mall-skatt-anmalan-naring`
 - **Användning:** Registrering av nystartat företag/eget företagande
 - **Myndighet:** Skatteverket
 - **Parametrar:** Företagsnamn, verksamhetstyp, startdatum, omsättning, bankinformation
 
 ### 8. **Migrationsverket - Uppehållstillstånds ansökan**
-- **Fil:** `template-8-migrationsverket-uppehall.json`
+- **Mall-ID:** `mall-migrationsverket-uppehall`
 - **Användning:** Ansökan för att få uppehållstillstånd i Sverige
 - **Myndighet:** Migrationsverket
 - **Parametrar:** Personlig info, boendeadress, grund för ansökan, anställningsuppgifter
 
 ### 9. **Polismyndigheten - Ansökan om ID-handling**
-- **Fil:** `template-9-polismyndigheten-id.json`
+- **Mall-ID:** `mall-polis-id-handling`
 - **Användning:** Ansökan för pass eller nationellt ID-kort
 - **Myndighet:** Polismyndigheten
 - **Parametrar:** Namn, personnummer, typ av handling, giltighet, kontakt
 
 ### 10. **Kronofogdemyndigheten - Betalningsplan ansökan**
-- **Fil:** `template-10-kronofogden-betalningsplan.json`
+- **Mall-ID:** `mall-kronofogden-betalningsplan`
 - **Användning:** Ansökan för betalningsplan vid skulder
 - **Myndighet:** Kronofogdemyndigheten
 - **Parametrar:** Gäldenärens info, skulduppgifter, ekonomisk situation, betalningsschema
 
-## Stödjande filer
+## Filens innehåll
 
-- **`organisations.json`**: Definitioner av alla 7 svenska myndigheter med logotyper (base64-kodade SVG-bilder)
-- **`hierarchy.json`**: Hierarkisk kategorisering av mallarna (arbetsmarknad, skatter, försäkringar, utbildning, migration, skulder)
+`config.json` innehåller allt i ett:
+
+- **`organisations`**: Definitioner av alla 7 svenska myndigheter med logotyper (base64-kodade bilder)
+- **`hierarchy`**: Hierarkisk kategorisering av mallarna (arbetsmarknad, skatter, försäkringar, utbildning, migration, skulder)
+- **`mallar`**: De 11 mallarna ovan
 
 ## Struktur enligt Fred-specifikationen
 
-Varje mall följer Fred-systemets datamodell (kravspecifikation V8):
+Varje mall följer Fred-systemets datamodell (kravspecifikation V12):
 
 - **Header/Footer**: Organisationslogotyp, organisationsnamn och sidnummer
 - **Parametrar**: Multi-nivå parametrar som kan vara text, datum, nummer, boolean eller listor
@@ -106,11 +111,11 @@ Varje mall följer Fred-systemets datamodell (kravspecifikation V8):
 
 ## Logotyper
 
-Logotyperna lagras som base64-kodade data-URL:er i `organisations.json` och
-renderas i dokumentens sidhuvuden i Fred Editor, i konfiguratorns
-förhandsgranskning av sidhuvud/sidfot samt vid PDF-export.
+Logotyperna lagras som base64-kodade data-URL:er i `config.json`
+(organisationslistan) och renderas i dokumentens sidhuvuden i Fred Editor,
+i konfiguratorns förhandsgranskning av sidhuvud/sidfot samt vid PDF-export.
 
-**Nuvarande status: riktiga logotyper.** Organisationsfilen innehåller
+**Nuvarande status: riktiga logotyper.** Konfigurationsfilen innehåller
 respektive myndighets riktiga logotyp, hämtad från Wikimedia. Källan
 antecknas per organisation i fältet `logoSource`:
 
@@ -137,8 +142,10 @@ NODE_USE_ENV_PROXY=1 node scripts/fetch-logos.mjs
 Claude Code-miljöer — Nodes `fetch` följer annars inte `HTTPS_PROXY`.)
 
 Skriptet hämtar en 400 px PNG-thumb av respektive logotyp, bäddar in den
-som data-URL i `organisations.json` och uppdaterar `logoSource`. Ingen mall
-behöver ändras — mallarna refererar organisationer via id.
+som data-URL i `config.json` och uppdaterar `logoSource`. Ingen mall
+behöver ändras — mallarna refererar organisationer via id. Kör därefter
+`node scripts/generate-config-bundles.mjs` så att de inbakade
+TS-konstanterna i apparna uppdateras.
 
 **Varumärkesnot:** Myndighetslogotyperna tillhör respektive myndighet och
 används i mallarna endast för att återge korrekt avsändare i dokument som
@@ -146,31 +153,38 @@ utfärdas i myndighetens namn.
 
 ## Använda filformatet
 
-Alla filer använder standardformatet för Fred-systemet:
+Filen använder Fred-systemets enhetliga konfigurationsformat:
 
 ```json
 {
-  "marker": "fred-mall",
+  "marker": "fred-konfiguration",
   "version": 1,
-  "mall": { ... }
+  "organisations": [ ... ],
+  "hierarchy": { ... },
+  "mallar": [ ... ]
 }
 ```
 
-Detta möjliggör att filerna direkt kan importeras in i Fred Konfigurator.
+Detta gör att filen direkt kan öppnas i både Fred Konfigurator och Fred
+Editor ("Öppna konfigurationsfil").
 
 ## Anpassning
 
 För att anpassa mallarna:
 
-1. Öppna `template-X-....json` i Fred Konfigurator
-2. Lägg till eller modifiera parametrar, innehållsblock och sidhuvud/sidfot efter behov
-3. Spara den uppdaterade mallen
+1. Öppna `config.json` i Fred Konfigurator ("Öppna konfigurationsfil") —
+   eller klicka *"+ Sveriges myndighetsmallar"* för att hämta samma
+   innehåll ur den inbakade bunten
+2. Välj mall i mallistan och modifiera parametrar, innehållsblock och
+   sidhuvud/sidfot efter behov
+3. Spara konfigurationsfilen
 
 ## Användning i Fred Editor
 
-1. Ladda organisationsfilen och hierarkin i Fred Konfigurator
-2. Importera mallarna
-3. I Fred Editor kan användaren sedan:
+1. Öppna konfigurationsfilen i Fred Editor ("Öppna konfigurationsfil") —
+   eller låt editorn läsa in den automatiskt via den delade lokala
+   lagringen om Konfiguratorn körs från samma webbursprung
+2. I Fred Editor kan användaren sedan:
    - Välja en mall baserad på myndighetshierarkin
    - Fylla i parametervärden
    - Redigera innehållet i redigerbara block
@@ -182,7 +196,7 @@ För att anpassa mallarna:
 ## Detaljerad beskrivning av den omfattande exempel-mallen
 
 ### Syfte
-`template-example-comprehensive.json` är inte en verklig myndighetsmall utan en **referensmall för utvecklare och administratörer** som visar alla möjligheter i Fred-systemet.
+Mallen `mall-comprehensive-example` är inte en verklig myndighetsmall utan en **referensmall för utvecklare och administratörer** som visar alla möjligheter i Fred-systemet.
 
 ### Parametrar som demonstreras
 

@@ -81,9 +81,13 @@ function PreviewStrip({
  * Uppdateras direkt när fält, positioner eller stilar ändras.
  */
 export default function HeaderFooterPreview() {
-  const mall = useConfiguratorStore((s) => s.mall);
+  const mall = useConfiguratorStore(
+    (s) => s.mallar.find((m) => m.id === s.selectedMallId) ?? null
+  );
   const organisations = useConfiguratorStore((s) => s.organisations);
   const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null);
+
+  if (!mall) return null;
 
   const eligible = organisations.filter((o) => orgAllowedForMall(mall, o));
   const organisation =

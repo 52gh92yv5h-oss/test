@@ -1,17 +1,14 @@
 import { useState } from "react";
 import {
-  FRED_HIERARCHY_FILE_MARKER,
-  FRED_MALL_FILE_MARKER,
-  FRED_ORG_FILE_MARKER,
+  ConfigFile,
+  FRED_CONFIG_FILE_MARKER,
   FRED_SESSION_FILE_MARKER,
   FRED_VERSION,
-  HierarchyFile,
   Mall,
-  MallFile,
-  OrganisationsFile,
   SessionFile,
   flattenCategories,
   openJsonFromLocalFile,
+  showToast,
 } from "@fred/shared";
 import { useEditorStore } from "../store";
 import { listAutosaves } from "../autosave";
@@ -28,26 +25,22 @@ export default function StartScreen() {
   const organisations = useEditorStore((s) => s.organisations);
   const templates = useEditorStore((s) => s.templates);
   const hierarchy = useEditorStore((s) => s.hierarchy);
-  const loadOrganisations = useEditorStore((s) => s.loadOrganisations);
-  const loadTemplate = useEditorStore((s) => s.loadTemplate);
-  const loadHierarchy = useEditorStore((s) => s.loadHierarchy);
+  const loadConfigFile = useEditorStore((s) => s.loadConfigFile);
   const startNewSession = useEditorStore((s) => s.startNewSession);
   const openSession = useEditorStore((s) => s.openSession);
   const [selectedOrgByTemplate, setSelectedOrgByTemplate] = useState<Record<string, string>>({});
 
-  const handleOpenOrgs = async () => {
-    const data = await openJsonFromLocalFile<OrganisationsFile>();
-    if (data?.marker === FRED_ORG_FILE_MARKER) loadOrganisations(data.organisations);
-  };
-
-  const handleOpenHierarchy = async () => {
-    const data = await openJsonFromLocalFile<HierarchyFile>();
-    if (data?.marker === FRED_HIERARCHY_FILE_MARKER) loadHierarchy(data.root);
-  };
-
-  const handleOpenTemplate = async () => {
-    const data = await openJsonFromLocalFile<MallFile>();
-    if (data?.marker === FRED_MALL_FILE_MARKER) loadTemplate(data.mall);
+  const handleOpenConfig = async () => {
+    const data = await openJsonFromLocalFile<ConfigFile>();
+    if (!data) return;
+    if (data.marker !== FRED_CONFIG_FILE_MARKER) {
+      showToast("Filen är inte en Fred-konfigurationsfil.");
+      return;
+    }
+    loadConfigFile(data);
+    showToast(
+      `Konfiguration inläst: ${data.organisations.length} organisation(er), ${data.mallar.length} mall(ar).`
+    );
   };
 
   const handleOpenSession = async () => {
@@ -98,12 +91,14 @@ export default function StartScreen() {
       <p className="muted">Fristående, offline ordbehandling baserad på lokala mallar.</p>
 
       <div className="card">
-        <h2>1. Ladda in lokala filer</h2>
+        <h2>1. Ladda in konfiguration</h2>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <button onClick={handleOpenOrgs}>Öppna organisationer.json</button>
-          <button onClick={handleOpenHierarchy}>Öppna hierarki.json</button>
-          <button onClick={handleOpenTemplate}>Öppna mall.json</button>
+          <button onClick={handleOpenConfig}>Öppna konfigurationsfil</button>
         </div>
+        <p className="muted" style={{ marginTop: 8 }}>
+          En konfigurationsfil innehåller organisationer, mallhierarki och samtliga mallar.
+          Om Konfiguratorn körs i samma webbläsare läses dess konfiguration in automatiskt.
+        </p>
         <p className="muted" style={{ marginTop: 8 }}>
           Organisationer: {organisations.length} · Mallar inlästa: {templateList.length}
         </p>

@@ -3,7 +3,7 @@
 Fred är ett fristående, helt offline ordbehandlingssystem baserat på lokala
 JSON-konfigurationer. **Version 1.0.0** (visas i respektive apps gränssnitt).
 
-Se `kravspecifikation.md` för den fullständiga kravspecifikationen (V11).
+Se `kravspecifikation.md` för den fullständiga kravspecifikationen (V12).
 
 ## Appvarianter
 
@@ -43,6 +43,25 @@ uppdatera Pages-sajten. Windows-exen byggs av `windows-editor.yml`
 
 - **Mallstyrda dokument**: låsta/redigerbara block, fasta/fria block
   (fraser), flernivåparametrar med global uppdatering.
+- **En enhetlig konfigurationsfil (V12)**: organisationer, mallhierarki och
+  samtliga mallar ligger i **en** JSON-fil (markör `fred-konfiguration`).
+  Konfiguratorn har gemensamma åtgärder *Ny/Öppna/Spara konfigurationsfil*
+  och kan hantera flera mallar i samma arbetsyta; båda editorvarianterna
+  (React och WASM) läser in hela biblioteket med en enda "Öppna
+  konfigurationsfil"-knapp. De gamla separata filerna
+  (`organisationer.json`, `hierarki.json`, `mall-*.json`) finns inte
+  längre.
+- **Fördefinierad mallbunt (V12)**: knappen *"+ Sveriges myndighetsmallar"*
+  i konfiguratorn slår ihop de inbakade svenska myndighetsmallarna
+  (7 organisationer, 11 mallar, hierarki) med arbetsytan — helt offline,
+  innehållet inlinas i den sparade filen.
+- **Delad localStorage-brygga (V12)**: konfiguratorns ändringar speglas
+  automatiskt (debounce ~0,8 s) till nyckeln `fred-shared-config` i
+  webbläsarens localStorage, och editorn läser in den vid start. Fungerar
+  bara när båda apparna körs från **samma webbursprung** (t.ex. Pages-
+  deploymentens `/redigerare/` + `/konfigurator/`) — inte mellan separata
+  artifact-URL:er eller i Windows-appen. Filexport/-import fungerar alltid,
+  oavsett ursprung.
 - **Parameterinmatning — valbart läge (V11)**: användaren väljer om
   parametrar anges **inline i dokumentet** (klicka på fältet/chipen) eller i
   en **panel**; panelens sida (vänster/höger) är valbar och i inline-läge
@@ -132,17 +151,25 @@ verifierar att mallen öppnas och att initialvärdena infogats.
 
 ## Mallbibliotek
 
-- `templates/standard/` — Exempelbolagets affärsbrev + organisation
-  (samma mall som är inbyggd i editorerna).
-- `templates/swedish-government/` — 11 exempelmallar för svenska
-  myndigheter, organisationsfil med riktiga logotyper och mallhierarki.
+Varje bunt är **en** konfigurationsfil (`config.json`) i det enhetliga
+formatet (marker `fred-konfiguration`, se kravspec avsnitt 6.1):
+
+- `templates/standard/config.json` — Exempelbolaget AB + affärsbrevet
+  (samma mall som är inbyggd i editorerna; `apps/editor/src/builtin.ts`
+  genereras från denna fil).
+- `templates/swedish-government/config.json` — 7 svenska myndigheter med
+  riktiga logotyper, mallhierarki och 11 exempelmallar
+  (`apps/configurator/src/predefinedBundle.ts` genereras från denna fil).
   Se katalogens README.
+
+Regenerera de inbakade TS-konstanterna efter ändringar i buntarna med
+`node scripts/generate-config-bundles.mjs`.
 
 ## Logotyper: källor och licenser
 
 Myndighetslogotyperna är hämtade med `scripts/fetch-logos.mjs`
 (`NODE_USE_ENV_PROXY=1 node scripts/fetch-logos.mjs` bakom utgående proxy)
-och inbäddade i `templates/swedish-government/organisations.json`. Källa
+och inbäddade i `templates/swedish-government/config.json`. Källa
 och licens lagras per organisation i fälten `logoSource`/`logoLicense`:
 
 | Logotyp | Källa | Licens |
@@ -163,7 +190,7 @@ att återge korrekt avsändare i dokument som utfärdas i myndighetens namn.
 
 ## Status
 
-Version 1.0.0 täcker kravspecifikationens kärnflöden (V11). Ej
+Version 1.0.0 täcker kravspecifikationens kärnflöden (V12). Ej
 implementerat ännu: fullständig sidhuvud/sidfot-repetition per utskriven
 sida (renderas en gång per dokument) samt installationsprogram utöver
 enfils-`index.html`/Windows-exen.

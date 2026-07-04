@@ -103,10 +103,17 @@ genomgår inte bilageskanning.
 
 ## Filformat
 
-Samma JSON-format som övriga Fred: mallfiler (`fred-mall`),
-organisationsfiler (`fred-organisationer`), sessionsfiler (`fred-session`)
-och importfiler (`{ organisationId?, values }`). Filer skapade i
-Fred Konfiguratör kan läsas in via startskärmen eller Arkiv → Öppna.
+Samma JSON-format som övriga Fred (kravspec V12): den enhetliga
+konfigurationsfilen (`fred-konfiguration` — organisationer, hierarki och
+samtliga mallar i en fil), sessionsfiler (`fred-session`) och importfiler
+(`{ organisationId?, values }`). Konfigurationsfilen öppnas via
+startskärmens "Öppna konfigurationsfil…" eller Arkiv → Öppna; innehållet
+slås ihop med den inbyggda demo-datan (`web/demo-data.js`), där filens
+poster vinner vid krockande id:n.
+
+**Not:** den delade localStorage-bryggan mellan Konfiguratorn och
+React-editorn omfattar inte WASM-editorn — här läses konfigurationen
+alltid in som fil.
 
 ## Start från extern applikation
 
