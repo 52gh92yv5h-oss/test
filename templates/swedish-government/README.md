@@ -110,23 +110,35 @@ Logotyperna lagras som base64-kodade data-URL:er i `organisations.json` och
 renderas i dokumentens sidhuvuden i Fred Editor, i konfiguratorns
 förhandsgranskning av sidhuvud/sidfot samt vid PDF-export.
 
-**Nuvarande status: platshållare.** Organisationsfilen innehåller för
-närvarande genererade platshållar-logotyper (färgkodade SVG:er), eftersom
-utvecklingsmiljöns nätverkspolicy inte tillåter hämtning från internet.
+**Nuvarande status: riktiga logotyper.** Organisationsfilen innehåller
+respektive myndighets riktiga logotyp, hämtad från Wikimedia. Källan
+antecknas per organisation i fältet `logoSource`:
 
-### Hämta riktiga logotyper
+| Myndighet | Källa |
+|-----------|-------|
+| Arbetsförmedlingen | Commons: `File:Arbetsförmedlingen logo.svg` |
+| Skatteverket | en.wikipedia: `File:Skatteverket Logo.svg` |
+| Försäkringskassan | Commons: `File:Logo Försäkringskassan.svg` |
+| CSN | Commons: `File:Centrala Studiestödsnämnden logo.svg` |
+| Migrationsverket | Commons: `File:Logotyp för Migrationsverket.svg` |
+| Polismyndigheten | Commons: `File:Polisen vapen.svg` (polisens vapen) |
+| Kronofogdemyndigheten | Commons: `File:Logo Kronofogdemyndigheten.svg` |
+
+### Uppdatera logotyperna
 
 Kör hämtskriptet från repots rot i en miljö med nätverksåtkomst till
-`wikimedia.org`:
+`*.wikimedia.org`/`*.wikipedia.org`:
 
 ```bash
-node scripts/fetch-logos.mjs
+NODE_USE_ENV_PROXY=1 node scripts/fetch-logos.mjs
 ```
 
-Skriptet söker upp respektive myndighets logotyp på Wikimedia Commons,
-bäddar in den som data-URL i `organisations.json` och antecknar källan i
-fältet `logoSource`. Ingen mall behöver ändras — mallarna refererar
-organisationer via id.
+(`NODE_USE_ENV_PROXY=1` behövs bara bakom en utgående proxy, t.ex. i
+Claude Code-miljöer — Nodes `fetch` följer annars inte `HTTPS_PROXY`.)
+
+Skriptet hämtar en 400 px PNG-thumb av respektive logotyp, bäddar in den
+som data-URL i `organisations.json` och uppdaterar `logoSource`. Ingen mall
+behöver ändras — mallarna refererar organisationer via id.
 
 **Varumärkesnot:** Myndighetslogotyperna tillhör respektive myndighet och
 används i mallarna endast för att återge korrekt avsändare i dokument som

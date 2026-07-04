@@ -73,12 +73,13 @@ myndigheter (inkl. en heltäckande exempel-mall som demonstrerar samtliga
 konstruktioner), en organisationsfil och en mallhierarki. Se katalogens
 README för detaljer.
 
-Logotyperna i organisationsfilen är för närvarande platshållare.
-`scripts/fetch-logos.mjs` hämtar riktiga myndighetslogotyper från Wikimedia
-Commons och bäddar in dem – kräver nätverksåtkomst till `wikimedia.org`:
+Organisationsfilen innehåller myndigheternas riktiga logotyper (hämtade
+från Wikimedia; källa per organisation i fältet `logoSource`). De kan
+uppdateras med `scripts/fetch-logos.mjs` — kräver nätverksåtkomst till
+`*.wikimedia.org`/`*.wikipedia.org`:
 
 ```bash
-node scripts/fetch-logos.mjs
+NODE_USE_ENV_PROXY=1 node scripts/fetch-logos.mjs
 ```
 
 ## Status
