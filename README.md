@@ -46,10 +46,11 @@ uppdatera Pages-sajten. Windows-exen byggs av `windows-editor.yml`
 - **En enhetlig konfigurationsfil (V12)**: organisationer, mallhierarki och
   samtliga mallar ligger i **en** JSON-fil (markör `fred-konfiguration`).
   Konfiguratorn har gemensamma åtgärder *Ny/Öppna/Spara konfigurationsfil*
-  och kan hantera flera mallar i samma arbetsyta; editorn läser in hela
-  biblioteket med en enda "Öppna konfigurationsfil"-knapp. De gamla
-  separata filerna (`organisationer.json`, `hierarki.json`, `mall-*.json`)
-  finns inte längre.
+  och kan hantera flera mallar i samma arbetsyta; båda editorvarianterna
+  (React och WASM) läser in hela biblioteket med en enda "Öppna
+  konfigurationsfil"-knapp. De gamla separata filerna
+  (`organisationer.json`, `hierarki.json`, `mall-*.json`) finns inte
+  längre.
 - **Fördefinierad mallbunt (V12)**: knappen *"+ Sveriges myndighetsmallar"*
   i konfiguratorn slår ihop de inbakade svenska myndighetsmallarna
   (7 organisationer, 11 mallar, hierarki) med arbetsytan — helt offline,
