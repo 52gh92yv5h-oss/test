@@ -8,7 +8,7 @@ import {
 } from "@fred/shared";
 import { useEditorStore } from "../store";
 
-function ParamInput({ def, value, onChange }: { def: ParameterDef; value: ParameterValue; onChange: (v: ParameterValue) => void }) {
+export function ParamInput({ def, value, onChange }: { def: ParameterDef; value: ParameterValue; onChange: (v: ParameterValue) => void }) {
   if (def.type === "boolean") {
     return (
       <select value={String(Boolean(value))} onChange={(e) => onChange(e.target.value === "true")}>

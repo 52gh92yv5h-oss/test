@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <RootNamespace>FredEditor</RootNamespace>
+    <AssemblyName>FredEditor</AssemblyName>
+    <Version>1.0.0</Version>
+    <!-- Gör att projektet kan korskompileras för Windows från Linux/macOS. -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <!-- WebView2-loadern packas in i exen vid PublishSingleFile. -->
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
+  </ItemGroup>
+
+  <!-- Den fristående editorn (WASM-variantens enfils-HTML) följer med som
+       innehåll och serveras till WebView2 via en virtuell host. Bygg den
+       först: npm run build:editor-wasm (repo-roten). -->
+  <ItemGroup>
+    <Content Include="../editor-wasm/dist/index.html" Link="app/index.html" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

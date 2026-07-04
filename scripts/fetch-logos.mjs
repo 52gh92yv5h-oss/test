@@ -91,7 +91,7 @@ async function imageInfo(wiki, title) {
     action: "query",
     titles: title,
     prop: "imageinfo",
-    iiprop: "url|mime",
+    iiprop: "url|mime|extmetadata", // extmetadata ger licens (LicenseShortName)
     iiurlwidth: "400", // PNG-thumb även för SVG → jämn rendering, rimlig storlek
   });
   const page = Object.values(data?.query?.pages ?? {})[0];
@@ -125,9 +125,11 @@ async function fetchLogo({ wiki, title, search }) {
   const mime = res.headers.get("content-type")?.split(";")[0] || "image/png";
   const buf = Buffer.from(await res.arrayBuffer());
   if (buf.length < 500) throw new Error(`misstänkt liten fil (${buf.length} B)`);
+  const license = info.extmetadata?.LicenseShortName?.value ?? "";
   return {
     dataUrl: `data:${mime};base64,${buf.toString("base64")}`,
     source: `${wiki}: ${usedTitle}`,
+    license,
     bytes: buf.length,
   };
 }
@@ -140,11 +142,12 @@ for (const org of orgFile.organisations) {
   const src = SOURCES[org.id];
   if (!src) continue;
   try {
-    const { dataUrl, source, bytes } = await fetchLogo(src);
+    const { dataUrl, source, license, bytes } = await fetchLogo(src);
     org.logoDataUrl = dataUrl;
     org.logoSource = source;
+    if (license) org.logoLicense = license;
     updated++;
-    console.log(`ok   ${org.name} ← ${source} (${(bytes / 1024).toFixed(0)} kB)`);
+    console.log(`ok   ${org.name} ← ${source} [${license || "licens okänd"}] (${(bytes / 1024).toFixed(0)} kB)`);
   } catch (err) {
     failures.push(`${org.name}: ${err.message}`);
     console.error(`FAIL ${org.name}: ${err.message}`);

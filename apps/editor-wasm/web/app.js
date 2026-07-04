@@ -69,6 +69,89 @@
   const DOC_KEY = "fred-doc-";
   const RECENT_LIMIT = 8;
 
+  // ============ Parameterläge (kravspec 2.2, V11) ============
+  // paramMode: "inline" (fält i löptexten) eller "panel" (sidopanel).
+  // panelSide: "left"/"right". panelHidden gäller endast inline-läget.
+  const PREFS_KEY = "fred-wasm-ui-prefs";
+  let uiPrefs = { paramMode: "inline", panelSide: "right", panelHidden: true };
+  try {
+    const saved = JSON.parse(localStorage.getItem(PREFS_KEY) || "{}");
+    if (saved.paramMode === "panel") uiPrefs.paramMode = "panel";
+    if (saved.panelSide === "left") uiPrefs.panelSide = "left";
+    if (typeof saved.panelHidden === "boolean") uiPrefs.panelHidden = saved.panelHidden;
+  } catch { /* trasig lagring – kör standardvärden */ }
+
+  function savePrefs() {
+    try { localStorage.setItem(PREFS_KEY, JSON.stringify(uiPrefs)); } catch { /* lagring avstängd */ }
+  }
+
+  function applyUiPrefs() {
+    document.body.classList.toggle("param-mode-panel", uiPrefs.paramMode === "panel");
+    document.body.classList.toggle("pane-left", uiPrefs.panelSide === "left");
+    const paneVisible = uiPrefs.paramMode === "panel" || !uiPrefs.panelHidden;
+    $("parampane").hidden = !paneVisible || !model;
+    const modeLabel = $("parammode-label");
+    if (modeLabel) modeLabel.innerHTML = uiPrefs.paramMode === "inline" ? "Panel-<br>läge" : "Inline-<br>läge";
+    const paneLabel = $("parampane-label");
+    if (paneLabel) paneLabel.innerHTML = uiPrefs.panelHidden ? "Visa<br>panel" : "Dölj<br>panel";
+    const paneBtn = $("act-parampane");
+    if (paneBtn) paneBtn.disabled = uiPrefs.paramMode === "panel"; // alltid synlig i panel-läge
+    if (paneVisible && model) renderParamPane();
+  }
+
+  /** Bygger parameterpanelen från motorns rendermodell. */
+  function renderParamPane() {
+    const host = $("pp-list");
+    if (!host || !model) return;
+    host.innerHTML = "";
+    const params = model.doc.params.filter((p) => p.visible !== false);
+    if (!params.length) {
+      host.innerHTML = '<p style="color:#605e5c;font-size:12px">Mallen har inga parametrar.</p>';
+      return;
+    }
+    for (const p of params) {
+      const row = document.createElement("div");
+      row.className = "pp-row";
+      const label = document.createElement("label");
+      label.textContent = p.label;
+      row.appendChild(label);
+      let input;
+      if (p.type === "boolean") {
+        input = document.createElement("select");
+        input.innerHTML = '<option value="false">Nej</option><option value="true">Ja</option>';
+        input.value = String(p.value === true);
+        input.addEventListener("change", () => setFromPane(p.id, input.value === "true"));
+      } else if (p.type === "list") {
+        input = document.createElement("select");
+        input.innerHTML = '<option value="">(välj)</option>' +
+          (p.options || []).map((o) => `<option value="${esc(o.value)}">${esc(o.label)}</option>`).join("");
+        input.value = p.value == null ? "" : String(p.value);
+        input.addEventListener("change", () => setFromPane(p.id, input.value || null));
+      } else {
+        input = document.createElement("input");
+        input.type = p.type === "number" ? "number" : p.type === "date" ? "date" : "text";
+        input.value = p.value == null ? "" : String(p.value);
+        input.addEventListener("change", () => {
+          const v = input.value === "" ? null : (p.type === "number" ? Number(input.value) : input.value);
+          setFromPane(p.id, v);
+        });
+      }
+      input.dataset.paramId = p.id;
+      row.appendChild(input);
+      host.appendChild(row);
+    }
+  }
+
+  function setFromPane(id, value) {
+    const res = fred({ cmd: "set_param", id, value });
+    if (!res.ok) { toast(res.error); return; }
+    model = res;
+    syncChips();
+    updateQat();
+    scheduleAutosave();
+    renderParamPane(); // synlighet för nästlade parametrar kan ha ändrats
+  }
+
   // ===================== Småhjälpare =====================
 
   function esc(s) {
@@ -408,6 +491,7 @@
     autosave();
     model = null;
     currentMall = null;
+    $("parampane").hidden = true;
     $("editor-screen").hidden = true;
     $("backstage").hidden = true;
     $("start-screen").hidden = false;
@@ -490,6 +574,7 @@
     syncChips();
     updateQat();
     updateStatus();
+    applyUiPrefs();
   }
 
   /** Global uppdatering: speglar motorns parametervärden i alla inline-fält. */
@@ -517,6 +602,7 @@
     syncChips();
     updateQat();
     scheduleAutosave();
+    if (!$("parampane").hidden) renderParamPane();
     return true;
   }
 
@@ -814,6 +900,21 @@
   });
 
   on("act-navpane", () => toggleNavpane());
+  on("act-parammode", () => {
+    uiPrefs.paramMode = uiPrefs.paramMode === "inline" ? "panel" : "inline";
+    savePrefs();
+    applyUiPrefs();
+  });
+  on("act-paramside", () => {
+    uiPrefs.panelSide = uiPrefs.panelSide === "right" ? "left" : "right";
+    savePrefs();
+    applyUiPrefs();
+  });
+  on("act-parampane", () => {
+    uiPrefs.panelHidden = !uiPrefs.panelHidden;
+    savePrefs();
+    applyUiPrefs();
+  });
   on("act-find", () => toggleNavpane(true));
   on("act-replace", () => openReplaceDialog());
   on("title-search", () => toggleNavpane(true));

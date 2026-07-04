@@ -80,6 +80,11 @@ Under utveckling kan `web/index.html` serveras direkt (t.ex.
 
 ## Distribution
 
+**Obs:** PWA:n på GitHub Pages (`pages/editor`) är *inte* en egen klient —
+det är exakt denna app (samma byggda `index.html`) paketerad med manifest
+och service worker för hemskärmsinstallation. Windows-programmet
+(`apps/editor-windows`) bäddar också in samma fil via WebView2.
+
 Bygget skapar två artefakter i `dist/`:
 
 * **`fred-editor.zip`** – rekommenderat format att skicka via e-post.

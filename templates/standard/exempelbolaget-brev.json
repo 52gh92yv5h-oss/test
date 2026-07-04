@@ -1,0 +1,148 @@
+{
+  "marker": "fred-mall",
+  "version": 1,
+  "mall": {
+    "id": "mall-exempelbolaget-brev",
+    "name": "Affärsbrev – Exempelbolaget",
+    "description": "Enkel standardmall: affärsbrev från det fiktiva företaget Exempelbolaget AB. Inbyggd i editorn och användbar utan att externa filer läses in.",
+    "categoryId": "standard",
+    "orgScope": {
+      "mode": "specific",
+      "organisationId": "org-exempelbolaget"
+    },
+    "defaultStyle": {
+      "fontFamily": "Georgia, 'Times New Roman', serif",
+      "fontSizePt": 11
+    },
+    "headerFooter": {
+      "headerFields": [
+        {
+          "id": "hf-logo",
+          "kind": "logo",
+          "position": {
+            "col": "left",
+            "row": "top"
+          }
+        },
+        {
+          "id": "hf-adress",
+          "kind": "text",
+          "label": "Avsändaradress",
+          "defaultText": "Storgatan 1 · 111 22 Stockholm",
+          "position": {
+            "col": "right",
+            "row": "top"
+          },
+          "style": {
+            "fontSizePt": 9
+          }
+        }
+      ],
+      "footerFields": [
+        {
+          "id": "ff-info",
+          "kind": "text",
+          "label": "Företagsuppgifter",
+          "defaultText": "Exempelbolaget AB · Org.nr 556000-0000 · info@exempelbolaget.se · www.exempelbolaget.se",
+          "position": {
+            "col": "center",
+            "row": "bottom"
+          },
+          "style": {
+            "fontSizePt": 8
+          }
+        }
+      ]
+    },
+    "parameters": [
+      {
+        "id": "mottagareNamn",
+        "label": "Mottagarens namn",
+        "type": "text"
+      },
+      {
+        "id": "mottagareAdress",
+        "label": "Mottagarens adress",
+        "type": "text"
+      },
+      {
+        "id": "datum",
+        "label": "Datum",
+        "type": "date"
+      },
+      {
+        "id": "arende",
+        "label": "Ärende",
+        "type": "text"
+      },
+      {
+        "id": "avsandareNamn",
+        "label": "Avsändarens namn",
+        "type": "text",
+        "defaultValue": "Anna Andersson"
+      },
+      {
+        "id": "avsandareTitel",
+        "label": "Avsändarens titel",
+        "type": "text",
+        "defaultValue": "VD"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "b-huvud",
+        "title": "Brevhuvud",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<p>{{datum}}</p><p><strong>{{mottagareNamn}}</strong><br>{{mottagareAdress}}</p>",
+        "order": 0
+      },
+      {
+        "id": "b-arende",
+        "title": "Ärenderad",
+        "type": "locked",
+        "placement": "fixed",
+        "content": "<h2>Ärende: {{arende}}</h2>",
+        "order": 1,
+        "style": {
+          "fontSizePt": 13,
+          "bold": true
+        }
+      },
+      {
+        "id": "b-inledning",
+        "title": "Inledning",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p>Hej {{mottagareNamn}},</p><p>tack för din förfrågan. Här kommer den information du efterfrågat.</p>",
+        "order": 2
+      },
+      {
+        "id": "b-brodtext",
+        "title": "Brödtext",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p>Skriv brevets huvudsakliga innehåll här. Blocket är fritt redigerbart – du kan formatera text, lägga till stycken och rubriker.</p>",
+        "order": 3
+      },
+      {
+        "id": "b-halsning",
+        "title": "Hälsning",
+        "type": "editable",
+        "placement": "fixed",
+        "content": "<p>Med vänliga hälsningar,</p><p><strong>{{avsandareNamn}}</strong><br>{{avsandareTitel}}, Exempelbolaget AB</p>",
+        "order": 4
+      },
+      {
+        "id": "b-bilagor",
+        "title": "Bilageförteckning",
+        "type": "editable",
+        "placement": "free",
+        "content": "<h3>Bilagor</h3><p>1. </p>",
+        "order": 5
+      }
+    ],
+    "createdAt": "2026-07-04T00:00:00Z",
+    "updatedAt": "2026-07-04T00:00:00Z"
+  }
+}

@@ -15,6 +15,7 @@ import {
 } from "@fred/shared";
 import { useEditorStore } from "../store";
 import { listAutosaves } from "../autosave";
+import { BUILTIN_MALL } from "../builtin";
 
 function templateAllowedForOrg(mall: Mall, organisationId: string | undefined): boolean {
   if (mall.orgScope.mode === "all") return true;
@@ -54,7 +55,9 @@ export default function StartScreen() {
     if (data?.marker === FRED_SESSION_FILE_MARKER) openSession(data.session);
   };
 
-  const templateList = Object.values(templates);
+  // Den inbyggda standardmallen visas i egen sektion; övriga listor
+  // exkluderar den så att den inte dubbleras.
+  const templateList = Object.values(templates).filter((m) => m.id !== BUILTIN_MALL.id);
   const autosaves = listAutosaves();
 
   const orgIdFor = (templateId: string) =>
@@ -104,6 +107,12 @@ export default function StartScreen() {
         <p className="muted" style={{ marginTop: 8 }}>
           Organisationer: {organisations.length} · Mallar inlästa: {templateList.length}
         </p>
+      </div>
+
+      <div className="card">
+        <h2>Standardmall</h2>
+        <p className="muted">Inbyggd exempelmall – fungerar direkt utan att några filer läses in.</p>
+        {renderTemplateItem(BUILTIN_MALL)}
       </div>
 
       <div className="card">

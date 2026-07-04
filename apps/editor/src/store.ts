@@ -8,6 +8,7 @@ import {
   ParameterValue,
 } from "@fred/shared";
 import { createSession, insertFreeBlockInstance } from "./sessionEngine";
+import { BUILTIN_MALL, BUILTIN_ORGANISATION } from "./builtin";
 
 type Screen = "start" | "document";
 
@@ -55,8 +56,10 @@ function snapshot(session: DocumentSession): DocumentSession {
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
-  organisations: [],
-  templates: {},
+  // Den inbyggda standardmallen (Exempelbolaget AB, kravspec V11) är alltid
+  // tillgänglig; inlästa filer läggs till utan att skriva över den.
+  organisations: [BUILTIN_ORGANISATION],
+  templates: { [BUILTIN_MALL.id]: BUILTIN_MALL },
   hierarchy: null,
   session: null,
   screen: "start",
@@ -64,7 +67,13 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   future: [],
   pendingLaunch: null,
 
-  loadOrganisations: (organisations) => set({ organisations }),
+  loadOrganisations: (organisations) =>
+    set({
+      organisations: [
+        BUILTIN_ORGANISATION,
+        ...organisations.filter((o) => o.id !== BUILTIN_ORGANISATION.id),
+      ],
+    }),
   loadTemplate: (mall) => {
     set((s) => ({ templates: { ...s.templates, [mall.id]: mall } }));
     const { pendingLaunch, organisations } = get();

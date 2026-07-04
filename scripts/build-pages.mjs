@@ -23,6 +23,15 @@ const APPS = [
     backgroundColor: "#e4e6e9",
   },
   {
+    dir: "redigerare",
+    html: join(root, "apps/editor/dist/index.html"),
+    name: "Fred Editor (klassisk)",
+    shortName: "Fred klassisk",
+    themeColor: "#2f5d9f",
+    backgroundColor: "#eef0f3",
+    icons: "editor", // återanvänder editor-ikonuppsättningen
+  },
+  {
     dir: "konfigurator",
     html: join(root, "apps/configurator/dist/index.html"),
     name: "Fred Konfiguratör",
@@ -97,10 +106,12 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     )
   );
 
-  writeFileSync(join(dir, "sw.js"), serviceWorker(`fred-${app.dir}-v1`));
+  // v2: cache-namnet bumpat så att redan installerade PWA:er hämtar om
+  // appen när den nya service workern aktiveras.
+  writeFileSync(join(dir, "sw.js"), serviceWorker(`fred-${app.dir}-v2`));
 
   for (const size of [180, 192, 512]) {
-    copyFileSync(join(src, "icons", `${app.dir}-${size}.png`), join(dir, `icon-${size}.png`));
+    copyFileSync(join(src, "icons", `${app.icons ?? app.dir}-${size}.png`), join(dir, `icon-${size}.png`));
   }
 }
 

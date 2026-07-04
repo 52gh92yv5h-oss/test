@@ -26,6 +26,10 @@ export interface Organisation {
   name: string;
   /** Data-URL (base64) till logotypen, lagras lokalt i JSON. */
   logoDataUrl?: string;
+  /** Varifrån logotypen hämtats (t.ex. Wikimedia-filtitel eller "egendesignad"). */
+  logoSource?: string;
+  /** Logotypens licens (t.ex. "Public domain", "CC BY-SA 4.0", "CC0"). */
+  logoLicense?: string;
 }
 
 export type ParameterType = "text" | "date" | "number" | "boolean" | "list";

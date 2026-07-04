@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { ContentBlock, ParameterValue, renderContent, styleDefToCss, updateChipValues } from "@fred/shared";
+import { ContentBlock, ParameterValue, contentToChipHtml, styleDefToCss, updateChipValues } from "@fred/shared";
 import { useEditorStore } from "../store";
 
 function ToolbarButton({ label, title, onClick }: { label: string; title: string; onClick: () => void }) {
@@ -115,7 +115,9 @@ export default function BlockView({
         <div
           className="fred-block-content"
           style={blockCss}
-          dangerouslySetInnerHTML={{ __html: renderContent(block.content, parameterValues, parameters) }}
+          // Chips även i låsta block så att inline-parameterläget kan
+          // redigera värden överallt i dokumentet (kravspec 2.2, V11).
+          dangerouslySetInnerHTML={{ __html: contentToChipHtml(block.content, parameterValues, parameters) }}
         />
       ) : (
         <>
