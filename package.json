@@ -17,6 +17,7 @@
     "build:editor-wasm": "npm run build -w apps/editor-wasm",
     "test:editor-wasm": "npm run test -w apps/editor-wasm",
     "build:pages": "node scripts/build-pages.mjs",
-    "test:launch": "node scripts/test-launch.mjs"
+    "test:launch": "node scripts/test-launch.mjs",
+    "fetch:logos": "node scripts/fetch-logos.mjs"
   }
 }
