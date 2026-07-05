@@ -12,8 +12,9 @@ import { PREDEFINED_BUNDLE } from "./predefinedBundle";
 import OrganisationsPanel from "./components/OrganisationsPanel";
 import HierarchyPanel from "./components/HierarchyPanel";
 import MallPanel from "./components/MallPanel";
+import DocumentPreviewPanel from "./components/DocumentPreviewPanel";
 
-type Tab = "organisationer" | "hierarki" | "mall";
+type Tab = "organisationer" | "hierarki" | "mall" | "dokument";
 
 export default function App() {
   const [tab, setTab] = useState<Tab>("mall");
@@ -65,6 +66,13 @@ export default function App() {
         <button className={tab === "mall" ? "active" : ""} onClick={() => setTab("mall")}>
           Mallar ({mallar.length})
         </button>
+        <button
+          className={tab === "dokument" ? "active" : ""}
+          onClick={() => setTab("dokument")}
+          title="WYSIWYG: se och testa den valda mallen som färdigt dokument"
+        >
+          Dokumentvy (test)
+        </button>
         <button className={tab === "hierarki" ? "active" : ""} onClick={() => setTab("hierarki")}>
           Mallhierarki
         </button>
@@ -79,6 +87,7 @@ export default function App() {
         {tab === "organisationer" && <OrganisationsPanel />}
         {tab === "hierarki" && <HierarchyPanel />}
         {tab === "mall" && <MallPanel />}
+        {tab === "dokument" && <DocumentPreviewPanel />}
       </main>
     </div>
   );

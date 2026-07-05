@@ -1670,13 +1670,65 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
           "id": "hasFamily",
           "label": "Har barn/familj?",
           "type": "boolean",
-          "defaultValue": false
+          "defaultValue": false,
+          "children": [
+            {
+              "id": "familyType",
+              "label": "Typ av familj",
+              "type": "list",
+              "options": [
+                {
+                  "value": "barn",
+                  "label": "Barn"
+                },
+                {
+                  "value": "adopterad",
+                  "label": "Adopterat barn"
+                },
+                {
+                  "value": "styvbarn",
+                  "label": "Styvbarn"
+                }
+              ],
+              "showWhen": true
+            },
+            {
+              "id": "numberOfChildren",
+              "label": "Antal barn",
+              "type": "number",
+              "defaultValue": 0,
+              "showWhen": true
+            },
+            {
+              "id": "childrenAges",
+              "label": "Barnens åldrar (kommaseparerat)",
+              "type": "text",
+              "defaultValue": "",
+              "showWhen": true
+            }
+          ]
         },
         {
           "id": "isStudent",
           "label": "Studerar du?",
           "type": "boolean",
-          "defaultValue": false
+          "defaultValue": false,
+          "children": [
+            {
+              "id": "studentInstitution",
+              "label": "Utbildningsinstitution",
+              "type": "text",
+              "defaultValue": "",
+              "showWhen": true
+            },
+            {
+              "id": "studyProgram",
+              "label": "Utbildningsprogram",
+              "type": "text",
+              "defaultValue": "",
+              "showWhen": true
+            }
+          ]
         },
         {
           "id": "agreeToTerms",
@@ -1751,54 +1803,6 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
             }
           ],
           "defaultValue": "ensam"
-        },
-        {
-          "id": "familyType",
-          "label": "Typ av familj",
-          "type": "list",
-          "options": [
-            {
-              "value": "barn",
-              "label": "Barn"
-            },
-            {
-              "value": "adopterad",
-              "label": "Adopterat barn"
-            },
-            {
-              "value": "styvbarn",
-              "label": "Styvbarn"
-            }
-          ],
-          "showWhen": true
-        },
-        {
-          "id": "numberOfChildren",
-          "label": "Antal barn",
-          "type": "number",
-          "defaultValue": 0,
-          "showWhen": true
-        },
-        {
-          "id": "childrenAges",
-          "label": "Barnens åldrar (kommaseparerat)",
-          "type": "text",
-          "defaultValue": "",
-          "showWhen": true
-        },
-        {
-          "id": "studentInstitution",
-          "label": "Utbildningsinstitution",
-          "type": "text",
-          "defaultValue": "",
-          "showWhen": false
-        },
-        {
-          "id": "studyProgram",
-          "label": "Utbildningsprogram",
-          "type": "text",
-          "defaultValue": "",
-          "showWhen": false
         }
       ],
       "blocks": [
