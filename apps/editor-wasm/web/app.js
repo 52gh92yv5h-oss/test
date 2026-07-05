@@ -389,7 +389,12 @@
 
     const grid = $("tpl-grid");
     grid.innerHTML = "";
-    const visible = mallar.filter((m) => !activeCategory || m.categoryId === activeCategory);
+    // En mall hör till en kategori via sitt categoryId eller genom att vara
+    // placerad i kategorins templateIds i hierarkin.
+    const activeCat = cats.find((c) => c.id === activeCategory) ?? null;
+    const visible = mallar.filter(
+      (m) => !activeCat || m.categoryId === activeCat.id || (activeCat.templateIds || []).includes(m.id)
+    );
     for (const mall of visible) {
       const card = document.createElement("button");
       card.className = "tpl-card";

@@ -14,10 +14,11 @@ export interface UiPrefs {
 
 const KEY = "fred-editor-ui-prefs";
 
+// Samma standardvärden som WASM-editorn: inline-läge med dold panel.
 export const DEFAULT_PREFS: UiPrefs = {
-  paramMode: "panel",
+  paramMode: "inline",
   panelSide: "right",
-  panelHidden: false,
+  panelHidden: true,
 };
 
 export function loadUiPrefs(): UiPrefs {
@@ -26,9 +27,9 @@ export function loadUiPrefs(): UiPrefs {
     if (!raw) return { ...DEFAULT_PREFS };
     const parsed = JSON.parse(raw) as Partial<UiPrefs>;
     return {
-      paramMode: parsed.paramMode === "inline" ? "inline" : "panel",
+      paramMode: parsed.paramMode === "panel" ? "panel" : "inline",
       panelSide: parsed.panelSide === "left" ? "left" : "right",
-      panelHidden: Boolean(parsed.panelHidden),
+      panelHidden: typeof parsed.panelHidden === "boolean" ? parsed.panelHidden : true,
     };
   } catch {
     return { ...DEFAULT_PREFS };

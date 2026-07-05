@@ -23,6 +23,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      # Central versionshantering: alla versionsangivelser i repot måste vara
+      # i synk (bumpas med npm run bump / bump:minor / bump:major).
+      - run: node scripts/bump-version.mjs --check
       - uses: actions/configure-pages@v5
         with:
           enablement: true

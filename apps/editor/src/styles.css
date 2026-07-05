@@ -38,13 +38,62 @@ input[type=text], input[type=number], input[type=date], select, textarea {
   font-family: inherit;
 }
 
-/* ---------- Start screen ---------- */
-.start-screen { max-width: 760px; margin: 40px auto; padding: 0 20px; }
-.start-screen h1 { color: var(--accent-dark); }
-.card { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; margin-bottom: 16px; }
-.template-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 4px; border-bottom: 1px solid var(--border); }
+/* ---------- Start screen (samma upplägg som WASM-editorn) ---------- */
+.start-screen { max-width: 980px; margin: 0 auto; padding: 28px 32px 48px; }
+.start-screen h1 { font-size: 26px; font-weight: 400; margin: 0 0 4px; color: var(--text); }
+.start-screen .app-version { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.start-screen h2 { font-size: 15px; font-weight: 600; margin: 26px 0 10px; }
+
+.cat-chips { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.cat-chips button { padding: 5px 14px; border-radius: 14px; background: #fff; border: 1px solid var(--border); font-size: 12.5px; }
+.cat-chips button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.tpl-grid { display: flex; gap: 18px; flex-wrap: wrap; }
+.tpl-card { width: 168px; text-align: left; background: none; border: none; padding: 0; }
+.tpl-thumb {
+  width: 168px; height: 216px; background: #fff; border: 1px solid var(--border); border-radius: 3px;
+  padding: 18px 16px; overflow: hidden; position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.1s, transform 0.1s;
+}
+.tpl-card:hover .tpl-thumb { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18); transform: translateY(-2px); border-color: var(--accent); }
+.tpl-thumb .t-title { font-family: Georgia, serif; font-size: 13px; color: var(--accent-dark); margin-bottom: 10px; }
+.tpl-thumb .t-line { height: 4px; background: #e8e8e8; border-radius: 2px; margin-bottom: 6px; }
+.tpl-thumb .t-line.short { width: 60%; }
+.tpl-thumb .t-field { display: inline-block; height: 4px; width: 34%; background: #cfe0f5; border-radius: 2px; margin-bottom: 6px; }
+.tpl-name { font-size: 13px; font-weight: 600; margin-top: 8px; }
+.tpl-desc { font-size: 11.5px; color: var(--muted); margin-top: 2px; line-height: 1.35; }
+
+.recent-list { display: flex; flex-direction: column; gap: 2px; max-width: 640px; }
+.recent-item {
+  display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 4px; text-align: left;
+  background: none; border: none;
+}
+.recent-item:hover:not(:disabled) { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.recent-item svg { width: 26px; height: 26px; flex: none; }
+.recent-item .ri-name { font-size: 13px; font-weight: 600; }
+.recent-item .ri-sub { font-size: 11.5px; color: var(--muted); }
+
+.open-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.open-actions button { padding: 10px 16px; }
+
+/* Dialog (organisationsval m.m.) – samma mönster som WASM-editorn. */
+.dlg-scrim {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.35);
+  display: flex; align-items: center; justify-content: center; z-index: 100;
+}
+.dlg { background: #fff; border-radius: 6px; min-width: 320px; max-width: 440px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+.dlg header { padding: 14px 18px 0; font-size: 15px; font-weight: 600; }
+.dlg .dlg-body { padding: 10px 18px; }
+.dlg .dlg-body label { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin: 8px 0 4px; }
+.dlg .dlg-body select { width: 100%; }
+.dlg footer { display: flex; justify-content: flex-end; gap: 8px; padding: 8px 18px 14px; }
+
+.muted { color: var(--muted); font-size: 12px; }
+
+/* Används av frasfliken i sidopanelen. */
+.template-item { padding: 8px 4px; border-bottom: 1px solid var(--border); }
 .template-item:last-child { border-bottom: none; }
-.category-heading { font-weight: 600; margin-top: 10px; color: var(--accent-dark); }
 
 /* ---------- App shell ---------- */
 .editor-shell { display: flex; height: 100vh; }

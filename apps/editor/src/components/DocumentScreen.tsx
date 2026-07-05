@@ -126,14 +126,19 @@ export default function DocumentScreen() {
           >
             ⇄ Panelsida
           </button>
-          {prefs.paramMode === "inline" && (
-            <button
-              onClick={() => updatePrefs({ panelHidden: !prefs.panelHidden })}
-              title="Visa eller dölj panelen (endast i inline-läge)"
-            >
-              {prefs.panelHidden ? "◧ Visa panel" : "◨ Dölj panel"}
-            </button>
-          )}
+          {/* Som i WASM-editorn: knappen finns alltid men är inaktiv i
+              panel-läge, där panelen alltid visas. */}
+          <button
+            onClick={() => updatePrefs({ panelHidden: !prefs.panelHidden })}
+            disabled={prefs.paramMode === "panel"}
+            title={
+              prefs.paramMode === "panel"
+                ? "Panelen visas alltid i panel-läge"
+                : "Visa eller dölj panelen"
+            }
+          >
+            {prefs.panelHidden ? "◧ Visa panel" : "◨ Dölj panel"}
+          </button>
           <button onClick={undo} disabled={history.length === 0} title="Ångra (Ctrl+Z)">↶ Ångra</button>
           <button onClick={redo} disabled={future.length === 0} title="Gör om (Ctrl+Y)">↷ Gör om</button>
           <button onClick={() => setSearchOpen(true)} title="Sök (Ctrl+F)">🔍 Sök</button>

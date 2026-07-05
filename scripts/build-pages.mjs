@@ -8,10 +8,18 @@
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { execFileSync } from "node:child_process";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const src = join(root, "scripts/pages-src");
 const out = join(root, "pages");
+
+// Central versionshantering: versionen läses från rot-package.json (bumpas
+// med scripts/bump-version.mjs) och används i service worker-cachenamnet så
+// att installerade PWA:er hämtar om appen vid varje release. Kontrollera
+// först att alla versionsangivelser i repot är i synk.
+execFileSync(process.execPath, [join(root, "scripts/bump-version.mjs"), "--check"], { stdio: "inherit" });
+const VERSION = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
 
 const APPS = [
   {
@@ -105,9 +113,10 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     )
   );
 
-  // v3: cache-namnet bumpat (nya appikoner + version 1.1.0) så att redan
-  // installerade PWA:er hämtar om appen när den nya service workern aktiveras.
-  writeFileSync(join(dir, "sw.js"), serviceWorker(`fred-${app.dir}-v3`));
+  // Cache-namnet följer appversionen: varje versionsbump ger ett nytt namn,
+  // och redan installerade PWA:er hämtar om appen när nya service workern
+  // aktiveras – ingen manuell cachebump behövs.
+  writeFileSync(join(dir, "sw.js"), serviceWorker(`fred-${app.dir}-v${VERSION}`));
 
   for (const size of [180, 192, 512]) {
     copyFileSync(join(src, "icons", `${app.icons ?? app.dir}-${size}.png`), join(dir, `icon-${size}.png`));
