@@ -1,7 +1,7 @@
 # Fred (Fras-EDitor)
 
 Fred är ett fristående, helt offline ordbehandlingssystem baserat på lokala
-JSON-konfigurationer. **Version 1.1.0** (visas i respektive apps gränssnitt).
+JSON-konfigurationer. **Version 1.2.0** (visas i respektive apps gränssnitt).
 
 Se `kravspecifikation.md` för den fullständiga kravspecifikationen (V12).
 
@@ -67,6 +67,14 @@ uppdatera Pages-sajten. Windows-exen byggs av `windows-editor.yml`
   en **panel**; panelens sida (vänster/höger) är valbar och i inline-läge
   kan panelen döljas. Valet sparas lokalt (localStorage). I React-editorn
   finns kontrollerna i verktygsfältet, i WASM-editorn under fliken **Visa**.
+  Sedan 1.2.0 har båda editorvarianterna samma standardläge: inline med
+  dold panel.
+- **Enhetlig startskärm (1.2.0)**: klassiska (React-)editorn har samma
+  startskärm som WASM-editorn — hälsning, kategorichips som filtrerar
+  mallbiblioteket, mallkort med dokument-miniatyr, *Senaste* (autosparade
+  dokument) och *Öppna filer*. Klick på ett mallkort startar dokumentet
+  direkt; om flera organisationer är behöriga visas organisationsvalet i
+  en dialog, precis som i WASM-editorn.
 - **Inbyggd standardmall (V11)**: affärsbrevet "Affärsbrev – Exempelbolaget"
   från det fiktiva företaget **Exempelbolaget AB** (egendesignad logotyp,
   CC0) är inbyggd i alla editorvarianter och fungerar direkt utan att några
@@ -83,9 +91,28 @@ uppdatera Pages-sajten. Windows-exen byggs av `windows-editor.yml`
   `apps/*/public/icon.svg`. Favicon är inbakad som data-URL i respektive
   HTML (syns även i nedladdad enfils-app), PWA:erna får PNG-ikoner via
   manifestet och Windows-exe:n har ikonen inbäddad (`icon.ico`).
-  Rasterversionerna regenereras med `node scripts/generate-icons.mjs`
-  (service worker-cachen bumpas i `build-pages.mjs` så installerade PWA:er
-  uppdateras).
+  Rasterversionerna fylls ut kant-till-kant med ikonens primärfärg (1.2.0;
+  ingen vit kant på hemskärm/skrivbord) och regenereras med `npm run icons`.
+
+## Versionshantering
+
+Versionen hanteras centralt: rot-`package.json` är källan och
+`scripts/bump-version.mjs` speglar den till alla ställen där den
+förekommer (`FRED_VERSION` i shared, workspace-`package.json`,
+`engine/Cargo.toml`+`Cargo.lock`, `FredEditor.csproj`, README).
+
+```bash
+npm run bump          # patch: 1.2.3 -> 1.2.4
+npm run bump:minor    # 1.2.3 -> 1.3.0
+npm run bump:major    # 1.2.3 -> 2.0.0
+npm run version:check # verifierar att allt är i synk (körs även i CI)
+```
+
+Automatiken i övrigt: `npm run build:pages` vägrar bygga om
+versionsangivelserna är osynkade, och service worker-cachenamnet härleds
+ur versionen — varje bump gör alltså automatiskt att installerade PWA:er
+hämtar om appen vid nästa start. Efter en bump: bygg om apparna
+(`npm run build && npm run build:editor-wasm && npm run build:pages`).
 
 ## Utveckling
 
@@ -197,7 +224,7 @@ att återge korrekt avsändare i dokument som utfärdas i myndighetens namn.
 
 ## Status
 
-Version 1.1.0 täcker kravspecifikationens kärnflöden (V12). Ej
+Version 1.2.0 täcker kravspecifikationens kärnflöden (V12). Ej
 implementerat ännu: fullständig sidhuvud/sidfot-repetition per utskriven
 sida (renderas en gång per dokument) samt installationsprogram utöver
 enfils-`index.html`/Windows-exen.

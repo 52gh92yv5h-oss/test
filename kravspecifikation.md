@@ -23,6 +23,7 @@ Fred Editor är verktyget där användaren väljer mall, fyller i uppgifter, red
 
 ### 2.1 Textredigering & Dokumentstruktur
 * **Grundmallar:** Ett dokument måste alltid baseras på en mall. Användaren väljer mall innan dokumentet skapas, och mallen kan inte bytas i efterhand. Fred Editor laddar malldokumentet med en stor mängd fördefinierad text från start.
+* **Enhetlig startskärm och enhetligt mallval:** Mallval ska ske på samma sätt i samtliga editorvarianter: startskärmen visar mallbiblioteket som mallkort, filtrerbart per hierarkikategori, tillsammans med senaste (autosparade) dokument och filåtgärder. Klick på ett mallkort skapar dokumentet direkt; om flera organisationer är behöriga för mallen väljs utfärdande organisation i en dialog.
 * **Inbyggd standardmall:** Editorn ska levereras med en inbyggd, enkel standardmall för ett fiktivt företag (inklusive logotyp), användbar direkt utan att externa mallfiler läses in. Standardmallen ska finnas i samtliga editorvarianter.
 * **Dokumentstorlek:** Dokumenten är normalt 1–5 sidor långa.
 * **Sidhuvud och Sidfot:** Stöd för att producera dokument som har sidhuvud och sidfot. Följande specifika fält ska kunna definieras till sidhuvud och sidfot:
@@ -38,7 +39,7 @@ Fred Editor är verktyget där användaren väljer mall, fyller i uppgifter, red
 * **Multi-nivå parametrar:** Parametrarna som ges till mallarna ska kunna vara på flera nivåer (nästlade val). Det ska finnas ett system för texterna och hur de ska infogas baserat på dessa val.
 * **Global uppdatering:** En parameter anges en gång och uppdateras direkt på alla förekomster globalt i dokumentet när värdet ändras.
 * **Parametertyper:** Parametrar ska kunna vara text, datum, numeriska värden, ja/nej samt listor. Ingen strikt validering krävs för inmatning.
-* **Parameterinmatningsläge (valbart):** Användaren ska kunna välja om parametrar anges *inline* direkt i dokumentet (klick på parameterfältet öppnar redigering på plats) eller i en *panel* vid sidan av dokumentet. Panelens placering (vänster eller höger om dokumentet) ska vara valbar. I inline-läget ska panelen kunna döljas; i panel-läget visas den alltid. Användarens val sparas lokalt per användare och gäller nästa gång editorn öppnas.
+* **Parameterinmatningsläge (valbart):** Användaren ska kunna välja om parametrar anges *inline* direkt i dokumentet (klick på parameterfältet öppnar redigering på plats) eller i en *panel* vid sidan av dokumentet. Panelens placering (vänster eller höger om dokumentet) ska vara valbar. I inline-läget ska panelen kunna döljas; i panel-läget visas den alltid. Standardläget är detsamma i samtliga editorvarianter: inline med dold panel. Användarens val sparas lokalt per användare och gäller nästa gång editorn öppnas.
 
 ### 2.3 Redigeringsfunktioner och Gränssnitt
 * **Generell upplevelse:** Fred Editor ska upplevas som en modern ordbehandlare likt Microsoft Word, fast med reducerad funktionalitet.
@@ -103,6 +104,7 @@ Ett separat verktyg dedikerat till administratörer för att skapa, konfigurera 
 * **Enkel installation:** Det ska vara enkelt att installera både Fred Editor och Fred Konfiguratör. Ingen serverinstallation krävs.
 * **Katalogbaserad körning:** Det ska finnas en installationsfil eller "run-fil" per app, så att man enkelt kan lägga applikationen i en lokal katalog och köra den därifrån.
 * **Synligt versionsnummer:** Varje applikation ska visa sitt versionsnummer i gränssnittet (t.ex. på startskärmen och i statusfält/verktygsfält), så att användare och support enkelt kan avgöra vilken version som körs.
+* **Central versionshantering:** Versionsnumret hanteras på ett enda ställe och bumpas med ett kommando som automatiskt speglar det till samtliga appar (webbappar, WASM-motorn, Windows-exens metadata) och dokumentation. Byggena ska vägra paketera om versionsangivelserna är osynkade (kontrollen körs även i CI), och PWA-distributionens cache ska följa versionen så att installerade appar automatiskt hämtar den nya versionen efter en bump.
 * **Appikoner:** Varje applikation ska ha en egen igenkännbar ikon som visas:
   * i webbläsarens flik (favicon) — även när appen körs från en nedladdad enfils-HTML (`file://`) eller inbäddad, vilket kräver att ikonen är inbakad i HTML-filen och inte refereras som separat fil,
   * som hemskärms-/skrivbordsikon när appen installeras som PWA (ikonerna refereras från webbmanifestet),
