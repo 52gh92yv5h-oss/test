@@ -220,3 +220,33 @@ hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 .template-list-item:hover { border-color: var(--accent); }
 .template-list-item.selected { border-color: var(--accent); background: #eef4fc; }
 .template-list-item button { padding: 2px 8px; font-size: 12px; }
+
+/* ---------- Dokumentvy (WYSIWYG-test) ---------- */
+/* Samma sidrendering som Fred Editor: A4-sida, block med chips, 3x3-sidhuvud. */
+.doc-preview-layout { display: flex; gap: 20px; align-items: flex-start; }
+.doc-preview-scroll { flex: 1; overflow-x: auto; min-width: 0; }
+.doc-preview-side { width: 300px; flex-shrink: 0; }
+
+.document-page {
+  background: #fff; width: 210mm; min-height: 297mm; padding: 20mm 18mm;
+  box-shadow: 0 0 6px rgba(0,0,0,0.15);
+}
+.doc-header, .doc-footer {
+  font-size: 12px; color: var(--muted);
+  padding-bottom: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--border);
+}
+.doc-footer { border-bottom: none; border-top: 1px solid var(--border); margin-top: 16px; padding-top: 8px; margin-bottom: 0; }
+.doc-header img, .doc-footer img { max-height: 32px; max-width: 100px; object-fit: contain; }
+
+.fred-block { position: relative; margin-bottom: 14px; padding: 6px; border-radius: 4px; }
+.fred-block.locked { background: #fafafa; }
+.fred-block.editable:hover { outline: 1px dashed #c7d2e0; }
+.fred-block-content { outline: none; min-height: 1.4em; line-height: 1.5; }
+.fred-block-content .fred-param-chip {
+  background: #e5edfb; border-radius: 3px; padding: 0 3px; color: var(--accent-dark);
+}
+.fred-block-label { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 2px; }
+.fred-block-actions { position: absolute; top: -10px; right: 0; display: flex; gap: 2px; }
+.fred-block-actions button { padding: 1px 5px; font-size: 11px; }
+.page-break { border-top: 2px dashed #94a3b8; margin: 12px 0; height: 0; }
+.page-break::after { content: "Sidbrytning"; font-size: 10px; color: #94a3b8; }

@@ -1,7 +1,7 @@
 # Fred (Fras-EDitor)
 
 Fred är ett fristående, helt offline ordbehandlingssystem baserat på lokala
-JSON-konfigurationer. **Version 1.2.0** (visas i respektive apps gränssnitt).
+JSON-konfigurationer. **Version 1.3.0** (visas i respektive apps gränssnitt).
 
 Se `kravspecifikation.md` för den fullständiga kravspecifikationen (V12).
 
@@ -83,6 +83,13 @@ uppdatera Pages-sajten. Windows-exen byggs av `windows-editor.yml`
   på tre nivåer — mallstandard, per block, per sidhuvud/sidfot-fält, med arv.
 - **Sidhuvud/sidfot i 3×3-matris** (V9) med live-förhandsgranskning i
   konfiguratorn (V10).
+- **Visuell dokumentvy i konfiguratorn (1.3.0)**: fliken *Dokumentvy (test)*
+  visar den valda mallen WYSIWYG som färdigt dokument — samma rendering som
+  editorn (A4-sida, sidhuvud/sidfot, block, typografi, parameterchips) — och
+  låter administratören testa den direkt: fylla i parametrar (nästlade
+  villkor följs), skriva i redigerbara block och infoga/ta bort fraser.
+  Testet påverkar inte mallen och kan återställas; vyn uppdateras live när
+  mallen ändras.
 - **Sparande med återkoppling** (V10): tyst sparande + toast där det är
   pålitligt; spara-dialog med *Dela / Ladda ner / Kopiera text* på
   iOS/iPadOS och i inbäddade miljöer.
@@ -224,7 +231,7 @@ att återge korrekt avsändare i dokument som utfärdas i myndighetens namn.
 
 ## Status
 
-Version 1.2.0 täcker kravspecifikationens kärnflöden (V12). Ej
+Version 1.3.0 täcker kravspecifikationens kärnflöden (V12). Ej
 implementerat ännu: fullständig sidhuvud/sidfot-repetition per utskriven
 sida (renderas en gång per dokument) samt installationsprogram utöver
 enfils-`index.html`/Windows-exen.
