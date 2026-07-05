@@ -1,4 +1,4 @@
-import type { ParameterDef, ParameterValue } from "./types";
+import type { ContentBlock, ParameterDef, ParameterValue } from "./types";
 
 /** Plattar ut ett nästlat parameterträd till en lista, oavsett synlighet. */
 export function flattenParameters(defs: ParameterDef[]): ParameterDef[] {
@@ -10,6 +10,19 @@ export function flattenParameters(defs: ParameterDef[]): ParameterDef[] {
     }
   }
   return out;
+}
+
+/**
+ * Villkor mellan block (kravspec V13): ett block visas bara när dess
+ * synlighetsvillkor är uppfyllt av det aktuella parametervärdet.
+ * Block utan villkor visas alltid.
+ */
+export function isBlockVisible(
+  block: ContentBlock,
+  values: Record<string, ParameterValue>
+): boolean {
+  if (!block.visibleWhen) return true;
+  return (values[block.visibleWhen.parameterId] ?? null) === block.visibleWhen.equals;
 }
 
 /** Ett barn är synligt bara om förälderns aktuella värde matchar showWhen. */

@@ -1,4 +1,4 @@
-# Kravspecifikation: Fred (Fras-EDitor) (V12)
+# Kravspecifikation: Fred (Fras-EDitor) (V13)
 
 Detta dokument sammanställer kraven för utvecklingen av Fred (Fras-EDitor) – ett fristående, helt isolerat ordbehandlingssystem baserat på lokala JSON-konfigurationer. Systemet ska köras i en webbläsarmiljö och består av två separata applikationer: en Editor för slutanvändare och en Konfiguratör för administratörer.
 
@@ -46,6 +46,7 @@ Fred Editor är verktyget där användaren väljer mall, fyller i uppgifter, red
 * **Redigerbara och låsta block:** Dokumentet består av innehållsblock definierade i mallen. Användaren styrs av om blocket är:
   * *Redigerbart:* Användaren kan skriva/redigera text fritt, skapa/ta bort stycken, infoga rubriker, infoga sidbrytningar samt flytta, ändra formatering, lägga till eller ta bort innehåll inom blocket.
   * *Låst:* Användaren kan se innehållet men inte ändra text eller formatering.
+* **Villkor mellan block (villkorsstyrd synlighet):** Ett block kan förses med ett synlighetsvillkor kopplat till en parameter: blocket visas i dokumentet endast när parameterns aktuella värde matchar villkorets värde. Blocket döljs och visas dynamiskt när parametervärdet ändras — innehållet i ett dolt block bevaras (inklusive användarens text i redigerbara block) och återkommer om villkoret uppfylls igen. Villkoret gäller även fraser: en fras vars villkor inte är uppfyllt kan inte infogas, och en redan infogad fras döljs så länge villkoret inte är uppfyllt. Dolda block ingår inte i utskrift/PDF. Block utan villkor visas alltid.
 * **Infogning av fraser (Fria block):** Användaren ska i gränssnittet fritt kunna välja bland de fördefinierade fria blocken (fraserna) som är kopplade till mallen och infoga dessa i dokumentet under pågående arbete.
 * **Inbyggda funktioner:**
   * Undo / Redo
@@ -81,6 +82,7 @@ Ett separat verktyg dedikerat till administratörer för att skapa, konfigurera 
 * **Automatisk spegling till Editorn:** Ändringar i Konfiguratören ska automatiskt (med kort fördröjning) speglas till den delade lokala lagringen enligt avsnitt 1, så att en Editor som körs från samma webbursprung ser ändringarna vid nästa start utan filhantering.
 * **Förhandsinnehåll & Ordning:** Administratören bestämmer ordningen på alla fasta block i mallen och kan fylla i fördefinierad text i blocken.
 * **Definition av fria block (Fraser):** Administratören ska kunna markera valda block i mallen som "fria" (fraser), vilket innebär dataladdning att de inte har en fast plats från start utan lämnas tillgängliga för slutanvändaren att infoga fritt via Fred Editor.
+* **Villkor per block:** Administratören ska per block (fast eller fras) kunna ange ett valfritt synlighetsvillkor: en parameter i mallen och det värde som krävs för att blocket ska visas (se avsnitt 2.3). Värdeväljaren ska anpassas efter parameterns typ (ja/nej, listalternativ, text/nummer/datum). Villkoret ska kunna tas bort så att blocket åter visas alltid.
 * **Hantering av parameternivåer:** Administratören ska kunna konfigurera mallarna och parametrarna på several nivåer samt definiera standardvärden.
 * **Mallhierarki:** Mallar organiseras i en hierarkisk struktur (t.ex. i kategorier) som enbart används för enkel navigering och val av mall i Fred Editor. Hierarkin påverkar inte dokumentets innehåll. En mall kan endast ligga på en plats i hierarkin.
 * **Mallversioner:** Varje mall existerar endast i en version. Tidigare versioner sparas inte som separata mallar i systemet. Om en mall ändras i efterhand krävs dataladdning eller att användaren skapar ett nytt dokument för att ta del av ändringarna.
@@ -167,6 +169,7 @@ Informationsobjekt för de mallar som skapas i Fred Konfiguratör.
   * Placeringsstatus (*Fast* eller *Fri/Fras*)
   * Förhandsinnehåll (Grundtext med platshållare för parametrar)
   * Typografi (`style`, valfri Stildefinition enligt 6.0 som ersätter mallens standardtypografi för blocket)
+  * Synlighetsvillkor (`visibleWhen`, valfritt: Parameter-ID + värde; blocket visas endast när parameterns aktuella värde matchar — se avsnitt 2.3)
 
 #### 6.1.3 Mallhierarki
 Struktur som används för att organisera mallbiblioteket i Fred Editors gränssnitt.

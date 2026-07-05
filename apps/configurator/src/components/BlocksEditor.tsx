@@ -1,5 +1,86 @@
-import { BlockPlacement, BlockType, ContentBlock, ParameterDef, flattenParameters, newId } from "@fred/shared";
+import {
+  BlockPlacement,
+  BlockType,
+  ContentBlock,
+  ParameterDef,
+  ParameterValue,
+  flattenParameters,
+  newId,
+} from "@fred/shared";
 import StyleEditor from "./StyleEditor";
+
+/**
+ * Villkor mellan block (kravspec V13): blocket visas bara när den valda
+ * parameterns värde matchar. Värdeväljaren anpassas efter parametertypen.
+ */
+function BlockConditionEditor({
+  block,
+  parameters,
+  onPatch,
+}: {
+  block: ContentBlock;
+  parameters: ParameterDef[];
+  onPatch: (p: Partial<ContentBlock>) => void;
+}) {
+  const defs = flattenParameters(parameters);
+  const cond = block.visibleWhen;
+  const def = cond ? defs.find((d) => d.id === cond.parameterId) : undefined;
+
+  const setEquals = (equals: ParameterValue) =>
+    cond && onPatch({ visibleWhen: { ...cond, equals } });
+
+  return (
+    <div className="row" style={{ alignItems: "center" }}>
+      <label style={{ fontWeight: 400 }}>Visas endast när:</label>
+      <select
+        value={cond?.parameterId ?? ""}
+        onChange={(e) => {
+          const parameterId = e.target.value;
+          if (!parameterId) {
+            // "visibleWhen: undefined" i patchen tar bort villkoret.
+            onPatch({ visibleWhen: undefined });
+            return;
+          }
+          const d = defs.find((x) => x.id === parameterId);
+          const equals: ParameterValue =
+            d?.type === "boolean" ? true : d?.type === "list" ? d.options?.[0]?.value ?? "" : "";
+          onPatch({ visibleWhen: { parameterId, equals } });
+        }}
+      >
+        <option value="">(visas alltid)</option>
+        {defs.map((d) => (
+          <option key={d.id} value={d.id}>{d.label}</option>
+        ))}
+      </select>
+      {cond && def?.type === "boolean" && (
+        <select value={String(cond.equals === true)} onChange={(e) => setEquals(e.target.value === "true")}>
+          <option value="true">= Ja</option>
+          <option value="false">= Nej</option>
+        </select>
+      )}
+      {cond && def?.type === "list" && (
+        <select value={String(cond.equals ?? "")} onChange={(e) => setEquals(e.target.value)}>
+          {(def.options ?? []).map((o) => (
+            <option key={o.value} value={o.value}>= {o.label}</option>
+          ))}
+        </select>
+      )}
+      {cond && def && def.type !== "boolean" && def.type !== "list" && (
+        <input
+          type={def.type === "number" ? "number" : def.type === "date" ? "date" : "text"}
+          placeholder="värde"
+          value={cond.equals === null ? "" : String(cond.equals)}
+          onChange={(e) =>
+            setEquals(
+              e.target.value === "" ? null : def.type === "number" ? Number(e.target.value) : e.target.value
+            )
+          }
+        />
+      )}
+      {cond && !def && <span className="muted">Parametern finns inte längre – villkoret uppfylls aldrig.</span>}
+    </div>
+  );
+}
 
 interface Props {
   blocks: ContentBlock[];
@@ -78,6 +159,7 @@ export default function BlocksEditor({ blocks, parameters, onChange }: Props) {
             <span className={`badge ${block.placement === "free" ? "free" : ""}`}>
               {block.placement === "free" ? "Fri fras" : "Fast"}
             </span>
+            {block.visibleWhen && <span className="badge">Villkorat</span>}
             {block.placement === "fixed" && (
               <>
                 <button onClick={() => move(block.id, -1)} title="Flytta upp">↑</button>
@@ -86,6 +168,11 @@ export default function BlocksEditor({ blocks, parameters, onChange }: Props) {
             )}
             <button className="danger" onClick={() => remove(block.id)}>Ta bort</button>
           </div>
+          <BlockConditionEditor
+            block={block}
+            parameters={parameters}
+            onPatch={(p) => patch(block.id, p)}
+          />
           <div className="col">
             <label>Typografi (ersätter mallens standard)</label>
             <StyleEditor

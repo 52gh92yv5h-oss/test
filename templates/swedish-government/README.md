@@ -1,6 +1,6 @@
 # Svenska myndighetsdokumentmallar
 
-Denna katalog innehåller **en enhetlig konfigurationsfil**, `config.json`, med hela mallbiblioteket för svenska myndigheter: 7 organisationer (med logotyper), mallhierarkin och 11 mallar — 10 myndighetsmallar plus en omfattande exempel-mall. Filen följer Fred-systemets konfigurationsformat (markör `fred-konfiguration`, kravspecifikation V12 avsnitt 6.1).
+Denna katalog innehåller **en enhetlig konfigurationsfil**, `config.json`, med hela mallbiblioteket för svenska myndigheter: 7 organisationer (med logotyper), mallhierarkin och 11 mallar — 10 myndighetsmallar plus en omfattande exempel-mall. Filen följer Fred-systemets konfigurationsformat (markör `fred-konfiguration`, kravspecifikation V13 avsnitt 6.1).
 
 Samma innehåll är även inbakat i Fred Konfigurator som den fördefinierade mallbunten bakom knappen *"+ Sveriges myndighetsmallar"* (`apps/configurator/src/predefinedBundle.ts`, genererad med `node scripts/generate-config-bundles.mjs`).
 
@@ -15,7 +15,8 @@ Samma innehåll är även inbakat i Fred Konfigurator som den fördefinierade ma
   - **Nummer-parametrar:** Inkomst (SEK), utgifter (SEK), procentsats
   - **Boolean-parametrar:** Har familj? Studerar? Godkänner villkor?
   - **List-parametrar:** Utbildningsnivå, ansökningsgrund, civilstatus med valalternativ
-  - **Nästlade parametrar:** Familjetyp, barnantal, barnåldrar (visas endast när "hasFamily" är true)
+  - **Nästlade parametrar:** Familjetyp, barnantal, barnåldrar (visas endast när `hasFamily` är true); institution och utbildningsprogram (visas endast när `isStudent` är true)
+  - **Villkor mellan block (kravspec V13):** blocket *Familjesituation* visas endast när `hasFamily` = Ja, och blocket *Bekräftelse* endast när `agreeToTerms` = Ja (`visibleWhen` på blocket)
   - **Samma parameter på flera ställen:** `applicantName` återanvänds på 3 olika ställen i dokumentet (sidhuvud, bekräftelse, etc.)
   - **Låsta block:** Informativ text som användaren inte kan redigera
   - **Redigerbara block:** Text som slutanvändaren kan modifiera fritt
@@ -101,7 +102,7 @@ Samma innehåll är även inbakat i Fred Konfigurator som den fördefinierade ma
 
 ## Struktur enligt Fred-specifikationen
 
-Varje mall följer Fred-systemets datamodell (kravspecifikation V12):
+Varje mall följer Fred-systemets datamodell (kravspecifikation V13):
 
 - **Header/Footer**: Organisationslogotyp, organisationsnamn och sidnummer
 - **Parametrar**: Multi-nivå parametrar som kan vara text, datum, nummer, boolean eller listor
@@ -238,12 +239,12 @@ Dessa visas bara när `hasFamily` eller `isStudent` är true:
 1. **Introduktion** (Låst block) - Informativ text från administratör
 2. **Personlig information** (Låst block med parametrar) - Visa personuppgifter
 3. **Utbildning** (Låst block med parametrar) - Utbildningsnivå, studiestatus
-4. **Familjesituation** (Låst block med parametrar) - Familjeuppgifter (nästlade)
+4. **Familjesituation** (Låst block med parametrar, **villkorat**: visas endast när `hasFamily` = Ja) - Familjeuppgifter (nästlade)
 5. **Ekonomisk situation** (Redigerbart block) - Inkomst, utgifter + fri text
 6. **Grund för ansökan** (Redigerbart block) - Ansökningsgrund + fri text
 7. **Bifogade dokument** (Fritt block/Phrase) - Kan infogas flera gånger
 8. **Ytterligare information** (Fritt block/Phrase) - Kan infogas flera gånger
-9. **Bekräftelse** (Låst block) - Slutlig bekräftelse med namn och datum
+9. **Bekräftelse** (Låst block, **villkorat**: visas endast när `agreeToTerms` = Ja) - Slutlig bekräftelse med namn och datum
 
 ### Sidhuvud och Sidfot
 

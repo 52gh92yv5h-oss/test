@@ -1,3 +1,4 @@
+import { isBlockVisible } from "@fred/shared";
 import { useEditorStore } from "../store";
 
 export default function PhraseSidebar() {
@@ -6,7 +7,10 @@ export default function PhraseSidebar() {
   const insertFreeBlock = useEditorStore((s) => s.insertFreeBlock);
 
   if (!session || !mall) return null;
-  const freeBlocks = mall.blocks.filter((b) => b.placement === "free");
+  // Fraser vars synlighetsvillkor (kravspec V13) inte är uppfyllt kan inte infogas.
+  const freeBlocks = mall.blocks.filter(
+    (b) => b.placement === "free" && isBlockVisible(b, session.parameterValues)
+  );
 
   return (
     <div>

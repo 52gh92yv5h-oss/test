@@ -4,6 +4,7 @@ import {
   FRED_VERSION,
   SessionFile,
   flattenParameters,
+  isBlockVisible,
   saveJsonWithFeedback,
   styleDefToCss,
 } from "@fred/shared";
@@ -156,6 +157,10 @@ export default function DocumentScreen() {
             {sortedBlocks.map((used, i) => {
               const blockDef = mall.blocks.find((b) => b.id === used.blockId);
               if (!blockDef) return null;
+              // Villkor mellan block (kravspec V13): blocket döljs när dess
+              // synlighetsvillkor inte uppfylls av parametervärdena. Blocket
+              // ligger kvar i sessionen och visas igen om villkoret uppfylls.
+              if (!isBlockVisible(blockDef, session.parameterValues)) return null;
               return (
                 <BlockView
                   key={used.instanceId}
