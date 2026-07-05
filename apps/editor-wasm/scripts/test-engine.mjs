@@ -159,5 +159,32 @@ check("fel mall avvisas", r.ok === false);
 r = fred({ cmd: "nonsens" });
 check("okänt kommando", r.ok === false);
 
+// --- villkor mellan block (kravspec V13) ---
+const villkorsMall = {
+  ...mall,
+  id: "mall-villkor",
+  name: "Villkorsmall",
+  blocks: [
+    { id: "v1", title: "Alltid", type: "locked", placement: "fixed", content: "<p>Alltid synligt.</p>", order: 0 },
+    { id: "v2", title: "Vid brådska", type: "locked", placement: "fixed", content: "<p>Brådskande handläggning.</p>", order: 1, visibleWhen: { parameterId: "brådskande", equals: true } },
+    { id: "v3", title: "Fras vid avslag", type: "editable", placement: "free", content: "<p>Om avslag: {{motiv}}</p>", order: 2, visibleWhen: { parameterId: "beslut", equals: "avslag" } },
+  ],
+};
+r = fred({ cmd: "new_session", mall: villkorsMall, organisationId: "org-1", now: "2026-07-03T11:00:00Z", seed: 777 });
+check("villkorat block dolt från start", r.ok && r.doc.blocks.length === 1, r.error);
+check("villkorad fras dold från start (beslut=bifall)", r.doc.freePhrases.length === 0);
+r = fred({ cmd: "insert_free_block", blockId: "v3", now: "2026-07-03T11:00:30Z" });
+check("dold fras kan inte infogas", r.ok === false);
+r = fred({ cmd: "set_param", id: "brådskande", value: true, now: "2026-07-03T11:01:00Z" });
+check("villkorat block visas när villkoret uppfylls", r.doc.blocks.length === 2);
+r = fred({ cmd: "set_param", id: "beslut", value: "avslag", now: "2026-07-03T11:02:00Z" });
+check("villkorad fras infogbar efter avslag", r.doc.freePhrases.length === 1);
+r = fred({ cmd: "insert_free_block", blockId: "v3", now: "2026-07-03T11:03:00Z" });
+check("villkorad fras infogad", r.ok && r.doc.blocks.length === 3, r.error);
+r = fred({ cmd: "set_param", id: "beslut", value: "bifall", now: "2026-07-03T11:04:00Z" });
+check("infogad fras döljs när villkoret slutar gälla", r.doc.blocks.length === 2);
+r = fred({ cmd: "set_param", id: "brådskande", value: false, now: "2026-07-03T11:05:00Z" });
+check("villkorat block döljs igen", r.doc.blocks.length === 1);
+
 console.log(failures === 0 ? "\nAlla motortester gick igenom." : `\n${failures} test misslyckades.`);
 process.exit(failures ? 1 : 0);

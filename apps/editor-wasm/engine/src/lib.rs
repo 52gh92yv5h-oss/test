@@ -88,6 +88,25 @@ struct ContentBlock {
     order: i64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     style: Option<StyleDef>,
+    /// Villkor mellan block (kravspec V13): blocket visas bara när
+    /// parameterns aktuella värde är exakt `equals`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    visible_when: Option<BlockCondition>,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+struct BlockCondition {
+    parameter_id: String,
+    equals: Value,
+}
+
+/// Block utan villkor visas alltid; annars krävs exakt värdematchning.
+fn block_visible(block: &ContentBlock, values: &Map<String, Value>) -> bool {
+    match &block.visible_when {
+        None => true,
+        Some(cond) => values.get(&cond.parameter_id).unwrap_or(&Value::Null) == &cond.equals,
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -569,6 +588,11 @@ fn render_model(engine: &Engine) -> Value {
         .iter()
         .filter_map(|ub| {
             let block = mall.blocks.iter().find(|b| b.id == ub.block_id)?;
+            // Villkor mellan block (kravspec V13): blocket ligger kvar i
+            // sessionen men döljs så länge villkoret inte är uppfyllt.
+            if !block_visible(block, &session.parameter_values) {
+                return None;
+            }
             let editable = block.btype == "editable";
             let html = if editable {
                 session
@@ -628,7 +652,12 @@ fn render_model(engine: &Engine) -> Value {
         })
         .collect();
 
-    let mut free: Vec<&ContentBlock> = mall.blocks.iter().filter(|b| b.placement == "free").collect();
+    // Fraser vars villkor inte är uppfyllt går inte att infoga (kravspec V13).
+    let mut free: Vec<&ContentBlock> = mall
+        .blocks
+        .iter()
+        .filter(|b| b.placement == "free" && block_visible(b, &session.parameter_values))
+        .collect();
     free.sort_by_key(|b| b.order);
     let free_phrases: Vec<Value> = free
         .iter()
@@ -818,6 +847,11 @@ fn handle(req: Value) -> Value {
                 let Some(block) = mall.blocks.iter().find(|b| b.id == block_id).cloned() else {
                     return json!({ "ok": false, "error": "Blocket finns inte i mallen" });
                 };
+                if let Some(s) = engine.session.as_ref() {
+                    if !block_visible(&block, &s.parameter_values) {
+                        return json!({ "ok": false, "error": "Frasens synlighetsvillkor är inte uppfyllt" });
+                    }
+                }
                 engine.commit();
                 let instance_id = engine.new_id("instance");
                 let mut flat = Vec::new();

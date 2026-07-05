@@ -59,6 +59,14 @@ export interface ParameterDef {
 export type BlockType = "locked" | "editable";
 export type BlockPlacement = "fixed" | "free";
 
+/** Villkor som styr om ett block visas i dokumentet (kravspec V13). */
+export interface BlockCondition {
+  /** Parametern vars värde villkoret prövas mot. */
+  parameterId: string;
+  /** Blocket visas när parameterns aktuella värde är exakt detta. */
+  equals: ParameterValue;
+}
+
 export interface ContentBlock {
   id: string;
   title: string;
@@ -69,6 +77,13 @@ export interface ContentBlock {
   order: number;
   /** Valfri typografi som ersätter mallens defaultStyle för blocket. */
   style?: StyleDef;
+  /**
+   * Valfritt synlighetsvillkor: blocket visas bara när villkoret är
+   * uppfyllt. Utelämnat = blocket visas alltid. Gäller både fasta block
+   * och fraser (en fras med ouppfyllt villkor kan inte infogas, och döljs
+   * om den redan är infogad när villkoret slutar vara uppfyllt).
+   */
+  visibleWhen?: BlockCondition;
 }
 
 export type HeaderFooterFieldKind = "logo" | "organisation" | "text";

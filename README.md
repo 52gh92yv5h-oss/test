@@ -1,9 +1,9 @@
 # Fred (Fras-EDitor)
 
 Fred är ett fristående, helt offline ordbehandlingssystem baserat på lokala
-JSON-konfigurationer. **Version 1.3.0** (visas i respektive apps gränssnitt).
+JSON-konfigurationer. **Version 1.4.0** (visas i respektive apps gränssnitt).
 
-Se `kravspecifikation.md` för den fullständiga kravspecifikationen (V12).
+Se `kravspecifikation.md` för den fullständiga kravspecifikationen (V13).
 
 ## Appvarianter
 
@@ -43,6 +43,15 @@ uppdatera Pages-sajten. Windows-exen byggs av `windows-editor.yml`
 
 - **Mallstyrda dokument**: låsta/redigerbara block, fasta/fria block
   (fraser), flernivåparametrar med global uppdatering.
+- **Villkor mellan block (V13, 1.4.0)**: ett block kan förses med ett
+  synlighetsvillkor (parameter + värde, `visibleWhen`) och visas då bara
+  när villkoret är uppfyllt — döljs/visas dynamiskt när parametervärdet
+  ändras, i båda editorvarianterna och i konfiguratorns dokumentvy.
+  Villkorade fraser kan inte infogas förrän villkoret är uppfyllt.
+  Villkoret sätts per block i konfiguratorns malleditor ("Visas endast
+  när"). Exempel i den omfattande exempel-mallen: *Familjesituation* visas
+  bara när "Har barn/familj?" = Ja och *Bekräftelse* bara när "Godkänner
+  villkoren?" = Ja.
 - **En enhetlig konfigurationsfil (V12)**: organisationer, mallhierarki och
   samtliga mallar ligger i **en** JSON-fil (markör `fred-konfiguration`).
   Konfiguratorn har gemensamma åtgärder *Ny/Öppna/Spara konfigurationsfil*
@@ -231,7 +240,7 @@ att återge korrekt avsändare i dokument som utfärdas i myndighetens namn.
 
 ## Status
 
-Version 1.3.0 täcker kravspecifikationens kärnflöden (V12). Ej
+Version 1.4.0 täcker kravspecifikationens kärnflöden (V13). Ej
 implementerat ännu: fullständig sidhuvud/sidfot-repetition per utskriven
 sida (renderas en gång per dokument) samt installationsprogram utöver
 enfils-`index.html`/Windows-exen.

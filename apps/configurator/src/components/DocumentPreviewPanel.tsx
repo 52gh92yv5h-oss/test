@@ -11,6 +11,7 @@ import {
   buildParentMap,
   contentToChipHtml,
   defaultValuesFrom,
+  isBlockVisible,
   isParameterVisible,
   newId,
   styleDefToCss,
@@ -222,10 +223,12 @@ export default function DocumentPreviewPanel() {
   const organisation = eligible.find((o) => o.id === orgId) ?? eligible[0];
   const parentMap = buildParentMap(mall.parameters);
 
+  // Villkor mellan block (kravspec V13): block och fraser vars villkor inte
+  // uppfylls av testvärdena döljs – precis som i Fred Editor.
   const fixedBlocks = mall.blocks
-    .filter((b) => b.placement === "fixed")
+    .filter((b) => b.placement === "fixed" && isBlockVisible(b, values))
     .sort((a, b) => a.order - b.order);
-  const freeBlocks = mall.blocks.filter((b) => b.placement === "free");
+  const freeBlocks = mall.blocks.filter((b) => b.placement === "free" && isBlockVisible(b, values));
 
   const reset = () => {
     setValues(defaultValuesFrom(mall.parameters));
@@ -246,7 +249,7 @@ export default function DocumentPreviewPanel() {
           ))}
           {freeInstances.map(({ instanceId, blockId }) => {
             const block = mall.blocks.find((b) => b.id === blockId);
-            if (!block) return null;
+            if (!block || !isBlockVisible(block, values)) return null;
             return (
               <PreviewBlock
                 key={instanceId}

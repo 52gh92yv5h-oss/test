@@ -1839,7 +1839,11 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
           "type": "locked",
           "placement": "fixed",
           "content": "<h2>Familjesituation</h2>\n<p><strong>Har familj:</strong> {{hasFamily}}</p>\n<p><strong>Familjetyp:</strong> {{familyType}}</p>\n<p><strong>Antal barn:</strong> {{numberOfChildren}}</p>\n<p><strong>Barnens åldrar:</strong> {{childrenAges}}</p>",
-          "order": 4
+          "order": 4,
+          "visibleWhen": {
+            "parameterId": "hasFamily",
+            "equals": true
+          }
         },
         {
           "id": "block-economy",
@@ -1882,6 +1886,10 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
           "order": 9,
           "style": {
             "italic": true
+          },
+          "visibleWhen": {
+            "parameterId": "agreeToTerms",
+            "equals": true
           }
         }
       ],
