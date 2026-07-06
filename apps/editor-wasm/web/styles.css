@@ -521,3 +521,29 @@ body.pane-left .parampane { order: -1; border-left: none; border-right: 1px soli
 
 /* I panel-läge är inline-fälten i dokumentet skrivskyddade. */
 body.param-mode-panel .fred-cc { pointer-events: none; }
+
+/* ---------- Mobilanpassning (kravspec V13: responsivt gränssnitt) ---------- */
+@media (max-width: 720px) {
+  :root { --page-w: calc(100vw - 12px); --page-pad-x: 10mm; }
+  .page { min-height: auto; padding-top: 8mm; padding-bottom: 8mm; }
+  .ribbon-tabs { overflow-x: auto; }
+  .ribbon { overflow-x: auto; }
+  .titlebar .doc-title { max-width: 40vw; }
+  .win-controls { display: none; }
+
+  .start-rail { width: 56px; }
+  .start-rail button { width: 48px; font-size: 9px; }
+  .start-main { padding: 16px 12px; }
+  .tpl-grid { gap: 12px; }
+  .tpl-card { width: calc(50% - 6px); }
+  .tpl-thumb { width: 100%; height: 170px; padding: 12px 10px; }
+  .open-actions button { flex: 1 1 45%; }
+
+  /* Arbetsytan staplas vertikalt: parameterpanelen under dokumentet. */
+  .workspace { flex-direction: column; }
+  .parampane, body.pane-left .parampane {
+    width: 100%; order: 2; max-height: 42dvh;
+    border-left: none; border-right: none;
+    border-top: 1px solid var(--border, #d9d9d9);
+  }
+}

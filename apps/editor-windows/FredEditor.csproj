@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <RootNamespace>FredEditor</RootNamespace>
     <AssemblyName>FredEditor</AssemblyName>
-    <Version>1.4.1</Version>
+    <Version>1.5.0</Version>
     <!-- Programikon (skrivbord/utforskaren/aktivitetsfältet). Genereras från
          public/icon.svg med: node scripts/generate-icons.mjs (repo-roten). -->
     <ApplicationIcon>icon.ico</ApplicationIcon>
