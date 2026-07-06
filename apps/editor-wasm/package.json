@@ -1,7 +1,7 @@
 {
   "name": "@fred/editor-wasm",
   "private": true,
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Fred Editor med dokumentmotor i WebAssembly och Word-liknande granssnitt",
   "scripts": {
     "build": "node scripts/build.mjs",
