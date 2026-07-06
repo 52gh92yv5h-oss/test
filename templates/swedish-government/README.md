@@ -1,6 +1,6 @@
 # Svenska myndighetsdokumentmallar
 
-Denna katalog innehåller **en enhetlig konfigurationsfil**, `config.json`, med hela mallbiblioteket för svenska myndigheter: 7 organisationer (med logotyper), mallhierarkin och 11 mallar — 10 myndighetsmallar plus en omfattande exempel-mall. Filen följer Fred-systemets konfigurationsformat (markör `fred-konfiguration`, kravspecifikation V13 avsnitt 6.1).
+Denna katalog innehåller **en enhetlig konfigurationsfil**, `config.json`, med ett mallbibliotek av svensk myndighetstyp: mallhierarkin, 11 mallar — 10 myndighetsmallar plus en omfattande exempel-mall — samt den **fiktiva** utfärdande myndigheten *Myndigheten för överklagande av dåligt väder* (med egendesignad logotyp, CC0). Mallarna är inspirerade av vanliga dokumenttyper hos svenska myndigheter, men ingen riktig myndighet förekommer i biblioteket. Filen följer Fred-systemets konfigurationsformat (markör `fred-konfiguration`, kravspecifikation V13 avsnitt 6.1).
 
 Samma innehåll är även inbakat i Fred Konfigurator som den fördefinierade mallbunten bakom knappen *"+ Sveriges myndighetsmallar"* (`apps/configurator/src/predefinedBundle.ts`, genererad med `node scripts/generate-config-bundles.mjs`).
 
@@ -35,68 +35,68 @@ Samma innehåll är även inbakat i Fred Konfigurator som den fördefinierade ma
 ### 1. **Arbetsförmedlingen - Personlig handlingsplan**
 - **Mall-ID:** `mall-arb-handlingsplan`
 - **Användning:** Handlingsplan för arbetssökande som registreras tillsammans med Arbetsförmedlingen
-- **Myndighet:** Arbetsförmedlingen
+- **Förlaga (dokumenttyp):** Arbetsförmedlingen
 - **Parametrar:** Namn, personnummer, arbetsmarknadsmål, åtgärder, tidplaner
 
 ### 2. **Skatteverket - Arbetsgivardeklaration**
 - **Mall-ID:** `mall-skatt-agdekl`
 - **Användning:** Månatlig rapportering av arbetsgivaravgifter
-- **Myndighet:** Skatteverket
+- **Förlaga (dokumenttyp):** Skatteverket
 - **Parametrar:** Organisationsnummer, anställdas uppgifter, löner, arbetsgivaravgifter
 
 ### 3. **Försäkringskassan - Läkarintyg för sjukpenning**
 - **Mall-ID:** `mall-fk-lakarintyg`
 - **Användning:** Medicinsk bedömning för sjukpenning/sjukskrivning
-- **Myndighet:** Försäkringskassan
+- **Förlaga (dokumenttyp):** Försäkringskassan
 - **Parametrar:** Diagnos, sjukskrivningsgrad, perioder, arbetsförmåga, behandlingsplan
 
 ### 4. **Försäkringskassan - Föräldrapenning ansökan**
 - **Mall-ID:** `mall-fk-foraldrapenning`
 - **Användning:** Ansökan för graviditets- och föräldrapenning
-- **Myndighet:** Försäkringskassan
+- **Förlaga (dokumenttyp):** Försäkringskassan
 - **Parametrar:** Ansökares info, barnets info, tidsperiod, typ av föräldrapenning
 
 ### 5. **CSN - Studiefinansiering ansökan**
 - **Mall-ID:** `mall-csn-studielan`
 - **Användning:** Ansökan om statligt studiestöd och studielån
-- **Myndighet:** Centrala studiestödsnämnden (CSN)
+- **Förlaga (dokumenttyp):** Centrala studiestödsnämnden (CSN)
 - **Parametrar:** Studentinfo, utbildningsprogram, institution, förvändade kostnader
 
 ### 6. **Försäkringskassan - Boendebidrags ansökan**
 - **Mall-ID:** `mall-fk-boendebidraget`
 - **Användning:** Ansökan för ekonomiskt stöd till boende
-- **Myndighet:** Försäkringskassan
+- **Förlaga (dokumenttyp):** Försäkringskassan
 - **Parametrar:** Ansökares info, bostadsadress, hyra, inkomst, familjemedlemmar
 
 ### 7. **Skatteverket - Anmälan om start av näringsverksamhet**
 - **Mall-ID:** `mall-skatt-anmalan-naring`
 - **Användning:** Registrering av nystartat företag/eget företagande
-- **Myndighet:** Skatteverket
+- **Förlaga (dokumenttyp):** Skatteverket
 - **Parametrar:** Företagsnamn, verksamhetstyp, startdatum, omsättning, bankinformation
 
 ### 8. **Migrationsverket - Uppehållstillstånds ansökan**
 - **Mall-ID:** `mall-migrationsverket-uppehall`
 - **Användning:** Ansökan för att få uppehållstillstånd i Sverige
-- **Myndighet:** Migrationsverket
+- **Förlaga (dokumenttyp):** Migrationsverket
 - **Parametrar:** Personlig info, boendeadress, grund för ansökan, anställningsuppgifter
 
 ### 9. **Polismyndigheten - Ansökan om ID-handling**
 - **Mall-ID:** `mall-polis-id-handling`
 - **Användning:** Ansökan för pass eller nationellt ID-kort
-- **Myndighet:** Polismyndigheten
+- **Förlaga (dokumenttyp):** Polismyndigheten
 - **Parametrar:** Namn, personnummer, typ av handling, giltighet, kontakt
 
 ### 10. **Kronofogdemyndigheten - Betalningsplan ansökan**
 - **Mall-ID:** `mall-kronofogden-betalningsplan`
 - **Användning:** Ansökan för betalningsplan vid skulder
-- **Myndighet:** Kronofogdemyndigheten
+- **Förlaga (dokumenttyp):** Kronofogdemyndigheten
 - **Parametrar:** Gäldenärens info, skulduppgifter, ekonomisk situation, betalningsschema
 
 ## Filens innehåll
 
 `config.json` innehåller allt i ett:
 
-- **`organisations`**: Definitioner av alla 7 svenska myndigheter med logotyper (base64-kodade bilder)
+- **`organisations`**: Den fiktiva myndigheten *Myndigheten för överklagande av dåligt väder* med egendesignad logotyp (inbäddad som data-URL)
 - **`hierarchy`**: Hierarkisk kategorisering av mallarna (arbetsmarknad, skatter, försäkringar, utbildning, migration, skulder)
 - **`mallar`**: De 11 mallarna ovan
 
@@ -108,49 +108,19 @@ Varje mall följer Fred-systemets datamodell (kravspecifikation V13):
 - **Parametrar**: Multi-nivå parametrar som kan vara text, datum, nummer, boolean eller listor
 - **Innehållsblock**: Låsta (informativa) och redigerbara block som slutanvändaren kan modifiera
 - **Fria block (fraser)**: Block som kan infogas fritt av slutanvändaren under arbetet
-- **Organisationsomfattning**: Varje mall är kopplad till en specifik myndighet
+- **Organisationsomfattning**: Myndighetsmallarna är kopplade till den fiktiva myndigheten; exempel-mallen gäller alla organisationer
 
-## Logotyper
+## Logotyp
 
-Logotyperna lagras som base64-kodade data-URL:er i `config.json`
-(organisationslistan) och renderas i dokumentens sidhuvuden i Fred Editor,
-i konfiguratorns förhandsgranskning av sidhuvud/sidfot samt vid PDF-export.
+Den fiktiva myndighetens logotyp — ett paraply med paragraftecken, regn
+och blixt — är egendesignad för Fred (CC0) och lagras som en inbäddad
+SVG-data-URL i `config.json` (`logoDataUrl`), med källa och licens i
+fälten `logoSource`/`logoLicense`. Den renderas i dokumentens sidhuvuden
+i Fred Editor, i konfiguratorns förhandsgranskning och vid PDF-export.
 
-**Nuvarande status: riktiga logotyper.** Konfigurationsfilen innehåller
-respektive myndighets riktiga logotyp, hämtad från Wikimedia. Källan
-antecknas per organisation i fältet `logoSource`:
-
-| Myndighet | Källa |
-|-----------|-------|
-| Arbetsförmedlingen | Commons: `File:Arbetsförmedlingen logo.svg` |
-| Skatteverket | en.wikipedia: `File:Skatteverket Logo.svg` |
-| Försäkringskassan | Commons: `File:Logo Försäkringskassan.svg` |
-| CSN | Commons: `File:Centrala Studiestödsnämnden logo.svg` |
-| Migrationsverket | Commons: `File:Logotyp för Migrationsverket.svg` |
-| Polismyndigheten | Commons: `File:Polisen vapen.svg` (polisens vapen) |
-| Kronofogdemyndigheten | Commons: `File:Logo Kronofogdemyndigheten.svg` |
-
-### Uppdatera logotyperna
-
-Kör hämtskriptet från repots rot i en miljö med nätverksåtkomst till
-`*.wikimedia.org`/`*.wikipedia.org`:
-
-```bash
-NODE_USE_ENV_PROXY=1 node scripts/fetch-logos.mjs
-```
-
-(`NODE_USE_ENV_PROXY=1` behövs bara bakom en utgående proxy, t.ex. i
-Claude Code-miljöer — Nodes `fetch` följer annars inte `HTTPS_PROXY`.)
-
-Skriptet hämtar en 400 px PNG-thumb av respektive logotyp, bäddar in den
-som data-URL i `config.json` och uppdaterar `logoSource`. Ingen mall
-behöver ändras — mallarna refererar organisationer via id. Kör därefter
-`node scripts/generate-config-bundles.mjs` så att de inbakade
-TS-konstanterna i apparna uppdateras.
-
-**Varumärkesnot:** Myndighetslogotyperna tillhör respektive myndighet och
-används i mallarna endast för att återge korrekt avsändare i dokument som
-utfärdas i myndighetens namn.
+Biblioteket innehåller inga riktiga myndigheter eller
+tredjepartsvarumärken. (Tidigare versioner använde riktiga logotyper
+från Wikimedia; de är borttagna tillsammans med hämtskriptet.)
 
 ## Använda filformatet
 

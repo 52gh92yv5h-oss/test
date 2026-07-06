@@ -1,7 +1,7 @@
 # Fred (Fras-EDitor)
 
 Fred är ett fristående, helt offline ordbehandlingssystem baserat på lokala
-JSON-konfigurationer. **Version 1.4.0** (visas i respektive apps gränssnitt).
+JSON-konfigurationer. **Version 1.4.1** (visas i respektive apps gränssnitt).
 
 Se `kravspecifikation.md` för den fullständiga kravspecifikationen (V13).
 
@@ -61,9 +61,10 @@ uppdatera Pages-sajten. Windows-exen byggs av `windows-editor.yml`
   (`organisationer.json`, `hierarki.json`, `mall-*.json`) finns inte
   längre.
 - **Fördefinierad mallbunt (V12)**: knappen *"+ Sveriges myndighetsmallar"*
-  i konfiguratorn slår ihop de inbakade svenska myndighetsmallarna
-  (7 organisationer, 11 mallar, hierarki) med arbetsytan — helt offline,
-  innehållet inlinas i den sparade filen.
+  i konfiguratorn slår ihop den inbakade mallbunten (11 mallar av svensk
+  myndighetstyp, hierarki och den fiktiva myndigheten *Myndigheten för
+  överklagande av dåligt väder*) med arbetsytan — helt offline, innehållet
+  inlinas i den sparade filen.
 - **Delad localStorage-brygga (V12)**: konfiguratorns ändringar speglas
   automatiskt (debounce ~0,8 s) till nyckeln `fred-shared-config` i
   webbläsarens localStorage, och editorn läser in den vid start. Fungerar
@@ -207,40 +208,34 @@ formatet (marker `fred-konfiguration`, se kravspec avsnitt 6.1):
 - `templates/standard/config.json` — Exempelbolaget AB + affärsbrevet
   (samma mall som är inbyggd i editorerna; `apps/editor/src/builtin.ts`
   genereras från denna fil).
-- `templates/swedish-government/config.json` — 7 svenska myndigheter med
-  riktiga logotyper, mallhierarki och 11 exempelmallar
-  (`apps/configurator/src/predefinedBundle.ts` genereras från denna fil).
-  Se katalogens README.
+- `templates/swedish-government/config.json` — 11 exempelmallar av svensk
+  myndighetstyp med mallhierarki, utfärdade av den **fiktiva** myndigheten
+  *Myndigheten för överklagande av dåligt väder* (egen designad logotyp,
+  CC0). `apps/configurator/src/predefinedBundle.ts` genereras från denna
+  fil. Se katalogens README.
 
 Regenerera de inbakade TS-konstanterna efter ändringar i buntarna med
 `node scripts/generate-config-bundles.mjs`.
 
 ## Logotyper: källor och licenser
 
-Myndighetslogotyperna är hämtade med `scripts/fetch-logos.mjs`
-(`NODE_USE_ENV_PROXY=1 node scripts/fetch-logos.mjs` bakom utgående proxy)
-och inbäddade i `templates/swedish-government/config.json`. Källa
-och licens lagras per organisation i fälten `logoSource`/`logoLicense`:
+Samtliga organisationer i mallbiblioteket är fiktiva och deras logotyper
+är egendesignade för Fred (CC0). Källa och licens lagras per organisation
+i fälten `logoSource`/`logoLicense` i respektive `config.json`:
 
 | Logotyp | Källa | Licens |
 |---|---|---|
-| Arbetsförmedlingen | Wikimedia Commons: `File:Arbetsförmedlingen logo.svg` | Public domain |
-| Skatteverket | engelska Wikipedia: `File:Skatteverket Logo.svg` | PD (public domain, textlogotyp) |
-| Försäkringskassan | Commons: `File:Logo Försäkringskassan.svg` | Public domain |
-| CSN | Commons: `File:Centrala Studiestödsnämnden logo.svg` | Public domain |
-| Migrationsverket | Commons: `File:Logotyp för Migrationsverket.svg` | Public domain |
-| Polismyndigheten | Commons: `File:Polisen vapen.svg` | **CC BY-SA 2.5** — kräver erkännande; se filsidan på Commons för upphovsperson |
-| Kronofogdemyndigheten | Commons: `File:Logo Kronofogdemyndigheten.svg` | Public domain |
+| Myndigheten för överklagande av dåligt väder | Egendesignad för Fred (fiktiv myndighet) | CC0 |
 | Exempelbolaget AB | Egendesignad för Fred (fiktivt företag) | CC0 |
 
-Licenser enligt respektive filsidas `LicenseShortName` vid hämtningstillfället —
-kontrollera filsidan vid vidare användning. **Varumärkesnot:** myndighets-
-logotyperna tillhör respektive myndighet och används i mallarna endast för
-att återge korrekt avsändare i dokument som utfärdas i myndighetens namn.
+Tidigare versioner av mallbiblioteket innehöll riktiga svenska
+myndigheter med logotyper från Wikimedia; dessa är borttagna och ersatta
+med den fiktiva myndigheten, så repot innehåller inte längre några
+tredjepartsvarumärken.
 
 ## Status
 
-Version 1.4.0 täcker kravspecifikationens kärnflöden (V13). Ej
+Version 1.4.1 täcker kravspecifikationens kärnflöden (V13). Ej
 implementerat ännu: fullständig sidhuvud/sidfot-repetition per utskriven
 sida (renderas en gång per dokument) samt installationsprogram utöver
 enfils-`index.html`/Windows-exen.

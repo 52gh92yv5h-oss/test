@@ -1,7 +1,7 @@
 {
   "name": "fred",
   "private": true,
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Fred (Fras-EDitor) - fristaende, offline ordbehandlingssystem",
   "workspaces": [
     "packages/*",
@@ -18,7 +18,6 @@
     "test:editor-wasm": "npm run test -w apps/editor-wasm",
     "build:pages": "node scripts/build-pages.mjs",
     "test:launch": "node scripts/test-launch.mjs",
-    "fetch:logos": "node scripts/fetch-logos.mjs",
     "icons": "node scripts/generate-icons.mjs",
     "bump": "node scripts/bump-version.mjs patch",
     "bump:minor": "node scripts/bump-version.mjs minor",
