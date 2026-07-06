@@ -43,6 +43,9 @@ inline-fält (`<span class="fred-cc">`).
   parameter uppdateras medan man skriver (global uppdatering).
 * Låsta block kan inte redigeras, men deras parameterfält går att fylla i.
 * Fraser (fria block) infogas via Infoga → Fras (snabbdelar).
+* Villkorsstyrda block (kravspec V13): block med `visibleWhen` döljs/visas
+  dynamiskt när parametervärdet ändras, och villkorade fraser kan bara
+  infogas när villkoret är uppfyllt. Filtreringen sker i Rust-motorn.
 
 ## Typografi & sidhuvud/sidfot (kravspec V10)
 
@@ -103,7 +106,7 @@ genomgår inte bilageskanning.
 
 ## Filformat
 
-Samma JSON-format som övriga Fred (kravspec V12): den enhetliga
+Samma JSON-format som övriga Fred (kravspec V13): den enhetliga
 konfigurationsfilen (`fred-konfiguration` — organisationer, hierarki och
 samtliga mallar i en fil), sessionsfiler (`fred-session`) och importfiler
 (`{ organisationId?, values }`). Konfigurationsfilen öppnas via
