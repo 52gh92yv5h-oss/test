@@ -228,10 +228,6 @@ i fälten `logoSource`/`logoLicense` i respektive `config.json`:
 | Myndigheten för överklagande av dåligt väder | Egendesignad för Fred (fiktiv myndighet) | CC0 |
 | Exempelbolaget AB | Egendesignad för Fred (fiktivt företag) | CC0 |
 
-Tidigare versioner av mallbiblioteket innehöll riktiga svenska
-myndigheter med logotyper från Wikimedia; dessa är borttagna och ersatta
-med den fiktiva myndigheten, så repot innehåller inte längre några
-tredjepartsvarumärken.
 
 ## Status
 
