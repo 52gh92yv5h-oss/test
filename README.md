@@ -1,7 +1,7 @@
 # Fred (Fras-EDitor)
 
 Fred är ett fristående, helt offline ordbehandlingssystem baserat på lokala
-JSON-konfigurationer. **Version 1.4.1** (visas i respektive apps gränssnitt).
+JSON-konfigurationer. **Version 1.5.0** (visas i respektive apps gränssnitt).
 
 Se `kravspecifikation.md` för den fullständiga kravspecifikationen (V13).
 
@@ -235,7 +235,7 @@ tredjepartsvarumärken.
 
 ## Status
 
-Version 1.4.1 täcker kravspecifikationens kärnflöden (V13). Ej
+Version 1.5.0 täcker kravspecifikationens kärnflöden (V13). Ej
 implementerat ännu: fullständig sidhuvud/sidfot-repetition per utskriven
 sida (renderas en gång per dokument) samt installationsprogram utöver
 enfils-`index.html`/Windows-exen.

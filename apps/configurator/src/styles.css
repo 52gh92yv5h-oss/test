@@ -250,3 +250,31 @@ hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 .fred-block-actions button { padding: 1px 5px; font-size: 11px; }
 .page-break { border-top: 2px dashed #94a3b8; margin: 12px 0; height: 0; }
 .page-break::after { content: "Sidbrytning"; font-size: 10px; color: #94a3b8; }
+
+/* ---------- Mobilanpassning (kravspec V13: responsivt gränssnitt) ---------- */
+@media (max-width: 720px) {
+  /* Navigationen blir en topprad i stället för sidospalt. */
+  .app-shell { flex-direction: column; }
+  .nav {
+    width: 100%; flex-direction: row; flex-wrap: wrap; align-items: center;
+    padding: 8px 8px 6px; gap: 2px; flex-shrink: 0;
+  }
+  .nav h1 { flex-basis: 100%; padding: 0 8px 8px; border-bottom: none; }
+  .nav-config-actions {
+    flex-direction: row; flex-wrap: wrap; flex-basis: 100%;
+    padding: 0 8px 8px; margin: 0 0 4px; gap: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  .nav-config-actions button { flex: 1 1 45%; text-align: center; }
+  .nav > button { padding: 8px 10px; border-radius: 4px; }
+  .content { padding: 12px; }
+
+  .row { gap: 8px; }
+  .row > .col { flex: 1 1 100%; }
+  input[type=text], select, textarea { max-width: 100%; }
+
+  /* Dokumentvyn: testpanelen under dokumentet. */
+  .doc-preview-layout { flex-direction: column; }
+  .doc-preview-side { width: 100%; }
+  .document-page { width: 100%; min-height: auto; padding: 16px 12px; }
+}

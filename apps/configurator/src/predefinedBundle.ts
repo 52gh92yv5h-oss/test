@@ -40,7 +40,7 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
             "name": "Arbetsmarknad",
             "children": [],
             "templateIds": [
-              "mall-arb-handlingsplan"
+              "mall-handlingsplan"
             ]
           },
           {
@@ -48,8 +48,8 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
             "name": "Skatter och näringsverksamhet",
             "children": [],
             "templateIds": [
-              "mall-skatt-agdekl",
-              "mall-skatt-anmalan-naring"
+              "mall-arbetsgivardeklaration",
+              "mall-naringsanmalan"
             ]
           },
           {
@@ -57,9 +57,9 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
             "name": "Försäkringar och social trygghet",
             "children": [],
             "templateIds": [
-              "mall-fk-lakarintyg",
-              "mall-fk-foraldrapenning",
-              "mall-fk-boendebidraget"
+              "mall-lakarintyg",
+              "mall-foraldrapenning",
+              "mall-boendebidrag"
             ]
           },
           {
@@ -67,7 +67,7 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
             "name": "Utbildning",
             "children": [],
             "templateIds": [
-              "mall-csn-studielan"
+              "mall-studiestod"
             ]
           },
           {
@@ -75,8 +75,8 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
             "name": "Migration och id-handlingar",
             "children": [],
             "templateIds": [
-              "mall-migrationsverket-uppehall",
-              "mall-polis-id-handling"
+              "mall-uppehallstillstand",
+              "mall-id-handling"
             ]
           },
           {
@@ -84,7 +84,7 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
             "name": "Skulder och betalning",
             "children": [],
             "templateIds": [
-              "mall-kronofogden-betalningsplan"
+              "mall-betalningsplan"
             ]
           }
         ],
@@ -95,8 +95,8 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
   },
   "mallar": [
     {
-      "id": "mall-arb-handlingsplan",
-      "name": "Personlig handlingsplan - Arbetsförmedlingen",
+      "id": "mall-handlingsplan",
+      "name": "Personlig handlingsplan",
       "description": "Handlingsplan för arbetssökande",
       "categoryId": "swedish-government",
       "orgScope": {
@@ -187,7 +187,7 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
           "title": "Introduktion",
           "type": "locked",
           "placement": "fixed",
-          "content": "<h2>Personlig handlingsplan</h2><p>Denna handlingsplan upprättas tillsammans med Arbetsförmedlingen för att stödja dina möjligheter på arbetsmarknaden.</p>",
+          "content": "<h2>Personlig handlingsplan</h2><p>Denna handlingsplan upprättas tillsammans med myndigheten för att stödja dina möjligheter på arbetsmarknaden.</p>",
           "order": 1
         },
         {
@@ -216,10 +216,10 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
         },
         {
           "id": "block-support",
-          "title": "Stöd från Arbetsförmedlingen",
+          "title": "Stöd från myndigheten",
           "type": "locked",
           "placement": "fixed",
-          "content": "<p>Arbetsförmedlingen erbjuder följande stöd: {{supportOffered}}</p>",
+          "content": "<p>Myndigheten erbjuder följande stöd: {{supportOffered}}</p>",
           "order": 5
         }
       ],
@@ -227,8 +227,8 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
       "updatedAt": "2026-07-03T11:52:39.482730Z"
     },
     {
-      "id": "mall-skatt-agdekl",
-      "name": "Arbetsgivardeklaration - Skatteverket",
+      "id": "mall-arbetsgivardeklaration",
+      "name": "Arbetsgivardeklaration",
       "description": "Månatlig rapportering av arbetsgivaravgifter",
       "categoryId": "swedish-government",
       "orgScope": {
@@ -350,8 +350,8 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
       "updatedAt": "2026-07-03T11:52:39.482752Z"
     },
     {
-      "id": "mall-fk-lakarintyg",
-      "name": "Läkarintyg för sjukpenning - Försäkringskassan",
+      "id": "mall-lakarintyg",
+      "name": "Läkarintyg för sjukpenning",
       "description": "Medicinsk bedömning för sjukpenning",
       "categoryId": "swedish-government",
       "orgScope": {
@@ -491,8 +491,8 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
       "updatedAt": "2026-07-03T11:52:39.482756Z"
     },
     {
-      "id": "mall-fk-foraldrapenning",
-      "name": "Ansökan om föräldrapenning - Försäkringskassan",
+      "id": "mall-foraldrapenning",
+      "name": "Ansökan om föräldrapenning",
       "description": "Ansökan för graviditets- och föräldrapenning",
       "categoryId": "swedish-government",
       "orgScope": {
@@ -637,8 +637,8 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
       "updatedAt": "2026-07-03T11:52:39.482763Z"
     },
     {
-      "id": "mall-csn-studielan",
-      "name": "Ansökan om statligt studiestöd - CSN",
+      "id": "mall-studiestod",
+      "name": "Ansökan om statligt studiestöd",
       "description": "Ansökan om studiestöd och studielån",
       "categoryId": "swedish-government",
       "orgScope": {
@@ -739,7 +739,7 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
           "title": "Ansökan om statligt studiestöd",
           "type": "locked",
           "placement": "fixed",
-          "content": "<h2>Ansökan om statligt studiestöd</h2><p>CSN - Centrala studiestödsnämnden</p>",
+          "content": "<h2>Ansökan om statligt studiestöd</h2><p>Myndigheten för överklagande av dåligt väder</p>",
           "order": 1
         },
         {
@@ -779,8 +779,8 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
       "updatedAt": "2026-07-03T11:52:39.482768Z"
     },
     {
-      "id": "mall-fk-boendebidraget",
-      "name": "Ansökan om boendebidraget - Försäkringskassan",
+      "id": "mall-boendebidrag",
+      "name": "Ansökan om boendebidraget",
       "description": "Ansökan för ekonomiskt stöd till boende",
       "categoryId": "swedish-government",
       "orgScope": {
@@ -925,8 +925,8 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
       "updatedAt": "2026-07-03T11:52:39.482774Z"
     },
     {
-      "id": "mall-skatt-anmalan-naring",
-      "name": "Anmälan om start av näringsverksamhet - Skatteverket",
+      "id": "mall-naringsanmalan",
+      "name": "Anmälan om start av näringsverksamhet",
       "description": "Registrering av nystartat företag",
       "categoryId": "swedish-government",
       "orgScope": {
@@ -1070,8 +1070,8 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
       "updatedAt": "2026-07-03T11:52:39.482779Z"
     },
     {
-      "id": "mall-migrationsverket-uppehall",
-      "name": "Ansökan om uppehållstillstånd - Migrationsverket",
+      "id": "mall-uppehallstillstand",
+      "name": "Ansökan om uppehållstillstånd",
       "description": "Ansökan för att få stanna i Sverige",
       "categoryId": "swedish-government",
       "orgScope": {
@@ -1211,8 +1211,8 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
       "updatedAt": "2026-07-03T11:52:39.482785Z"
     },
     {
-      "id": "mall-polis-id-handling",
-      "name": "Ansökan om ID-handling - Polismyndigheten",
+      "id": "mall-id-handling",
+      "name": "Ansökan om ID-handling",
       "description": "Ansökan för pass eller nationellt ID-kort",
       "categoryId": "swedish-government",
       "orgScope": {
@@ -1338,8 +1338,8 @@ export const PREDEFINED_BUNDLE: ConfigFile = {
       "updatedAt": "2026-07-03T11:52:39.482792Z"
     },
     {
-      "id": "mall-kronofogden-betalningsplan",
-      "name": "Ansökan om betalningsplan - Kronofogdemyndigheten",
+      "id": "mall-betalningsplan",
+      "name": "Ansökan om betalningsplan",
       "description": "Ansökan för betalningsplan för skulder",
       "categoryId": "swedish-government",
       "orgScope": {

@@ -30,66 +30,60 @@ Samma innehåll är även inbakat i Fred Konfigurator som den fördefinierade ma
 
 ---
 
-## Mallar för svenska myndigheter
+## Myndighetsmallarna
 
-### 1. **Arbetsförmedlingen - Personlig handlingsplan**
-- **Mall-ID:** `mall-arb-handlingsplan`
-- **Användning:** Handlingsplan för arbetssökande som registreras tillsammans med Arbetsförmedlingen
-- **Förlaga (dokumenttyp):** Arbetsförmedlingen
-- **Parametrar:** Namn, personnummer, arbetsmarknadsmål, åtgärder, tidplaner
+Samtliga mallar utfärdas av den fiktiva *Myndigheten för överklagande av
+dåligt väder*. Dokumenttyperna är inspirerade av vanliga svenska
+myndighetsärenden, men ingen riktig myndighet nämns i mallarna.
 
-### 2. **Skatteverket - Arbetsgivardeklaration**
-- **Mall-ID:** `mall-skatt-agdekl`
+### 1. **Personlig handlingsplan**
+- **Mall-ID:** `mall-handlingsplan`
+- **Användning:** Handlingsplan som upprättas tillsammans med myndigheten
+- **Parametrar:** Namn, personnummer, mål, åtgärder, tidplaner
+
+### 2. **Arbetsgivardeklaration**
+- **Mall-ID:** `mall-arbetsgivardeklaration`
 - **Användning:** Månatlig rapportering av arbetsgivaravgifter
-- **Förlaga (dokumenttyp):** Skatteverket
 - **Parametrar:** Organisationsnummer, anställdas uppgifter, löner, arbetsgivaravgifter
 
-### 3. **Försäkringskassan - Läkarintyg för sjukpenning**
-- **Mall-ID:** `mall-fk-lakarintyg`
+### 3. **Läkarintyg för sjukpenning**
+- **Mall-ID:** `mall-lakarintyg`
 - **Användning:** Medicinsk bedömning för sjukpenning/sjukskrivning
-- **Förlaga (dokumenttyp):** Försäkringskassan
 - **Parametrar:** Diagnos, sjukskrivningsgrad, perioder, arbetsförmåga, behandlingsplan
 
-### 4. **Försäkringskassan - Föräldrapenning ansökan**
-- **Mall-ID:** `mall-fk-foraldrapenning`
+### 4. **Ansökan om föräldrapenning**
+- **Mall-ID:** `mall-foraldrapenning`
 - **Användning:** Ansökan för graviditets- och föräldrapenning
-- **Förlaga (dokumenttyp):** Försäkringskassan
 - **Parametrar:** Ansökares info, barnets info, tidsperiod, typ av föräldrapenning
 
-### 5. **CSN - Studiefinansiering ansökan**
-- **Mall-ID:** `mall-csn-studielan`
-- **Användning:** Ansökan om statligt studiestöd och studielån
-- **Förlaga (dokumenttyp):** Centrala studiestödsnämnden (CSN)
-- **Parametrar:** Studentinfo, utbildningsprogram, institution, förvändade kostnader
+### 5. **Ansökan om statligt studiestöd**
+- **Mall-ID:** `mall-studiestod`
+- **Användning:** Ansökan om studiestöd och studielån
+- **Parametrar:** Studentinfo, utbildningsprogram, institution, förväntade kostnader
 
-### 6. **Försäkringskassan - Boendebidrags ansökan**
-- **Mall-ID:** `mall-fk-boendebidraget`
+### 6. **Ansökan om boendebidrag**
+- **Mall-ID:** `mall-boendebidrag`
 - **Användning:** Ansökan för ekonomiskt stöd till boende
-- **Förlaga (dokumenttyp):** Försäkringskassan
 - **Parametrar:** Ansökares info, bostadsadress, hyra, inkomst, familjemedlemmar
 
-### 7. **Skatteverket - Anmälan om start av näringsverksamhet**
-- **Mall-ID:** `mall-skatt-anmalan-naring`
+### 7. **Anmälan om start av näringsverksamhet**
+- **Mall-ID:** `mall-naringsanmalan`
 - **Användning:** Registrering av nystartat företag/eget företagande
-- **Förlaga (dokumenttyp):** Skatteverket
 - **Parametrar:** Företagsnamn, verksamhetstyp, startdatum, omsättning, bankinformation
 
-### 8. **Migrationsverket - Uppehållstillstånds ansökan**
-- **Mall-ID:** `mall-migrationsverket-uppehall`
-- **Användning:** Ansökan för att få uppehållstillstånd i Sverige
-- **Förlaga (dokumenttyp):** Migrationsverket
+### 8. **Ansökan om uppehållstillstånd**
+- **Mall-ID:** `mall-uppehallstillstand`
+- **Användning:** Ansökan om uppehållstillstånd
 - **Parametrar:** Personlig info, boendeadress, grund för ansökan, anställningsuppgifter
 
-### 9. **Polismyndigheten - Ansökan om ID-handling**
-- **Mall-ID:** `mall-polis-id-handling`
+### 9. **Ansökan om ID-handling**
+- **Mall-ID:** `mall-id-handling`
 - **Användning:** Ansökan för pass eller nationellt ID-kort
-- **Förlaga (dokumenttyp):** Polismyndigheten
 - **Parametrar:** Namn, personnummer, typ av handling, giltighet, kontakt
 
-### 10. **Kronofogdemyndigheten - Betalningsplan ansökan**
-- **Mall-ID:** `mall-kronofogden-betalningsplan`
-- **Användning:** Ansökan för betalningsplan vid skulder
-- **Förlaga (dokumenttyp):** Kronofogdemyndigheten
+### 10. **Ansökan om betalningsplan**
+- **Mall-ID:** `mall-betalningsplan`
+- **Användning:** Ansökan om betalningsplan vid skulder
 - **Parametrar:** Gäldenärens info, skulduppgifter, ekonomisk situation, betalningsschema
 
 ## Filens innehåll

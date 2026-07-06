@@ -5,6 +5,7 @@ Detta dokument sammanställer kraven för utvecklingen av Fred (Fras-EDitor) –
 ## 1. Övergripande syfte & Arkitektur
 
 * **Exekvering i webbläsare:** Fred ska köras och fungera i en webbläsare.
+* **Responsivt gränssnitt:** Apparna ska vara användbara även på mobiltelefon och surfplatta: på smala skärmar anpassas layouten (navigering och paneler staplas i stället för att ligga sida vid sida, dokumentsidan fyller skärmens bredd och mallkorten radbryts) utan att funktionalitet går förlorad.
 * **Inga externa anrop (Offline):** Fred ska fungera helt offline utan internetanslutning. Inga anrop till externa tjänster eller API:er får göras. Allt ska hanteras helt lokalt på användarens dator.
 * **Fristående applikationer:** Fred ska bestå av två separata, fristående appar:
   * **Fred Editor (slutanvändare)** – för att skapa och redigera dokument.
